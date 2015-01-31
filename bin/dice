@@ -1,0 +1,99 @@
+#!/usr/bin/env lua
+
+local dice_expression = require("fimbul.dice_expression")
+
+local os = require("os")
+local posix = require("posix")
+
+local short = "hmv"
+local long =  {
+   { "help", "none", "h" },
+   { "multi-line", "none", "m" },
+   { "verbose", "none", "v" },
+}
+
+-- Variables for flags that can be set
+local verbose = false
+-- Expressions
+local expressions = {}
+-- Line based stdin input?
+local linebased = true
+
+function usage()
+   io.write("dice -hmv expr1, expr2, ..., exprN\n")
+   io.write("\n")
+   io.write("Options:\n")
+   io.write("  -h --help       ... This bogus.\n")
+   io.write("  -m --multi-line ... stdin is one single chunk. Disables -v\n")
+   io.write("  -v --verbose    ... Print expression alongside result.\n")
+   io.write("\n")
+end
+
+function handle_arguments()
+   local lastindex = 1
+   for r, optarg, optind, li in posix.getopt(arg, short, long) do
+      if r == "?" then
+         usage()
+         os.exit(1)
+      elseif r == "h" then
+         usage()
+         os.exit(0)
+      end
+
+      if r == "v" then
+         verbose = true
+      elseif r == "m" then
+         linebased = false
+         verbose = false
+      end
+
+      lastindex = optind
+   end
+
+   for i = lastindex, #arg do
+      table.insert(expressions, arg[i])
+   end
+end
+
+function evaluate_statement(str)
+   local ret = dice_expression.evaluate(str)
+
+   if verbose then
+      io.write(string.format("%s = %d\n", str, ret))
+   else
+      io.write(string.format("%d\n", ret))
+   end
+end
+
+function save_read(str)
+   local stat, res = pcall(io.read, str)
+
+   if not stat or not res then
+      os.exit(0)
+   end
+   return res
+end
+
+function read_stdin()
+   if linebased then
+      local done = false
+
+      while not done do
+         local line = save_read("*l")
+         evaluate_statement(line)
+      end
+   else
+      local all = save_read("*all")
+      evaluate_statement(all)
+   end
+end
+
+handle_arguments()
+
+if not expressions or #expressions == 0 then
+   read_stdin()
+else
+   for i = 1, #expressions do
+      evaluate_statement(expressions[i])
+   end
+end
