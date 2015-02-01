@@ -11,6 +11,8 @@ local lfs = require("lfs")
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
 
+local pretty = require("pl.pretty")
+
 local repository = {}
 
 function repository:_load_config()
@@ -73,6 +75,23 @@ function repository:open(path)
    -- Load configuration
    self:_load_config()
    self.data = {}
+
+   -- Setup different data repository directories
+   if self.config.data then
+      for _, block in base.ipairs(self.config.data) do
+         local p = block.path
+
+         -- Translate relative paths for ease of opening
+         if p and util.is_relative(p) then
+            local full = self.root .. "/" .. p
+            block.path = posix.realpath(full)
+            assert(block.path, "The given data path " .. p .. " does not exist.")
+         end
+
+         local repository = data_repository.open(block)
+         table.insert(self.data, repository)
+      end
+   end
 
    -- Setup default data repository
    table.insert(self.data,

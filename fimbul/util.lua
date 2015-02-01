@@ -68,4 +68,16 @@ function util.concat_table(t1, t2)
    return t3
 end
 
+function util.is_relative(path)
+   if path == "" then
+      return false
+   end
+
+   if path[1] ~= "/" or path[1] == "." then
+      return true
+   else
+      return false
+   end
+end
+
 return util
