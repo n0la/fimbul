@@ -2,6 +2,7 @@
 
 local util = {}
 
+local base = _G
 local yaml = require("yaml")
 local table = require("table")
 
@@ -78,6 +79,16 @@ function util.is_relative(path)
    else
       return false
    end
+end
+
+function util.contains(t, v)
+   for _, value in base.pairs(t) do
+      if value == v then
+         return true
+      end
+   end
+
+   return false
 end
 
 return util
