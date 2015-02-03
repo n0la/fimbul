@@ -7,7 +7,7 @@ local randomseed = {}
 
 local randinit = 0
 
-function randomseed:init()
+function randomseed.init()
    if randinit == 1 then
       return
    end
