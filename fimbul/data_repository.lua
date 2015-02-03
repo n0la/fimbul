@@ -1,7 +1,5 @@
 --- @module fimbul.data_repository
 
-local r = {}
-
 local base = _G
 local table = require("table")
 
@@ -51,19 +49,17 @@ function data_repository:find_all(directory, glob)
    return results
 end
 
-function r.new()
+function data_repository:new(blob)
    local neu = {}
 
-   data_repository.__index = data_repository
-   setmetatable(neu, data_repository)
+   setmetatable(neu, self)
+   self.__index = self
+
+   if blob then
+      neu:open(blob)
+   end
 
    return neu
 end
 
-function r.open(blob)
-   local n = r.new()
-   n:open(blob)
-   return n
-end
-
-return r
+return data_repository

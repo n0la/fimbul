@@ -84,14 +84,14 @@ function repository:open(path)
             assert(block.path, "The given data path " .. p .. " does not exist.")
          end
 
-         local repository = data_repository.open(block)
+         local repository = data_repository:new(block)
          table.insert(self.data, repository)
       end
    end
 
    -- Setup default data repository
    table.insert(self.data,
-                data_repository.open({name = "_local", path = self.datapath}))
+                data_repository:new({name = "_local", path = self.datapath}))
 
 end
 
