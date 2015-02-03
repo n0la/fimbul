@@ -27,8 +27,6 @@ local table = require("table")
 
 local util = require("fimbul.util")
 
-local pretty = require("pl.pretty")
-
 local stacked_value = {}
 
 sv.STACK = true
