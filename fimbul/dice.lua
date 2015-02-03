@@ -1,7 +1,5 @@
 --- @module fimbul.dice
 
-local d = {}
-
 local base = _G
 local os = require("os")
 local io = require("io")
@@ -9,9 +7,9 @@ local mm = require("math")
 local string = require("string")
 local table = require("table")
 
-local rs = require("fimbul.randomseed")
-local drs = require("fimbul.dice_results")
-local dr = require("fimbul.dice_result")
+local random_seed = require("fimbul.randomseed")
+local dice_results = require("fimbul.dice_results")
+local dice_result = require("fimbul.dice_result")
 
 local dice = {}
 
@@ -31,10 +29,10 @@ end
 
 function dice:roll()
    local i = 1
-   local results = drs.new()
+   local results = dice_results:new()
    local r = 0
 
-   rs.init()
+   random_seed.init()
 
    while i <= self.amount do
       local sides = self.sides or 6
@@ -49,7 +47,7 @@ function dice:roll()
          tmp = self:translate_fudge(tmp)
       end
 
-      local res = dr.new(tmp)
+      local res = dice_result:new(tmp)
       -- Check for rerolls
       if self:needs_reroll(tmp) then
          res:drop()
@@ -104,22 +102,23 @@ function dice:__tostring()
    return str
 end
 
-function d.new()
+function dice:new(values)
    local neu = {}
+   local o = values or {}
 
-   dice.__index = dice
-   setmetatable(neu, dice)
+   setmetatable(neu, self)
+   self.__index = self
 
-   neu.amount = 1
-   neu.sides = 6
-   neu.reroll = {}
-   neu.drop_lowest = 0
-   neu.keep_highest = 0
+   neu.amount = o.amount or 1
+   neu.sides = o.sides or 6
+   neu.reroll = o.amount or {}
+   neu.drop_lowest = o.drop_lowest or 0
+   neu.keep_highest = o.keep_highest or 0
 
-   return neu;
+   return neu
 end
 
-function d.parse(str)
+function dice:parse(str)
    local a,s,f = string.match(str, "(%d*)d([%dfF]*)(.*)")
 
    -- Not defining the sides is an error
@@ -132,7 +131,7 @@ function d.parse(str)
       a = 1
    end
 
-   local d = d.new()
+   local d = self:new()
 
    d.amount = base.tonumber(a) or 1
    if s == "f" or s == "F" then
@@ -163,4 +162,4 @@ function d.parse(str)
    return d
 end
 
-return d
+return dice

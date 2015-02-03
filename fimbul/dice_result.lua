@@ -1,8 +1,5 @@
 --- @module fimbul.dice_result
 
-local dr = {}
-
-local print = print
 local string = require("string")
 
 local dice_result = {}
@@ -47,11 +44,11 @@ function dice_result.__eq(a, b)
    return a.value == b.value
 end
 
-function dr.new(v, c)
+function dice_result:new(v, c)
    local s = {}
 
-   dice_result.__index = dice_result
-   setmetatable(s, dice_result)
+   setmetatable(s, self)
+   self.__index = self
 
    s.value = v or 0
    s.counts = c or true
@@ -59,4 +56,4 @@ function dr.new(v, c)
    return s
 end
 
-return dr
+return dice_result

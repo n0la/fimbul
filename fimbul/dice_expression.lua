@@ -8,7 +8,7 @@ local math = math
 local dice = require("fimbul.dice")
 
 function dice_expression.d(str)
-   local D = dice.parse(str)
+   local D = dice:parse(str)
 
    if not D then
       return

@@ -1,7 +1,5 @@
 --- @module fimbul.dice_results
 
-local drs =  {}
-
 local base = _G
 local string = string
 local table = table
@@ -104,15 +102,15 @@ function dice_results:keep_highest(amount)
    self:drop_lowest(self:amount() - amount)
 end
 
-function drs.new()
+function dice_results:new()
    local s = {}
 
-   dice_results.__index = dice_results
-   setmetatable(s, dice_results)
+   setmetatable(s, self)
+   self.__index = self
 
    s.results = {}
 
    return s
 end
 
-return drs
+return dice_results
