@@ -20,18 +20,17 @@
 -- and "class"
 --
 
-local sv = {}
-
 local base = _G
 local table = require("table")
 
 local util = require("fimbul.util")
+local pretty = require("pl.pretty")
 
 local stacked_value = {}
 
-sv.STACK = true
-sv.DONT_STACK = false
-sv.DIFFERENT_VALUES = "value"
+stacked_value.STACK = true
+stacked_value.DONT_STACK = false
+stacked_value.DIFFERENT_VALUES = "value"
 
 function stacked_value:add(v, t)
    assert(v, "No value given")
@@ -71,21 +70,21 @@ function stacked_value:value()
       local rule = self:stacking_rule(v.type)
 
       if values[v.type] == nil then
-         if rule == sv.DIFFERENT_VALUES then
+         if rule == stacked_value.DIFFERENT_VALUES then
             values[v.type] = { v.value }
          else
             values[v.type] = v.value
          end
       else
-         if rule == sv.DONT_STACK then
+         if rule == stacked_value.DONT_STACK then
             -- Only store highest
             if v.value > values[v.type] then
                values[v.type] = v.value
             end
-         elseif rule == sv.STACK then
+         elseif rule == stacked_value.STACK then
             -- Add it as they do stack
             values[v.type] = values[v.type] + v.value
-         elseif rule == sv.DIFFERENT_VALUES then
+         elseif rule == stacked_value.DIFFERENT_VALUES then
             -- Different values stack, so check the list if it is there
             -- and otherwise add it
             if not util.contains(values[v.type], v.value) then
@@ -122,12 +121,12 @@ function stacked_value:stacking_rule(t)
    end
 end
 
-function sv.new(rules)
+function stacked_value:new(rules)
    local neu = {}
    local r = rules or { stack = false }
 
-   stacked_value.__index = stacked_value
-   setmetatable(neu, stacked_value)
+   setmetatable(neu, self)
+   self.__index = self
 
    neu.values = {}
    neu.rules = r
@@ -135,4 +134,4 @@ function sv.new(rules)
    return neu
 end
 
-return sv
+return stacked_value

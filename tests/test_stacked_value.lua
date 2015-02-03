@@ -6,10 +6,10 @@ local stacked_value = require("fimbul.stacked_value")
 local lunit = require("lunit")
 local pretty = require("pl.pretty")
 
-module("stacked_value_tests", lunit.testcase, package.seeall)
+module("test_stacked_value", lunit.testcase, package.seeall)
 
 function test_construction()
-   local s = stacked_value.new()
+   local s = stacked_value:new()
 
    assert(s, "no object created")
    assert(s.values, "stacked_value has nil table of values")
@@ -21,7 +21,7 @@ function test_construction()
 end
 
 function test_construction_rules()
-   local s = stacked_value.new({stack = stacked_value.STACK,
+   local s = stacked_value:new({stack = stacked_value.STACK,
                                 dodge = stacked_value.DONT_STACK})
 
    assert(s, "no object created")
@@ -33,7 +33,7 @@ function test_construction_rules()
 end
 
 function test_stacking_rule_normal()
-   local s = stacked_value.new({stack = stacked_value.STACK,
+   local s = stacked_value:new({stack = stacked_value.STACK,
                                 dodge = stacked_value.DONT_STACK})
 
    assert(s:stacking_rule() == stacked_value.STACK,
@@ -43,7 +43,7 @@ function test_stacking_rule_normal()
 end
 
 function test_stacking_rule_default()
-   local s = stacked_value.new({stack = stacked_value.STACK,
+   local s = stacked_value:new({stack = stacked_value.STACK,
                                 dodge = stacked_value.DONT_STACK})
 
    assert(s:stacking_rule("base") == stacked_value.STACK,
@@ -51,13 +51,13 @@ function test_stacking_rule_default()
 end
 
 function test_value_default()
-   local s = stacked_value.new()
+   local s = stacked_value:new()
 
    assert(s:value() == 0, "empty object returned non-zero for value()")
 end
 
 function test_value_add()
-   local s = stacked_value.new()
+   local s = stacked_value:new()
 
    assert(s:count() == 0, "new object is not empty")
 
@@ -68,7 +68,7 @@ function test_value_add()
 end
 
 function test_value_default()
-   local s = stacked_value.new()
+   local s = stacked_value:new()
 
    s:add(4, "enhancement")
    s:add(4, "enhancement")
@@ -79,7 +79,7 @@ function test_value_default()
 end
 
 function test_value_stack1()
-   local s = stacked_value.new({stack = stacked_value.STACK})
+   local s = stacked_value:new({stack = stacked_value.STACK})
 
    s:add(4, "enhancement")
    s:add(3, "enhancement")
@@ -90,7 +90,7 @@ function test_value_stack1()
 end
 
 function test_value_stack2()
-   local s = stacked_value.new({stack = stacked_value.DONT_STACK})
+   local s = stacked_value:new({stack = stacked_value.DONT_STACK})
 
    s:add(4, "enhancement")
    s:add(3, "dodge")
@@ -101,7 +101,7 @@ function test_value_stack2()
 end
 
 function test_value_stack3()
-   local s = stacked_value.new({stack = stacked_value.DONT_STACK,
+   local s = stacked_value:new({stack = stacked_value.DONT_STACK,
                                 dodge = stacked_value.STACK})
 
    s:add(4, "enhancement")
@@ -115,7 +115,7 @@ function test_value_stack3()
 end
 
 function test_value_stack3()
-   local s = stacked_value.new({stack = stacked_value.DONT_STACK,
+   local s = stacked_value:new({stack = stacked_value.DONT_STACK,
                                 dodge = stacked_value.DIFFERENT_VALUES})
 
    s:add(4, "enhancement")
@@ -129,7 +129,7 @@ function test_value_stack3()
 end
 
 function test_value_stack3()
-   local s = stacked_value.new({stack = stacked_value.DONT_STACK,
+   local s = stacked_value:new({stack = stacked_value.DONT_STACK,
                                 dodge = stacked_value.DIFFERENT_VALUES})
 
    s:add(4, "enhancement")
@@ -145,7 +145,7 @@ function test_value_stack3()
 end
 
 function test_value_remove_all()
-   local s = stacked_value.new({stack = stacked_value.DONT_STACK,
+   local s = stacked_value:new({stack = stacked_value.DONT_STACK,
                                 dodge = stacked_value.DIFFERENT_VALUES})
 
    s:add(4, "enhancement")
