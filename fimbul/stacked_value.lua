@@ -66,7 +66,7 @@ function stacked_value:count()
    return #self.values
 end
 
-function stacked_value:value(v)
+function stacked_value:value()
    local values = {}
 
    for _, v in base.ipairs(self.values) do
