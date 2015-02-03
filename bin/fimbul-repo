@@ -3,7 +3,7 @@
 local pretty = require("pl.pretty")
 local repository = require("fimbul.repository")
 
-local r = repository.open(arg[1])
+local r = repository:new(arg[1])
 local monsters = r:find_all("monsters")
 
 for _,m in ipairs(monsters) do

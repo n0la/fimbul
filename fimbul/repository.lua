@@ -1,7 +1,5 @@
 --- @module fimbul.repository
 
-local r = {}
-
 local base = _G
 
 local yaml = require("yaml")
@@ -10,8 +8,6 @@ local lfs = require("lfs")
 
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
-
-local pretty = require("pl.pretty")
 
 local repository = {}
 
@@ -99,19 +95,16 @@ function repository:open(path)
 
 end
 
-function r.new()
+function repository:new(p)
    local neu = {}
 
-   repository.__index = repository
-   setmetatable(neu, repository)
+   setmetatable(neu, self)
+   self.__index =  self
+
+   neu.data = {}
+   neu:open(p)
 
    return neu
 end
 
-function r.open(path)
-   local neu = r.new()
-   neu:open(path)
-   return neu
-end
-
-return r
+return repository
