@@ -38,7 +38,7 @@ sv.DIFFERENT_VALUES = "value"
 function stacked_value:add(v, t)
    assert(v, "No value given")
    -- Assume "base" type
-   local ty = t or "base"
+   local ty = t or "untyped"
 
    local value = { value = v, type = ty }
 
