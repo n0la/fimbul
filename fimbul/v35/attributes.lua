@@ -1,14 +1,18 @@
 --- @module fimbul.v35.attributes
 
+local attributes = {}
+package.loaded["fimbul.v35.attributes"] = attributes
+
 local attribute = require("fimbul.v35.attribute")
 
-local attributes = {}
+function attributes:load(o)
+end
 
 function attributes:new()
    local neu = {}
 
    setmetatable(neu, self)
-   neu.__index = self
+   self.__index = self
 
    neu.strength = attribute.new("strength")
    neu.dexterity = attribute.new("dexterity")

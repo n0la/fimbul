@@ -59,6 +59,28 @@ function util.yaml_loadfile(str)
    end
 end
 
+function util.getname(t)
+   if not t then
+      return nil
+   end
+
+   if type(t) ~= "table" then
+      return nil
+   end
+
+   if t.name then
+      return t.name
+   end
+
+   for _, c in base.pairs(t) do
+      if c.name then
+         return c.name
+      end
+   end
+
+   return nil
+end
+
 function util.concat_table(t1, t2)
    local t3 = t1
 
@@ -89,6 +111,12 @@ function util.contains(t, v)
    end
 
    return false
+end
+
+function util.foreach(t, f)
+   for _, value in base.pairs(t) do
+      f(value)
+   end
 end
 
 return util

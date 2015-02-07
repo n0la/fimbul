@@ -4,7 +4,7 @@ local base = _G
 local math = require("math")
 
 local stacked_value = require("fimbul.stacked_value")
-local engine = require("fimbul.v35.engine")
+local rules = require("fimbul.v35.rules")
 
 local attribute = stacked_value:new()
 
@@ -15,7 +15,7 @@ end
 
 function attribute:new()
    -- Override and provide with default stacking rules
-   local neu = engine.stacked_value(attribute)
+   local neu = stacked_value:new(rules.stacking_rules)
    return neu
 end
 

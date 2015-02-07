@@ -1,0 +1,22 @@
+#!/usr/bin/env lua
+
+local pretty = require("pl.pretty")
+
+local util = require("fimbul.util")
+local repository = require("fimbul.repository")
+
+local r = repository:new(arg[1])
+r:load()
+
+local t = r:find("encounter", "Goblin Raiding Party")
+local e = r:spawn(t)
+
+e:start()
+
+util.foreach(
+   e.monsters,
+   function(m)
+      io.write(string.format("NAME: %s HP: %d INIT: %d\n",
+                             m.name, m.hp, m.initiative))
+   end
+)

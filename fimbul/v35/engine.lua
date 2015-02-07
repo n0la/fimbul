@@ -1,37 +1,49 @@
 --- @module fimbul.v35.engine
 
-local stacked_value = require("fimbul.stacked_value")
 local engine = {}
+package.loaded["fimbul.v35.engine"] = engine
 
-engine.types = {
-   BASE = "base",
-   DODGE = "dodge",
-   CIRCUMSTANCE = "circumstance",
-   NEGATIVE_LEVEL = "negative_level",
-}
+local base = _G
 
-engine.stacking_rules = {
-      stack = stacked_value.DONT_STACK,
-      -- http://www.d20srd.org/srd/theBasics.htm
-      --  "Dodge bonuses and circumstance bonuses however, do stack
-      --   with one another unless otherwise specified."
-      [engine.types.DODGE] = stacked_value.STACK,
-      [engine.types.CIRCUMSTANCE] = stacked_value.STACK,
-      -- This is a handy hack to stack up negative levels
-      [engine.types.NEGATIVE_LEVEL] = stacked_value.STACK,
-}
+local stacked_value = require("fimbul.stacked_value")
+
+local creature =  require("fimbul.v35.creature")
+local encounter = require("fimbul.v35.encounter")
+
+local rules = require("fimbul.v35.rules")
+
+local monster_template = require("fimbul.v35.monster_template")
+local encounter_template = require("fimbul.v35.encounter_template")
 
 function engine.stacked_value(c)
    -- Compose a new stacked value with proper v35 rules
    -- in place. Mostly regarding dodge and circumstance
-   return stacked_value.new(c or stacked_value, engine.stacking_rules)
+   return stacked_value.new(c or stacked_value, rules.stacking_rules)
+end
+
+function engine:create_template(what, ...)
+   if what == "monster_template" then
+      return monster_template:new(...)
+   elseif what == "encounter_template" then
+      return encounter_template:new(...)
+   else
+      error("Unsupported template in v35: " .. what)
+   end
+end
+
+function engine:spawn(repository, template)
+   if template.templatetype == "monster" then
+      return creature:spawn(repository, template)
+   elseif template.templatetype == "encounter" then
+      return encounter:spawn(repository, template)
+   end
 end
 
 function engine:new()
    local neu = {}
 
    setmetatable(neu, self)
-   neu.__index = self
+   self.__index = self
 
    return neu
 end

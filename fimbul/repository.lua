@@ -21,6 +21,12 @@ function repository:_load_config()
    assert(c.name, "Please specify a name for your repository.")
    assert(c.game, "Please specify a game for your repository.")
 
+   local ename = "fimbul." .. c.game .. ".engine"
+   local engine = require(ename)
+
+   assert(engine, "Repository uses unsupported game " .. c.game)
+
+   self.engine = engine
    self.config = c
 end
 
@@ -92,7 +98,42 @@ function repository:open(path)
    -- Setup default data repository
    table.insert(self.data,
                 data_repository:new({name = "_local", path = self.datapath}))
+   -- Add current path as data repository
+   table.insert(self.data,
+                data_repository:new({name = "_cwd", path = path}))
 
+end
+
+function repository:_load_what(what, template, tbl)
+   local w = self:find_all(what)
+   local t = tbl or what
+
+   for _, m in pairs(w) do
+      local y = yaml.loadfile(m)
+      if not y then
+         error("Failed to load file " .. m)
+      end
+      local tmp = self.engine:create_template(template, y)
+      table.insert(self[t], tmp)
+   end
+end
+
+function repository:find(tbl, what)
+   for _, i in base.pairs(self[tbl]) do
+      local name = i.name
+      if string.lower(name) == string.lower(what) then
+         return i
+      end
+   end
+end
+
+function repository:load()
+   self:_load_what("monsters", "monster_template", "monster")
+   self:_load_what("encounters", "encounter_template", "encounter")
+end
+
+function repository:spawn(t)
+   return self.engine:spawn(self, t)
 end
 
 function repository:new(p)
@@ -102,6 +143,10 @@ function repository:new(p)
    self.__index =  self
 
    neu.data = {}
+
+   neu.monster = {}
+   neu.encounter = {}
+
    neu:open(p)
 
    return neu

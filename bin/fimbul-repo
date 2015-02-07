@@ -1,11 +1,9 @@
 #!/usr/bin/env lua
 
 local pretty = require("pl.pretty")
+
+local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 
 local r = repository:new(arg[1])
-local monsters = r:find_all("monsters")
-
-for _,m in ipairs(monsters) do
-   print(m)
-end
+r:load()
