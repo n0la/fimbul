@@ -5,6 +5,7 @@ local util = {}
 local base = _G
 local yaml = require("yaml")
 local table = require("table")
+local posix = require("posix")
 
 function util.removeif(t, F)
    local n = table.getn(t)
@@ -116,6 +117,15 @@ end
 function util.foreach(t, f)
    for _, value in base.pairs(t) do
       f(value)
+   end
+end
+
+function util.isdir(p)
+   local s = posix.stat(p)
+   if s then
+      return s.type == "directory"
+   else
+      return false
    end
 end
 
