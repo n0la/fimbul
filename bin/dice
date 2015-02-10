@@ -3,62 +3,33 @@
 local dice_expression = require("fimbul.dice_expression")
 
 local os = require("os")
-local posix = require("posix")
+local std = require("std")
 
-local short = "hmv"
-local long =  {
-   { "help", "none", "h" },
-   { "multi-line", "none", "m" },
-   { "verbose", "none", "v" },
-}
+local optparser = std.optparse [[
+ dice 0.1
 
--- Variables for flags that can be set
-local verbose = false
--- Expressions
-local expressions = {}
--- Line based stdin input?
-local linebased = true
+ Usage: dice [-hmv] dice1, dice2, ..., diceN
 
-function usage()
-   io.write("dice -hmv expr1, expr2, ..., exprN\n")
-   io.write("\n")
-   io.write("Options:\n")
-   io.write("  -h --help       ... This bogus.\n")
-   io.write("  -m --multi-line ... stdin is one single chunk. Disables -v\n")
-   io.write("  -v --verbose    ... Print expression alongside result.\n")
-   io.write("\n")
-end
+ Roll dice and/or evaluate dice expressions.
 
-function handle_arguments()
-   local lastindex = 1
-   for r, optarg, optind, li in posix.getopt(arg, short, long) do
-      if r == "?" then
-         usage()
-         os.exit(1)
-      elseif r == "h" then
-         usage()
-         os.exit(0)
-      end
+ This application evaluates dice expressions given on the command line. If
+ none are given then it evaluate stdin.
 
-      if r == "v" then
-         verbose = true
-      elseif r == "m" then
-         linebased = false
-         verbose = false
-      end
+ Options:
 
-      lastindex = optind
-   end
+   -h  --help               This bogus.
+   -m  --multi-line         stdin is one big chunk. Disables -v
+   -v  --verbose            Print expression alongside result.
 
-   for i = lastindex, #arg do
-      table.insert(expressions, arg[i])
-   end
-end
+ "dice" is part of the fimbul project.
+]]
+
+local expressions, opts = optparser:parse(arg)
 
 function evaluate_statement(str)
    local ret = dice_expression.evaluate(str)
 
-   if verbose then
+   if opts.verbose then
       io.write(string.format("%s = %d\n", str, ret))
    else
       io.write(string.format("%d\n", ret))
@@ -75,7 +46,7 @@ function save_read(str)
 end
 
 function read_stdin()
-   if linebased then
+   if opts.linebased then
       local done = false
 
       while not done do
@@ -87,8 +58,6 @@ function read_stdin()
       evaluate_statement(all)
    end
 end
-
-handle_arguments()
 
 if not expressions or #expressions == 0 then
    read_stdin()
