@@ -3,9 +3,12 @@
 local util = {}
 
 local base = _G
+
 local yaml = require("yaml")
+local lyaml = require("lyaml")
+
 local table = require("table")
-local posix = require("posix")
+local lfs = require("lfs")
 
 function util.removeif(t, F)
    local n = table.getn(t)
@@ -48,15 +51,27 @@ function util.min(t, fn)
 end
 
 function util.yaml_loadfile(str)
+   -- There are two lua-yaml libraries out there.
+   --   lyaml: https://github.com/gvvaughan/lyaml
+   --   lua-yaml: http://yaml.luaforge.net
+   -- This function tries to work with either installed.
    if yaml.loadfile then
-      -- high five for modernized lua yaml ;-)
+      -- And there is my fork of lua-yaml with a loadfile()
+      -- function built in.
       return yaml.loadfile(str)
    else
       local file = io.open(str, "r")
       local content = file:read("*all")
       file:close()
 
-      return yaml.load(content)
+      if yaml.load then
+         return yaml.load(content)
+      elseif lyaml.load then
+         return lyaml.load(content)
+      else
+         error("No suitable YAML loading mechanism found.")
+         return nil
+      end
    end
 end
 
@@ -121,9 +136,18 @@ function util.foreach(t, f)
 end
 
 function util.isdir(p)
-   local s = posix.stat(p)
+   local s = lfs.attributes(p)
    if s then
-      return s.type == "directory"
+      return s.mode == "directory"
+   else
+      return false
+   end
+end
+
+function util.isfile(p)
+   local s = lfs.attributes(p)
+   if s then
+      return s.mode == "file"
    else
       return false
    end

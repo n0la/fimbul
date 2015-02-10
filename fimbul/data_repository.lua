@@ -22,15 +22,14 @@ function data_repository:_find_all(directory, glob, path, results)
    for iter, dir in lfs.dir(path) do
       if iter ~= "." and iter ~= ".." then
          local full = posix.realpath(path .. "/" .. iter)
-         local s = posix.stat(full)
 
-         if s.type == "directory" then
+         if util.isdir(full) then
             if directory ~= "" and directory == iter then
                self:_find_all("",  glob, full, results)
             else
                self:_find_all(directory, glob, full, results)
             end
-         elseif s.type == "regular" then
+         elseif util.isfile(full) then
             if string.match(iter, glob) and directory == "" then
                table.insert(results, tostring(full))
             end

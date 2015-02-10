@@ -4,7 +4,6 @@ local config = {}
 
 local lfs = require("lfs")
 local os = require("os")
-local posix = require("posix")
 local util = require("fimbul.util")
 
 function config.init()
@@ -12,7 +11,7 @@ function config.init()
       local home = os.getenv("HOME")
       config.path = home .. "/.fimbul"
       if not util.isdir(config.path) then
-         assert(posix.mkdir(config.path),
+         assert(lfs.mkdir(config.path),
                 "Could not create save directory in " .. config.path)
       end
    end

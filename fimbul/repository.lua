@@ -39,8 +39,7 @@ function repository:_find_path(path)
          break
       end
 
-      local s = posix.stat(r .. "/.pnp/")
-      if s and s.type == "directory" then
+      if util.isdir(r .. "/.pnp/") then
          found = true
          break
       else
@@ -109,7 +108,7 @@ function repository:_load_what(what, template, tbl)
    local t = tbl or what
 
    for _, m in pairs(w) do
-      local y = yaml.loadfile(m)
+      local y = util.yaml_loadfile(m)
       if not y then
          error("Failed to load file " .. m)
       end
