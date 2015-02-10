@@ -31,7 +31,12 @@ function dice_expression.evaluate(str)
    -- are always needed to compute values.
    context.math = math
 
-   local chunk = base.load(s, nil, "t", context)
+   local chunk, e = base.load(s, nil, "t", context)
+
+   if not chunk then
+      error(e)
+   end
+
    local ret = chunk()
 
    return tonumber(ret)

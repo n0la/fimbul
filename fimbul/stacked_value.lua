@@ -121,6 +121,9 @@ function stacked_value:stacking_rule(t)
    end
 end
 
+function stacked_value:load(o)
+end
+
 function stacked_value:new(rules)
    local neu = {}
    local r = rules or { stack = false }

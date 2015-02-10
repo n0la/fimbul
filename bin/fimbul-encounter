@@ -4,6 +4,10 @@ local pretty = require("pl.pretty")
 
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
+local console = require("fimbul.ui.console")
 
 local r = repository:new(arg[1])
 r:load()
+
+local c = console:new({name = "encounter"})
+c:run()

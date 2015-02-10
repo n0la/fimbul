@@ -162,4 +162,15 @@ function dice:parse(str)
    return d
 end
 
+-- Commonly used dices in games
+--
+dice.d100 = dice:new({sides = 100})
+dice.d20 = dice:new({sides = 20})
+dice.d12 = dice:new({sides = 12})
+dice.d10 = dice:new({sides = 10})
+dice.d8 = dice:new({sides = 8})
+dice.d6 = dice:new({sides = 6})
+dice.d4 = dice:new({sides = 4})
+
+
 return dice
