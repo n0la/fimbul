@@ -3,7 +3,6 @@
 local base = _G
 
 local yaml = require("yaml")
-local posix = require("posix")
 local lfs = require("lfs")
 
 local util = require("fimbul.util")
@@ -44,7 +43,7 @@ function repository:_find_path(path)
          break
       else
          r = r .. "/../"
-         r = posix.realpath(r)
+         r = util.realpath(r)
       end
    end
 
@@ -85,8 +84,9 @@ function repository:open(path)
          -- Translate relative paths for ease of opening
          if p and util.is_relative(p) then
             local full = self.root .. "/" .. p
-            block.path = posix.realpath(full)
-            assert(block.path, "The given data path " .. p .. " does not exist.")
+            block.path = util.realpath(full)
+            assert(block.path,
+                   "The given data path " .. p .. " does not exist.")
          end
 
          local repository = data_repository:new(block)

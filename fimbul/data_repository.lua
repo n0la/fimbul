@@ -4,7 +4,7 @@ local base = _G
 local table = require("table")
 
 local lfs = require("lfs")
-local posix = require("posix")
+local util = require("fimbul.util")
 
 local data_repository = {}
 
@@ -21,7 +21,7 @@ end
 function data_repository:_find_all(directory, glob, path, results)
    for iter, dir in lfs.dir(path) do
       if iter ~= "." and iter ~= ".." then
-         local full = posix.realpath(path .. "/" .. iter)
+         local full = util.realpath(path .. "/" .. iter)
 
          if util.isdir(full) then
             if directory ~= "" and directory == iter then
