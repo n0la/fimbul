@@ -96,10 +96,7 @@ function repository:open(path)
 
    -- Setup default data repository
    table.insert(self.data,
-                data_repository:new({name = "_local", path = self.datapath}))
-   -- Add current path as data repository
-   table.insert(self.data,
-                data_repository:new({name = "_cwd", path = path}))
+                data_repository:new({name = "_local", path = self.root}))
 
 end
 

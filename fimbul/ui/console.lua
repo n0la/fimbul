@@ -11,14 +11,16 @@ local command_dispatcher = require("fimbul.ui.command_dispatcher")
 
 local readline = require("readline")
 
-function console:new(o)
+function console:new(r, o)
    local neu = {}
 
    setmetatable(neu, self)
    self.__index = self
 
    neu.name = o.name or ""
-   neu.cmd = command_dispatcher:new(o)
+   neu.dispatcher = command_dispatcher:new(r, o)
+
+   neu.context = nil
 
    return neu
 end
@@ -42,15 +44,15 @@ function console:run()
          break
       end
 
-      local ok, cmd, args = self.cmd:parse(line)
+      local ok, cmd, args = self.dispatcher:parse(line)
 
       if not ok then
-         self.cmd:error(cmd .. "\n")
+         self.dispatcher:error(cmd .. "\n")
       elseif ok and cmd then
-         local found, ret = self.cmd:run(cmd, args)
+         local found, ret = self.dispatcher:run(cmd, args)
 
          if not found then
-            self.cmd:ferror(
+            self.dispatcher:ferror(
                "Unknown command '%s'. For a list of commands type 'help'.", cmd)
          end
       end

@@ -7,40 +7,12 @@ local io = require("io")
 local table = require("table")
 
 local util = require("fimbul.util")
-local common_commands = require("fimbul.ui.common_commands")
+local common_context = require("fimbul.ui.common_context")
 
-function command_dispatcher:register(f, a, n, h)
-   local cmd
-
-   if type(f) == "function" then
-      cmd = {name = n, func = f, arg = a, help = (h or "")}
-   elseif type(f) == "table" then
-      cmd = f
-   end
-
-   table.insert(self.commands, cmd)
-end
-
-function command_dispatcher:help(dispatcher, arg)
-   for _, cmd in base.pairs(self.commands) do
-      local line = ""
-
-      if type(cmd.name) == "string" then
-         line = string.format("%s\t%s", cmd.name, cmd.help)
-      elseif type(cmd) == "table" then
-         line = string.format("%s\t%s", cmd.name[1], cmd.help)
-
-         if #cmd.name > 1 then
-            line = line .. " Available aliases: "
-
-            for i = 2, #cmd.name do
-               line = line .. '"' .. cmd.name[i] .. '" '
-            end
-         end
-      end
-
-      self:say(line)
-   end
+function command_dispatcher:add(context)
+   assert(context, "Cannot add nil context.")
+   assert(context.name, "Given context has no name.")
+   self.contexts[context.name] = context
 end
 
 function command_dispatcher:parse(str)
@@ -100,40 +72,73 @@ end
 
 function command_dispatcher:fsay(fmt, ...)
    local line = string.format(fmt, ...)
-   self.stdout:write(line .. "\n")
+   self:say(line)
 end
 
 function command_dispatcher:error(str)
-   self.stderr:write(str .. "\n")
+   self.stderr:write("Error: " .. str .. "\n")
 end
 
 function command_dispatcher:ferror(fmt, ...)
    local line = string.format(fmt, ...)
-   self.stderr:write(line .. "\n")
+   self:error(line)
+end
+
+function command_dispatcher:modules()
+   if self.current then
+      return {self.common, self.current}
+   else
+      return {self.common}
+   end
+end
+
+function command_dispatcher:has_function(c, n)
+   return c[n] ~= nil and type(c[n]) == "function"
 end
 
 function command_dispatcher:run(c, a)
    local args = a or {}
    local ret
    local found = false
+   local cur = self.current or {}
 
-   for _, i in base.pairs(self.commands) do
-      if (type(i.name) == "table" and util.contains(i.name, c)) or
-         (type(i.name) == "string" and i.name == c) then
+   assert(c, "Command must not be nil.")
+
+   for _, i in base.pairs(self:modules()) do
+      local funcname = "on_" .. c
+      if self:has_function(i, funcname) then
          found = true
 
-         -- This allows methods of objects to be used as commands
-         -- Or it can be used if you need pass some parameter first
-         ret = i.func(i.arg, self, a)
+         ret = i[funcname](i, self, a)
 
          break
       end
+
    end
 
    return found, ret
 end
 
-function command_dispatcher:new(o)
+function command_dispatcher:switch_context(c, arg)
+   local context
+
+   context = self.contexts[c]
+   assert(context, "Invalid context to switch to '" .. c .. "'")
+
+   local old = self.current
+   self.current = context
+
+   -- Notify context that it has been activated
+   if self:has_function(context, "on_switch") then
+      context:on_switch(self, arg)
+   end
+
+   self:fsay("Switched to context '%s'.", c)
+
+   return old
+end
+
+function command_dispatcher:new(r, o)
    local neu = {}
 
    setmetatable(neu, self)
@@ -143,11 +148,10 @@ function command_dispatcher:new(o)
    neu.stdout = o.stdout or io.stdout
    neu.stderr = o.stderr or io.stderr
 
-   neu.commands = {}
+   neu.contexts = {}
    -- Register common commands
-   common_commands:register(neu)
-   -- Register help command
-   neu:register(command_dispatcher.help, neu, "help", "This bogus.")
+   neu.common = common_context:new(r)
+   neu.current = nil
 
    return neu
 end

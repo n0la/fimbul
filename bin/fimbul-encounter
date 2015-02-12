@@ -6,8 +6,15 @@ local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 local console = require("fimbul.ui.console")
 
+local encounter_context = require("fimbul.ui.encounter_context")
+
 local r = repository:new(arg[1])
 r:load()
 
-local c = console:new({name = "encounter"})
+local c = console:new(r, {name = "encounter"})
+local encounter = encounter_context:new(r)
+
+-- Switch to encounter context
+c.dispatcher:add(encounter)
+
 c:run()
