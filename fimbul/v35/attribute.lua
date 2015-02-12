@@ -16,6 +16,10 @@ end
 function attribute:new()
    -- Override and provide with default stacking rules
    local neu = stacked_value:new(rules.stacking_rules)
+
+   setmetatable(neu, self)
+   self.__index = self
+
    return neu
 end
 

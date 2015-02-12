@@ -14,12 +14,12 @@ function attributes:new()
    setmetatable(neu, self)
    self.__index = self
 
-   neu.strength = attribute.new("strength")
-   neu.dexterity = attribute.new("dexterity")
-   neu.constitution = attribute.new("constitution")
-   neu.intelligence = attribute.new("intelligence")
-   neu.wisdom = attribute.new("wisdom")
-   neu.charisma = attribute.new("charisma")
+   neu.strength = attribute:new("strength")
+   neu.dexterity = attribute:new("dexterity")
+   neu.constitution = attribute:new("constitution")
+   neu.intelligence = attribute:new("intelligence")
+   neu.wisdom = attribute:new("wisdom")
+   neu.charisma = attribute:new("charisma")
 
    return neu
 end
