@@ -29,8 +29,10 @@ function encounter:spawn(r, encounter)
 
    if type(encounter) == "string" then
       e = r:find("encounters", encounter)
-      if not e then
+      if #e == 0 then
          error("No such encounter " .. encounter)
+      else
+         e = e[1]
       end
    end
 
@@ -54,9 +56,14 @@ function encounter:spawn(r, encounter)
       for i = 0, a do
          local template = r:find("monster", t)
 
-         if not template then
+         if #template == 0 then
             error("Encounter " .. neu.name .. " uses monster " ..
                      t .. " which cannot be found.")
+         elseif #template > 1 then
+            error("Encounter " .. neu.name .. " uses monster " ..
+                     t .. " which is not unique.")
+         else
+            template = template[1]
          end
 
          local monster = creature:spawn(r, template)

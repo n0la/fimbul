@@ -118,12 +118,25 @@ function repository:_load_what(what, template, tbl)
 end
 
 function repository:find(tbl, what)
+   local t = {}
+
    for _, i in base.pairs(self[tbl]) do
       local name = i.name
       if string.lower(name) == string.lower(what) then
-         return i
+         table.insert(t, i)
       end
    end
+
+   return t
+end
+
+function repository:all(what)
+   local r = {}
+
+   r = util.concat_table(r, self:find("monster", what))
+   r = util.concat_table(r, self:find("encounter", what))
+
+   return r
 end
 
 function repository:load()
