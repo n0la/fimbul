@@ -86,7 +86,13 @@ function battle_context:on_help(d, args)
 Battle - simulate a battle with characters vs. monster encounter
 
 "list" "ls"                       ... Show all who participate in this skirmish.
-"remove" "rm" i1 [, i2, ..., iN]  ... Remove characters or monsters from battle
+"next" "n"                        ... Jump to however is next in line for action.
+"remove" "rm" i1 [, i2, ..., iN]  ... Remove characters or monsters from battle.
+"start" "s"                       ... Start the skirmish.
+
+Remove monsters or players who flee or which were summoned and now have
+disappeared. Use kill for monsters that were actually defeated. Removed monsters
+do not generate loot and gold, but defeated monsters do.
 
 ]])
 end
