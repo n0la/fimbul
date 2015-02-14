@@ -5,6 +5,8 @@ local base = _G
 local yaml = require("yaml")
 local lfs = require("lfs")
 
+local pretty = require("pl.pretty")
+
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
 

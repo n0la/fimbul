@@ -16,8 +16,16 @@ function battle:_update()
               end)
 end
 
+function battle:has_started()
+   return self.round > 0
+end
+
+function battle:current_round()
+   return self.round
+end
+
 function battle:start()
-   if self.round > 0 then
+   if self:has_started() then
       return
    end
 
@@ -28,6 +36,44 @@ function battle:start()
 
    -- Mark as started.
    self.round = 1
+   self.current = 0
+end
+
+function battle:is_wipe()
+   local w = true
+
+   -- Is the whole battle a wipe?
+   util.foreach(self.members, function (m)
+                   if m:is_alive() then
+                      w = false
+                   end
+   end)
+end
+
+function battle:next()
+   if not self:has_started() then
+      return
+   end
+
+   if self:is_wipe() then
+      return nil
+   end
+
+   local newround = false
+   local target
+
+   repeat
+      self.current = self.current + 1
+      if self.current >= #self.members then
+         self.current = 1
+         self.round = self.round + 1
+         newround = true
+      end
+
+      target = self.members[self.current]
+   until not target:is_dead()
+
+   return newround, target
 end
 
 function battle:new(encounter, characters)
@@ -44,10 +90,12 @@ function battle:new(encounter, characters)
    -- Copy monsters over. We may need them separatedly
    neu.monsters = encounter.monsters
    -- Create a list of all members
-   neu.members = util.concat_table(neu.monsters, characters)
+   neu.members = util.concat_table({}, neu.monsters)
+   neu.members = util.concat_table(neu.members, characters)
 
    -- Round zero (aka not yet started)
    neu.round = 0
+   neu.current = 0
 
    neu:_update()
 

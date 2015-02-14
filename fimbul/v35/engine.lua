@@ -7,7 +7,7 @@ local base = _G
 
 local stacked_value = require("fimbul.stacked_value")
 
-local creature =  require("fimbul.v35.creature")
+local monster = require("fimbul.v35.monster")
 local encounter = require("fimbul.v35.encounter")
 local character = require("fimbul.v35.character")
 
@@ -38,11 +38,13 @@ end
 
 function engine:spawn(repository, template)
    if template.templatetype == "monster" then
-      return creature:spawn(repository, template)
+      return monster:spawn(repository, template)
    elseif template.templatetype == "encounter" then
       return encounter:spawn(repository, template)
-   elseif template.templateype == "character" then
-      return creature:spawn(repository, template)
+   elseif template.templatetype == "character" then
+      return character:spawn(repository, template)
+   else
+      error("Unsupported spawnable in v35: " .. template.templatetype)
    end
 end
 

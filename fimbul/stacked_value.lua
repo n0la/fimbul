@@ -20,13 +20,13 @@
 -- and "class"
 --
 
+local stacked_value = {}
+package.loaded["fimbul.stacked_value"] = stacked_value
+
 local base = _G
 local table = require("table")
 
 local util = require("fimbul.util")
-local pretty = require("pl.pretty")
-
-local stacked_value = {}
 
 stacked_value.STACK = true
 stacked_value.DONT_STACK = false

@@ -2,7 +2,8 @@
 
 local saves = {}
 
-local engine = require("fimbul.v35.engine")
+local stacked_value = require("fimbul.stacked_value")
+local rules = require("fimbul.v35.rules")
 
 function saves:load(o)
 end
@@ -13,9 +14,9 @@ function saves:new()
    setmetatable(neu, self)
    self.__index = self
 
-   neu.fortitude = engine.stacked_value()
-   neu.reflex = engine.stacked_value()
-   neu.will = engine.stacked_value()
+   neu.fortitude = stacked_value:new(rules.stacking_rules)
+   neu.reflex = stacked_value:new(rules.stacking_rules)
+   neu.will = stacked_value:new(rules.stacking_rules)
 
    return neu
 end

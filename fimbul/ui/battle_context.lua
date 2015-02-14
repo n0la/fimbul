@@ -19,6 +19,38 @@ function battle_context:on_switch(d, args)
    return true
 end
 
+function battle_context:on_start(d, args)
+   if self.battle:has_started() then
+      d:error("The battle has already started.")
+      return
+   end
+
+   self.battle:start()
+end
+
+function battle_context:on_next(d, args)
+   if not self.battle:has_started() then
+      d:error("The battle has not yet started. Use 'start'.")
+      return
+   end
+
+   if self.battle:is_wipe() then
+      d:error("There is no one left alive.")
+      return
+   end
+
+   -- Next
+   local newround, target = self.battle:next()
+
+   if newround then
+      d:fsay("Round #%d has started.", self.battle:current_round())
+   end
+
+   d:fsay("Now: %s", util.getname(target))
+end
+
+battle_context.on_n = battle_context.on_next
+
 function battle_context:on_remove(d, args)
    d.list:remove(args, self.battle:members())
 end
@@ -28,7 +60,7 @@ battle_context.on_rm = battle_context.on_remove
 function battle_context:on_list(d, args)
    for _, i in base.pairs(self.battle.members) do
       d:fsay("%s (init = %d, hp = %d)",
-             i.initiative, util.getname(i), i.hp)
+             util.getname(i), i.initiative, i.hp)
    end
 end
 

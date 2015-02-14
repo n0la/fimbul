@@ -1,18 +1,16 @@
----@module fimbul.v35.character
+---@module fimbul.v35.monster
 
 local creature = require("fimbul.v35.creature")
 
-local character = creature:new()
+local monster = creature:new()
 
-function character:new()
+function monster:new()
    local neu = creature:new()
 
    setmetatable(neu, self)
    self.__index = self
 
-   neu.player = ""
-
    return neu
 end
 
-return character
+return monster

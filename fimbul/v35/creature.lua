@@ -3,8 +3,8 @@
 local dice_expression = require("fimbul.dice_expression")
 
 local attributes = require("fimbul.v35.attributes")
+local armour_class = require("fimbul.v35.armour_class")
 local saves = require("fimbul.v35.saves")
-local engine = require("fimbul.v35.engine")
 local dice = require("fimbul.dice")
 
 local creature = {}
@@ -25,8 +25,7 @@ function creature:new()
    neu.max_hp = 0
    neu.temp_hp = 0
 
-   -- TODO: Warrants its own class
-   neu.ac = engine.stacked_value()
+   neu.ac = armour_class:new()
    neu.saves = saves:new()
    neu.attributes = attributes:new()
 
@@ -83,6 +82,23 @@ end
 
 function creature:roll_initiative()
    self.initiative = dice.d20:roll() + (self.template.initiative or 0)
+end
+
+function creature:is_dead()
+   return self.hp <= -10
+end
+
+function creature:is_dying()
+   -- TODO: House rule
+   return self.hp > -10 and self.hp < 0
+end
+
+function creature:is_unconsious()
+   return self.hp == 0
+end
+
+function creature:is_alive()
+   return self.hp > 0
 end
 
 return creature

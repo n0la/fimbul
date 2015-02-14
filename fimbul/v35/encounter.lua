@@ -3,7 +3,7 @@
 local base = _G
 
 local dice_expression = require("fimbul.dice_expression")
-local creature = require("fimbul.v35.creature")
+local monster = require("fimbul.v35.monster")
 local util = require("fimbul.util")
 
 local encounter = {}
@@ -52,7 +52,7 @@ function encounter:spawn(r, encounter)
       local a = m.amount or "1"
 
       a = dice_expression.evaluate(a)
-      for i = 0, a do
+      for i = 1, a do
          local template = r:find("monster", t)
 
          if #template == 0 then
@@ -65,9 +65,11 @@ function encounter:spawn(r, encounter)
             template = template[1]
          end
 
-         local monster = creature:spawn(r, template)
-         -- Change name
-         monster.name = monster.name .. " " .. (i+1)
+         local monster = monster:spawn(r, template)
+         -- Change name if there is more than one
+         if a > 1 then
+            monster.name = monster.name .. " " .. i
+         end
          table.insert(neu.monsters, monster)
       end
    end
