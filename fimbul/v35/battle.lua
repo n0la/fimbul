@@ -71,7 +71,7 @@ function battle:next()
       end
 
       target = self.members[self.current]
-   until not target:is_dead()
+   until target:is_alive()
 
    return newround, target
 end
