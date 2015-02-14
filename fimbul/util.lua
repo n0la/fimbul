@@ -9,6 +9,7 @@ local lyamlok, lyaml = pcall(require, "lyaml")
 
 local table = require("table")
 local lfs = require("lfs")
+local pretty = require("pl.pretty")
 
 function util.removeif_copy(t, F)
    local n = table.getn(t)
@@ -217,7 +218,7 @@ function util.realpath(p)
    end
 
    local i = 1
-   while i < #t do
+   while i <= #t do
       if t[i] == ".." then
          table.remove(t, i)
          if i > 1 then

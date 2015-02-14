@@ -32,6 +32,18 @@ function test_util_realpath()
    local c = lfs.currentdir()
    local res
 
+   res = util.realpath("/..")
+   assert(res == "/", "Does got beyound root path.")
+
+   res = util.realpath("/../../../..")
+   assert(res == "/", "Does got beyound root path.")
+
+   res = util.realpath(".")
+   assert(res == c, "Does not properly resolve single '.'")
+
+   res = util.realpath(c)
+   assert(res == c, "Does not properly resolve current working dir")
+
    res = util.realpath("myfile.txt")
    assert(res == c .."/myfile.txt",
           "Does not properly resolve local filenames.")
