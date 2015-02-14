@@ -43,8 +43,6 @@ function encounter_context:on_ls(d, args)
    d:fsay("%d result(s) found.", i)
 end
 
-encounter_context.list = encounter_context.ls
-
 function encounter_context:on_select(d, args)
    local s =  args[1]
 
@@ -94,9 +92,6 @@ function encounter_context:on_info(d, args)
    end
 end
 
-encounter_context.on_show = encounter_context.on_info
-encounter_context.on_print = encounter_context.on_info
-
 function encounter_context:on_help(d, args)
    d:say([[
 Encounter - edit and view encounters available
@@ -122,5 +117,9 @@ function encounter_context:new(repository)
 
    return neu
 end
+
+encounter_context.on_list = encounter_context.on_ls
+encounter_context.on_show = encounter_context.on_info
+encounter_context.on_print = encounter_context.on_info
 
 return encounter_context

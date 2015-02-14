@@ -13,6 +13,7 @@ local character = require("fimbul.v35.character")
 
 local battle = require("fimbul.v35.battle")
 local rules = require("fimbul.v35.rules")
+local damage = require("fimbul.v35.damage")
 
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
@@ -22,6 +23,11 @@ function engine.stacked_value(c)
    -- Compose a new stacked value with proper v35 rules
    -- in place. Mostly regarding dodge and circumstance
    return stacked_value.new(c or stacked_value, rules.stacking_rules)
+end
+
+function engine.damage(expr, t)
+   local err, d = pcall(damage.new, damage, expr, t)
+   return err, d
 end
 
 function engine:create_template(what, ...)

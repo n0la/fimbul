@@ -3,15 +3,15 @@
 local dice_expression = {}
 
 local base = _G
-local math = math
 
+local math = require("math")
 local dice = require("fimbul.dice")
 
 function dice_expression.d(str)
    local D = dice:parse(str)
 
    if not D then
-      return
+      error("The dice " .. str .. " did not parse correctly.")
    end
 
    local ev, res = D:roll()
@@ -31,7 +31,7 @@ function dice_expression.evaluate(str)
    -- are always needed to compute values.
    context.math = math
 
-   local chunk, e = base.load(s, nil, "t", context)
+   local chunk, e = base.load(s, "expression", "t", context)
 
    if not chunk then
       error(e)
@@ -40,6 +40,11 @@ function dice_expression.evaluate(str)
    local ret = chunk()
 
    return tonumber(ret)
+end
+
+function dice_expression.evaluate_save(str)
+   local ok, e = pcall(dice_expression.evaluate, str)
+   return ok, e
 end
 
 return dice_expression

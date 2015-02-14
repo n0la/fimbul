@@ -20,10 +20,6 @@ function common_context:on_roll(d, args)
    end
 end
 
--- Aliases for "on_roll"
-common_context.on_dice = common_context.on_roll
-common_context.on_d = common_context.on_roll
-
 function common_context:_on_help(d, args)
    d:say([[
 Common - methods common to every context
@@ -91,5 +87,8 @@ function common_context:new(r)
    return neu
 end
 
+-- Aliases for "on_roll"
+common_context.on_dice = common_context.on_roll
+common_context.on_d = common_context.on_roll
 
 return common_context

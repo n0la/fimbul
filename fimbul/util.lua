@@ -97,10 +97,10 @@ function util.getname(t)
       return nil
    end
 
-   if type(t) ~= "table" then
-      return nil
-   elseif type(t) == "string" then
+   if type(t) == "string" then
       return t
+   elseif type(t) ~= "table" then
+      return nil
    end
 
    if t.name then
@@ -156,7 +156,7 @@ function util.name_matches(t1, t2)
    n1 = string.lower(n1)
    n2 = string.lower(n2)
 
-   return n1 == n2
+   return (n1 == n2)
 end
 
 function util.concat_table(t1, t2)
@@ -191,9 +191,21 @@ function util.contains(t, v)
    return false
 end
 
-function util.foreach(t, f)
+function util.foreach(t, f, m)
    for _, value in base.pairs(t) do
-      f(value)
+      if m ~= nil then
+         if m(value) then
+            f(value)
+         end
+      else
+         f(value)
+      end
+   end
+end
+
+function util.foreach_in(str, F, m, ...)
+   for _, i in base.pairs({...}) do
+      self:foreach(t, F, m)
    end
 end
 

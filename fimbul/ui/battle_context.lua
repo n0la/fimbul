@@ -4,7 +4,9 @@ local battle_context = {}
 
 local base = _G
 local string = require("string")
+local pretty = require("pl.pretty")
 local util = require("fimbul.util")
+local dice_expression = require("fimbul.dice_expression")
 
 function battle_context:on_switch(d, args)
    local e = args
@@ -17,6 +19,34 @@ function battle_context:on_switch(d, args)
    self.battle = self.repository:create_battle(e)
 
    return true
+end
+
+function battle_context:on_damage(d, args)
+   if not self.battle:has_started() then
+      d:error("Battle must starte to deal/receive damage.")
+      return
+   end
+
+   if #args < 2 then
+      d:error("Need dice expression and at least one target for damage.")
+      return
+   end
+
+   local expr = args[1]
+   table.remove(args, 1)
+   local targets = args
+
+   local ok, d = self.repository.engine.damage(expr)
+   if not ok then
+      d:error(d)
+      return
+   end
+
+   for _, t in base.pairs(targets) do
+      util.foreach(self.battle.members,
+                   function (i) self.battle:damage(i, d) end,
+                   function (s) return util.name_matches(s, t) end)
+   end
 end
 
 function battle_context:on_start(d, args)
@@ -49,22 +79,16 @@ function battle_context:on_next(d, args)
    d:fsay("Now: %s", util.getname(target))
 end
 
-battle_context.on_n = battle_context.on_next
-
 function battle_context:on_remove(d, args)
    d.list:remove(args, self.battle:members())
 end
 
-battle_context.on_rm = battle_context.on_remove
-
 function battle_context:on_list(d, args)
    for _, i in base.pairs(self.battle.members) do
-      d:fsay("%s (init = %d, hp = %d)",
-             util.getname(i), i.initiative, i.hp)
+      d:fsay("%s (init = %d, hp = %d/%d)",
+             util.getname(i), i.initiative, i.hp, i.max_hp)
    end
 end
-
-battle_context.on_ls = battle_context.on_list
 
 function battle_context:new(repository)
    local neu = {}
@@ -80,6 +104,12 @@ function battle_context:new(repository)
 
    return neu
 end
+
+-- Alias
+battle_context.on_s = battle_context.on_start
+battle_context.on_n = battle_context.on_next
+battle_context.on_rm = battle_context.on_remove
+battle_context.on_ls = battle_context.on_list
 
 function battle_context:on_help(d, args)
    d:say([[

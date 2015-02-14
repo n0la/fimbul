@@ -73,7 +73,19 @@ function battle:next()
       target = self.members[self.current]
    until target:is_alive()
 
+   self.currentmember = target
+
    return newround, target
+end
+
+function battle:damage(target, damage, source)
+   if source == nil then
+      damage.source = self.currentmember
+   else
+      damage.source = source
+   end
+   target:damage(damage)
+   -- TODO: Battle logger
 end
 
 function battle:new(encounter, characters)
@@ -96,6 +108,7 @@ function battle:new(encounter, characters)
    -- Round zero (aka not yet started)
    neu.round = 0
    neu.current = 0
+   neu.currentmember = {}
 
    neu:_update()
 

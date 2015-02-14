@@ -101,4 +101,21 @@ function creature:is_alive()
    return self.hp > 0
 end
 
+function creature:damage(v)
+   local neu
+
+   neu = self.hp - v:value()
+   self.hp = neu
+end
+
+function creature:heal(v)
+   local neu
+
+   neu = self.hp + v:value()
+   if neu > self.max_hp then
+      neu = self.max_hp
+   end
+   self.hp = neu
+end
+
 return creature
