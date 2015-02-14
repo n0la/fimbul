@@ -10,7 +10,7 @@ local lyamlok, lyaml = pcall(require, "lyaml")
 local table = require("table")
 local lfs = require("lfs")
 
-function util.removeif(t, F)
+function util.removeif_copy(t, F)
    local n = table.getn(t)
 
    if n == 0 then
@@ -26,6 +26,22 @@ function util.removeif(t, F)
    end
 
    return copy
+end
+
+function util.removeif(t, F)
+   local i = #t
+   local c = 0
+
+   for i = 1, #t do
+      if F(t[i]) then
+         table.remove(t, i)
+         c = c + 1
+      else
+         i = i + 1
+      end
+   end
+
+   return c
 end
 
 function util.max(t, fn)
@@ -76,12 +92,14 @@ function util.yaml_loadfile(str)
 end
 
 function util.getname(t)
-   if not t then
+   if t == nil then
       return nil
    end
 
    if type(t) ~= "table" then
       return nil
+   elseif type(t) == "string" then
+      return t
    end
 
    if t.name then
@@ -89,12 +107,55 @@ function util.getname(t)
    end
 
    for _, c in base.pairs(t) do
-      if c.name then
+      if type(c) == "table" and c.name ~= nil then
          return c.name
       end
    end
 
    return nil
+end
+
+function util.deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[util.deepcopy(orig_key)] = util.deepcopy(orig_value)
+        end
+        setmetatable(copy, util.deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+function util.shallowcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in base.pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+function util.name_matches(t1, t2)
+   local n1 = util.getname(t1)
+   local n2 = util.getname(t2)
+
+   if n1 == nil or n2 == nil then
+      return false
+   end
+
+   n1 = string.lower(n1)
+   n2 = string.lower(n2)
+
+   return n1 == n2
 end
 
 function util.concat_table(t1, t2)

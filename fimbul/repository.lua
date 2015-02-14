@@ -139,10 +139,27 @@ end
 function repository:load()
    self:_load_what("monsters", "monster_template", "monster")
    self:_load_what("encounters", "encounter_template", "encounter")
+   self:_load_what("characters", "character_template", "character")
+end
+
+function repository:spawn_characters()
+   local t = {}
+
+   for _, c in base.pairs(self.character) do
+      local char = self:spawn(c)
+      table.insert(t, char)
+   end
+
+   return t
 end
 
 function repository:spawn(t)
    return self.engine:spawn(self, t)
+end
+
+function repository:create_battle(e)
+   -- Create battle with template and spawned characters
+   return self.engine:create_battle(e, self:spawn_characters())
 end
 
 function repository:new(p)
@@ -155,6 +172,7 @@ function repository:new(p)
 
    neu.monster = {}
    neu.encounter = {}
+   neu.character = {}
 
    neu:open(p)
 

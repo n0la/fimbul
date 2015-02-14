@@ -18,7 +18,6 @@ function encounter:new()
    neu.gold = ""
    neu.chance = 0.12
    neu.monsters = {}
-   neu.players = {}
 
    return neu
 end
@@ -74,20 +73,6 @@ function encounter:spawn(r, encounter)
    end
 
    return neu
-end
-
-function encounter:_update()
-   -- Sort monster template based on initiative
-   table.sort(self.monsters,
-              function (m1, m2)
-                 return m1.initiative > m2.initiative
-   end)
-end
-
-function encounter:start()
-   -- Roll iniative
-   util.foreach(self.monsters, function(m) m:roll_initiative() end)
-   self:_update()
 end
 
 return encounter

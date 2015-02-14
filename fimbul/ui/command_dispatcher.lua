@@ -9,6 +9,9 @@ local table = require("table")
 local util = require("fimbul.util")
 local common_context = require("fimbul.ui.common_context")
 
+-- Common methods for manipulating lists in contexts
+local list = require("fimbul.ui.list")
+
 function command_dispatcher:add(context)
    assert(context, "Cannot add nil context.")
    assert(context.name, "Given context has no name.")
@@ -121,19 +124,25 @@ end
 
 function command_dispatcher:switch_context(c, arg)
    local context
+   local ret
+
+   if c == nil then
+      return self.current
+   end
 
    context = self.contexts[c]
    assert(context, "Invalid context to switch to '" .. c .. "'")
 
-   local old = self.current
-   self.current = context
-
    -- Notify context that it has been activated
    if self:has_function(context, "on_switch") then
-      context:on_switch(self, arg)
+      ret = context:on_switch(self, arg)
    end
 
-   self:fsay("Switched to context '%s'.", c)
+   if ret then
+      local old = self.current
+      self.current = context
+      self:fsay("Switched to context '%s'.", c)
+   end
 
    return old
 end
@@ -152,6 +161,8 @@ function command_dispatcher:new(r, o)
    -- Register common commands
    neu.common = common_context:new(r)
    neu.current = nil
+
+   neu.list = list:new(neu)
 
    return neu
 end

@@ -7,8 +7,6 @@ local saves = require("fimbul.v35.saves")
 local engine = require("fimbul.v35.engine")
 local dice = require("fimbul.dice")
 
-local pretty = require("pl.pretty")
-
 local creature = {}
 
 function creature:new()
@@ -44,7 +42,7 @@ function creature:new()
 end
 
 function creature:spawn(r, t)
-   local neu = creature:new()
+   local neu = self:new()
    local template = t or self.template
 
    if template == nil then
@@ -55,11 +53,7 @@ function creature:spawn(r, t)
       error("The template should at least specify a name.")
    end
 
-   if not template.hd then
-      error("The template does not specify hit dice.")
-   end
-
-   local hp = dice_expression.evaluate(template.hd)
+   local hp = dice_expression.evaluate(template.hd or "1")
 
    neu.name = template.name
    neu.type = template.type

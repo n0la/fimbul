@@ -9,8 +9,10 @@ local pretty = require("pl.pretty")
 
 function encounter_context:on_switch(d, args)
    if args then
-      self.encounter = args
+      return self:on_select(d, {args})
    end
+
+   return true
 end
 
 function encounter_context:check_encounter(d)
@@ -22,7 +24,7 @@ function encounter_context:check_encounter(d)
    return true
 end
 
-function encounter_context:on_encounters(d, args)
+function encounter_context:on_ls(d, args)
    local s = args[1] or ""
    local i = 0
 
@@ -39,6 +41,41 @@ function encounter_context:on_encounters(d, args)
    end
 
    d:fsay("%d result(s) found.", i)
+end
+
+encounter_context.list = encounter_context.ls
+
+function encounter_context:on_select(d, args)
+   local s =  args[1]
+
+   if type(s) == "string" then
+      if s == nil or s == "" then
+         d:error("Invalid encounter given.")
+         return false
+      end
+
+      for _, e in pairs(self.repository.encounter) do
+         if s == "" or (s ~= "" and string.match(e.name, s)) then
+            self.encounter = e
+            return true
+         end
+      end
+   else
+      self.encounter = s
+      return true
+   end
+
+   return false
+end
+
+function encounter_context:on_start(d, args)
+   if not self:check_encounter(d) then
+      return
+   end
+
+   d:fsay("Spawning encounter '%s'.", self.encounter.name)
+   local e = self.repository:spawn(self.encounter)
+   d:switch_context("battle", e)
 end
 
 function encounter_context:on_info(d, args)
@@ -62,9 +99,11 @@ encounter_context.on_print = encounter_context.on_info
 
 function encounter_context:on_help(d, args)
    d:say([[
-Encounter - play a spawned encounter
+Encounter - edit and view encounters available
 
+"ls" "list"             ... Show a list of available encounters.
 "info" "show" "print"   ... Display information about the current encounter.
+"select" [encounter]    ... Select the given encounter.
 "start"                 ... Start the encounter in a battle with the PCs.
    ]])
 end

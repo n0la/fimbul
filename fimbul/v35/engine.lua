@@ -9,11 +9,14 @@ local stacked_value = require("fimbul.stacked_value")
 
 local creature =  require("fimbul.v35.creature")
 local encounter = require("fimbul.v35.encounter")
+local character = require("fimbul.v35.character")
 
+local battle = require("fimbul.v35.battle")
 local rules = require("fimbul.v35.rules")
 
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
+local character_template = require("fimbul.v35.character_template")
 
 function engine.stacked_value(c)
    -- Compose a new stacked value with proper v35 rules
@@ -26,6 +29,8 @@ function engine:create_template(what, ...)
       return monster_template:new(...)
    elseif what == "encounter_template" then
       return encounter_template:new(...)
+   elseif what == "character_template" then
+      return character_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -36,7 +41,13 @@ function engine:spawn(repository, template)
       return creature:spawn(repository, template)
    elseif template.templatetype == "encounter" then
       return encounter:spawn(repository, template)
+   elseif template.templateype == "character" then
+      return creature:spawn(repository, template)
    end
+end
+
+function engine:create_battle(template, characters)
+   return battle:new(template, characters)
 end
 
 function engine:new()
