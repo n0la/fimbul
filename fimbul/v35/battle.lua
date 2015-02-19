@@ -40,6 +40,8 @@ function battle:start()
    self.currentmember = self.monsters[1]
 
    self.logger:emit("Battle started.")
+
+   self:next()
 end
 
 function battle:is_wipe()
