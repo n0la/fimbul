@@ -11,6 +11,11 @@ rules.types = {
    NEGATIVE_LEVEL = "negative_level",
 }
 
+rules.damage_types = {
+   POSITIVE = "positive",
+   NEGATIVE = "negative",
+}
+
 rules.stacking_rules = {
       stack = stacked_value.DONT_STACK,
       -- http://www.d20srd.org/srd/theBasics.htm

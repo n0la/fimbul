@@ -4,9 +4,9 @@ local battle = {}
 
 local base = _G
 local table = require("table")
-local util = require("fimbul.util")
 
-local pretty = require("pl.pretty")
+local battle_logger = require("fimbul.battle_logger")
+local util = require("fimbul.util")
 
 function battle:_update()
    -- Sort monster template based on initiative
@@ -37,6 +37,9 @@ function battle:start()
    -- Mark as started.
    self.round = 1
    self.current = 0
+   self.currentmember = self.monsters[1]
+
+   self.logger:emit("Battle started.")
 end
 
 function battle:is_wipe()
@@ -68,6 +71,8 @@ function battle:next()
          self.current = 1
          self.round = self.round + 1
          newround = true
+
+         self.logger:emit("New round #%d has started.", self.round)
       end
 
       target = self.members[self.current]
@@ -84,7 +89,24 @@ function battle:damage(target, damage, source)
    else
       damage.source = source
    end
-   target:damage(damage)
+   damage.target = target
+   if target:is_healed_by(damage.type) then
+      self.logger:emit("%s healed %s for %s points of damage.",
+                       util.getname(damage.source), util.getname(damage.target),
+                       damage:value())
+      target:heal(damage)
+   else
+      -- Previously dead?
+      local dead = target:is_dead()
+      self.logger:emit("%s damaged %s for %s points of damage.",
+                       util.getname(damage.source), util.getname(damage.target),
+                       damage:value())
+      target:damage(damage)
+
+      if target:is_dead() and not dead then
+         self.logger:emit("%s died.", util.getname(damage.target))
+      end
+   end
    -- TODO: Battle logger
 end
 
@@ -97,6 +119,8 @@ function battle:new(encounter, characters)
    setmetatable(neu, self)
    self.__index = self
 
+   -- Logger
+   neu.logger = battle_logger:new()
    -- Keep it for reference
    neu.encounter = encounter
    -- Copy monsters over. We may need them separatedly

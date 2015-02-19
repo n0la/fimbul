@@ -2,6 +2,7 @@
 
 local damage = {}
 
+local string = require("string")
 local dice_expression = require("fimbul.dice_expression")
 
 function damage:value()
@@ -27,7 +28,9 @@ function damage:new(dmg, dt)
    self.__index = self
 
    neu.damage = d
-   neu.type = damagetype
+   neu.type = string.lower(damagetype)
+   neu.target = 'unknown'
+   neu.source = 'unknown'
 
    return neu
 end

@@ -2,10 +2,12 @@
 
 local dice_expression = require("fimbul.dice_expression")
 
+local rules = require("fimbul.v35.rules")
 local attributes = require("fimbul.v35.attributes")
 local armour_class = require("fimbul.v35.armour_class")
 local saves = require("fimbul.v35.saves")
 local dice = require("fimbul.dice")
+local string = require("string")
 
 local creature = {}
 
@@ -101,11 +103,16 @@ function creature:is_alive()
    return self.hp > 0
 end
 
-function creature:damage(v)
-   local neu
+function creature:is_undead()
+   return string.lower(self.type) == "undead"
+end
 
-   neu = self.hp - v:value()
-   self.hp = neu
+function creature:is_healed_by(dt)
+   if self:is_undead() then
+      return dt == rules.damage_types.NEGATIVE
+   else
+      return dt == rules.damage_types.POSITIVE
+   end
 end
 
 function creature:heal(v)
@@ -115,6 +122,13 @@ function creature:heal(v)
    if neu > self.max_hp then
       neu = self.max_hp
    end
+   self.hp = neu
+end
+
+function creature:damage(v)
+   local neu
+
+   neu = self.hp - v:value()
    self.hp = neu
 end
 
