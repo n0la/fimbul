@@ -9,7 +9,7 @@ local util = require("fimbul.util")
 local dice_expression = require("fimbul.dice_expression")
 
 function battle_context:on_round(d, args)
-   d:fsay("This is round #%d", self.battle.current_round());
+   d:fsay("This is round %d", self.battle:current_round());
 end
 
 function battle_context:on_switch(d, args)

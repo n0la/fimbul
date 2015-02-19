@@ -24,26 +24,6 @@ function battle:current_round()
    return self.round
 end
 
-function battle:start()
-   if self:has_started() then
-      return
-   end
-
-   -- Roll iniative for monsters
-   util.foreach(self.monsters, function(m) m:roll_initiative() end)
-   -- Resort list
-   self:_update()
-
-   -- Mark as started.
-   self.round = 1
-   self.current = 0
-   self.currentmember = self.monsters[1]
-
-   self.logger:emit("Battle started.")
-
-   self:next()
-end
-
 function battle:is_wipe()
    local w = true
 
@@ -81,8 +61,29 @@ function battle:next()
    until target:is_alive()
 
    self.currentmember = target
+   self.logger:emit("%s's turn has started.", util.getname(target))
 
    return newround, target
+end
+
+function battle:start()
+   if self:has_started() then
+      return
+   end
+
+   -- Roll iniative for monsters
+   util.foreach(self.monsters, function(m) m:roll_initiative() end)
+   -- Resort list
+   self:_update()
+
+   -- Mark as started.
+   self.round = 1
+   self.current = 0
+   self.currentmember = self.monsters[1]
+
+   self.logger:emit("Battle started.")
+
+   self:next()
 end
 
 function battle:damage(target, damage, source)
