@@ -2,6 +2,8 @@
 
 local dice_expression = require("fimbul.dice_expression")
 
+local base = _G
+
 local rules = require("fimbul.v35.rules")
 local attributes = require("fimbul.v35.attributes")
 local armour_class = require("fimbul.v35.armour_class")
@@ -130,6 +132,35 @@ function creature:damage(v)
 
    neu = self.hp - v:value()
    self.hp = neu
+end
+
+function creature:set(variable, value)
+   if variable == nil or value == nil then
+      error('variable and value must be set')
+   end
+
+   if self[variable] == nil then
+      error('No such variable.')
+   end
+
+   local old = self[variable]
+   local try = base.tonumber(value)
+
+   if try ~= nil and value ~= nil then
+      self[variable] = try
+   else
+      self[variable] = value
+   end
+
+   return old
+end
+
+function creature:get(variable)
+   if variable ~= nil then
+      return nil
+   end
+
+   return self[variable]
 end
 
 return creature

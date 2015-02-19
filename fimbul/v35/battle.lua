@@ -86,6 +86,13 @@ function battle:start()
    self:next()
 end
 
+function battle:set(target, variable, value)
+   local old = target:set(variable, value)
+   self.logger:emit("%s's %s changed from '%s' to '%s'.",
+                    util.getname(target), variable,
+                    tostring(old), tostring(value))
+end
+
 function battle:damage(target, damage, source)
    if source == nil then
       damage.source = self.currentmember

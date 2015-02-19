@@ -27,9 +27,41 @@ function battle_context:on_switch(d, args)
    return true
 end
 
+function battle_context:on_set(d, args)
+   if #args < 3 then
+      d:error("Requires a target, variable and value.")
+      return
+   end
+
+   local target = args[1]
+   local variable = args[2]
+   local value = args[3]
+
+   util.foreach(self.battle.members,
+                function (i) self.battle:set(i, variable, value) end,
+                function (s) return util.name_matches(s, target) end)
+end
+
+function battle_context:on_get(d, args)
+   if #args < 2 then
+      d:error("Requires a target and variable.")
+      return
+   end
+
+   local target = args[1]
+   local variable = args[2]
+
+   util.foreach(self.battle.members,
+                function (i)
+                   local val = battle:get(i, variable)
+                   d:say(val)
+                end,
+                function (s) return util.name_matches(s, target) end)
+end
+
 function battle_context:on_damage(d, args)
    if not self.battle:has_started() then
-      d:error("Battle must starte to deal/receive damage.")
+      d:error("Battle must start to deal/receive damage.")
       return
    end
 
@@ -131,6 +163,7 @@ Battle - simulate a battle with characters vs. monster encounter
 "next" "n"                        ... Jump to however is next in line for action.
 "round" "r"                       ... Displays the current round.
 "remove" "rm" i1 [, i2, ..., iN]  ... Remove characters or monsters from battle.
+"set" target variable value       ... Change a variable of the given target.
 "start" "s"                       ... Start the skirmish.
 
 Use damage type "positive" to heal someone.
