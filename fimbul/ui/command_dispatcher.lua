@@ -112,7 +112,11 @@ function command_dispatcher:run(c, a)
       if self:has_function(i, funcname) then
          found = true
 
-         ret = i[funcname](i, self, a)
+         local ok, ret = pcall(i[funcname], i, self, a)
+
+         if not ok then
+            self:ferror("Error in command '%s': %s", c, ret)
+         end
 
          break
       end
