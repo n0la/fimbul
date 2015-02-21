@@ -9,7 +9,7 @@ local pretty = require("pl.pretty")
 local config = require("fimbul.config")
 local command_dispatcher = require("fimbul.ui.command_dispatcher")
 
-local readline = require("readline")
+local readline = require("fimbul.ui.readline")
 
 function console:new(r, o)
    local neu = {}
@@ -41,6 +41,11 @@ function console:run()
       local ok, line = pcall(readline.readline, "> ")
 
       if not ok then
+         error(line)
+         break
+      end
+
+      if line == nil then
          break
       end
 
