@@ -8,6 +8,8 @@ local yamlok, yaml = pcall(require, "yaml")
 local lyamlok, lyaml = pcall(require, "lyaml")
 
 local table = require("table")
+local string = require("string")
+
 local lfs = require("lfs")
 local pretty = require("pl.pretty")
 
@@ -131,6 +133,12 @@ function util.deepcopy(orig)
     return copy
 end
 
+function util.deepclone(orig)
+   local copy = util.deepcopy(orig)
+   setmetatable(copy, getmetatable(orig))
+   return clone
+end
+
 function util.shallowcopy(orig)
     local orig_type = type(orig)
     local copy
@@ -143,6 +151,12 @@ function util.shallowcopy(orig)
         copy = orig
     end
     return copy
+end
+
+function util.shallowclone(orig)
+   local clone = util.shallowcopy(orig)
+   setmetatable(clone, getmetatable(orig))
+   return clone
 end
 
 function util.name_matches(t1, t2)
@@ -184,6 +198,16 @@ end
 function util.contains(t, v)
    for _, value in base.pairs(t) do
       if value == v then
+         return true
+      end
+   end
+
+   return false
+end
+
+function util.containsif(t, v, C)
+   for _, value in base.pairs(t) do
+      if C(value, v) then
          return true
       end
    end
@@ -261,6 +285,25 @@ function util.isfile(p)
       return s.mode == "file"
    else
       return false
+   end
+end
+
+function util.comparestr(a, b)
+   if a == nil or b == nil then
+      return false
+   end
+   if string.len(a) ~= string.len(b) then
+      return false
+   end
+
+   return string.lower(a) == string.lower(b)
+end
+
+function util.default(a, v)
+   if a ~= nil then
+      return a
+   else
+      return v
    end
 end
 

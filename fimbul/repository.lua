@@ -12,12 +12,17 @@ local data_repository = require("fimbul.data_repository")
 
 local repository = {}
 
-function repository:_load_config()
-   local configfile = self.datapath .. "/config.yml"
+function repository:load_configuration(name)
+   local configfile = self.datapath .. "/" .. name
    local status, c = pcall(util.yaml_loadfile, configfile)
 
-   -- Check configuration file.
-   assert(status, "Your repository has no config.yml")
+   assert(status, "Your repository is missing " .. name)
+
+   return c
+end
+
+function repository:_load_config()
+   c = self:load_configuration("config.yml")
 
    assert(c.name, "Please specify a name for your repository.")
    assert(c.game, "Please specify a game for your repository.")
