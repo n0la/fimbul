@@ -1,0 +1,14 @@
+#!/bin/env lua5.2
+
+local lgi = require("lgi");
+local Gtk = lgi.require('Gtk', '3.0');
+
+local mainwindow = require('fimbul.gtk.mainwindow');
+local repository = require('fimbul.repository')
+
+local r = repository:new()
+
+wnd = mainwindow:new(r)
+wnd:show()
+
+Gtk.main()
