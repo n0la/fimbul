@@ -14,6 +14,14 @@ function console_page:_append_text(s)
    self.log:scroll_to_iter(buf:get_end_iter(), 0.0, true, 1, 1)
 end
 
+function console_page:error(e)
+   self:_append_text('Error: ' .. e)
+end
+
+function console_page:say(m)
+   self:_append_text(m)
+end
+
 function console_page:_on_input()
    local s = self.input:get_buffer():get_text()
 
@@ -50,7 +58,7 @@ function console_page:_setup()
    scroll:add(self.log)
 
    self.input = Gtk.Entry({name = "input", hexpand = 1})
-   self.input.on_activate = function (o) self:_on_input() end
+   self.input.on_activate = function () self:_on_input() end
 
    self.consolegrid:attach(scroll, 0, 0, 1, 1)
    self.consolegrid:attach(self.input, 0, 1, 1, 1)
