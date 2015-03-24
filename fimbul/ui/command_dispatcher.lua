@@ -158,8 +158,13 @@ function command_dispatcher:new(r, o)
    self.__index = self
 
    -- Stuff goes to stdout by default
-   neu.stdout = o.stdout or io.stdout
-   neu.stderr = o.stderr or io.stderr
+   if o then
+      neu.stdout = o.stdout or io.stdout
+      neu.stderr = o.stderr or io.stderr
+   else
+      neu.stdout = io.stdout
+      neu.stderr = io.stderr
+   end
 
    neu.contexts = {}
    -- Register common commands

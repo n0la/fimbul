@@ -181,7 +181,9 @@ function repository:new(p)
    neu.encounter = {}
    neu.character = {}
 
-   neu:open(p)
+   if p ~= nil then
+      neu:open(p)
+   end
 
    return neu
 end
