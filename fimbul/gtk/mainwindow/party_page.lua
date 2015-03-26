@@ -32,26 +32,58 @@ function party_page:_setup()
    }
 
    local scroll = Gtk.ScrolledWindow({shadow_type = 'ETCHED_IN'})
-   self.treeview = Gtk.TreeView(
+   self.players = Gtk.TreeView(
       { id = 'players',
         model = self.store,
-        hexpand = true,
-        vexpand = true,
-        Gtk.TreeViewColumn({title = "Name"}),
-        Gtk.TreeViewColumn({title = "Player"}),
-        Gtk.TreeViewColumn({title = "XP"}),
+        expand = true,
+        Gtk.TreeViewColumn(
+           {
+              title = "Name",
+              sort_column_id = Column.NAME,
+              {
+                 Gtk.CellRendererText {},
+                 { text = Column.NAME },
+              },
+        }),
+        Gtk.TreeViewColumn(
+           {
+              title = "Player",
+              sort_column_id = Column.PLAYER,
+              {
+                 Gtk.CellRendererText {},
+                 { text = Column.PLAYER },
+              },
+
+           }
+        ),
+        Gtk.TreeViewColumn(
+           {
+              title = "XP",
+              sort_column_id = Column.XP,
+              {
+                 Gtk.CellRendererText {},
+                 { text = Column.XP },
+              },
+           }
+        ),
    })
-   scroll:add(self.treeview)
+   scroll:add(self.players)
    self.grid:attach(scroll, 0, 0, 1, 1)
 
 end
 
 function party_page:on_repository_open()
+   self.store =  Gtk.ListStore.new {
+      [Column.NAME] = GObject.Type.STRING,
+      [Column.PLAYER] = GObject.Type.STRING,
+      [Column.XP] = GObject.Type.UINT,
+   }
+
    for _, p in base.pairs(self.repository.character) do
-      local item = { p.name, p.player, p.xp or 0 }
+      local item = { p.name, p.player, 0 }
       self.store:append(item)
    end
-   -- UPDATE?
+   self.players:set_model(self.store)
 end
 
 function party_page:new(repository)
