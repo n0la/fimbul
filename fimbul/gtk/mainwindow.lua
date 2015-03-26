@@ -39,7 +39,13 @@ function mainwindow:_file_open()
       if not ok then
          self.console:error(err);
       else
-         self:_emit("repository_open")
+         -- Load repository
+         ok, err = pcall(self.repository.load, self.repository)
+         if not ok then
+            self.console:error(err)
+         else
+            self:_emit("repository_open")
+         end
       end
    end
    dlg:destroy()
