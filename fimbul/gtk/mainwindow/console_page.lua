@@ -22,6 +22,12 @@ function console_page:say(m)
    self:_append_text(m)
 end
 
+function console_page:on_repository_open()
+   self:say("New repository opened.")
+   self:say("Name: " .. self.repository.config.name)
+   self:say("Game: " .. self.repository.config.game)
+end
+
 function console_page:_on_input()
    local s = self.input:get_buffer():get_text()
 

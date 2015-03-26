@@ -2,10 +2,23 @@
 
 local mainwindow = {}
 
+local base = _G
+local table = require("table")
+
 local lgi = require("lgi")
 local Gtk = lgi.require("Gtk", "3.0")
 
 local console_page = require("fimbul.gtk.mainwindow.console_page")
+local party_page = require("fimbul.gtk.mainwindow.party_page")
+
+function mainwindow:_emit(f)
+   for _, p in base.pairs(self.pages) do
+      local event = p["on_" .. f]
+      if event ~= nil and type(event) == 'function' then
+         event(p)
+      end
+   end
+end
 
 function mainwindow:_file_open()
    dlg = Gtk.FileChooserDialog(
@@ -26,7 +39,7 @@ function mainwindow:_file_open()
       if not ok then
          self.console:error(err);
       else
-         self.console:say("Repository successfully opened.")
+         self:_emit("repository_open")
       end
    end
    dlg:destroy()
@@ -62,10 +75,18 @@ function mainwindow:_setup()
    })
 
    self.notebook = Gtk.Notebook()
-   self.console = console_page:new(self.repository)
-   self.notebook:append_page(self.console:widget(),
-                             Gtk.Label({label = self.console:name()}))
+   self.pages = {}
 
+   self.console = console_page:new(self.repository)
+   table.insert(self.pages, self.console)
+
+   self.party = party_page:new(self.repository)
+   table.insert(self.pages, self.party)
+
+   for _, page in base.pairs(self.pages) do
+      self.notebook:append_page(page:widget(),
+                                Gtk.Label({label = page:name()}))
+   end
    grid = Gtk.Grid()
 
    grid:attach(self.menubar, 0, 0, 1, 1)
