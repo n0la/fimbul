@@ -2,8 +2,17 @@
 
 local party_page = {}
 
+local base = _G
+
 local lgi = require('lgi')
 local Gtk = lgi.require('Gtk', '3.0')
+local GObject = lgi.require('GObject')
+
+local Column = {
+   NAME = 1,
+   PLAYER = 2,
+   XP = 3,
+}
 
 function party_page:widget()
    return self.grid
@@ -15,9 +24,34 @@ end
 
 function party_page:_setup()
    self.grid = Gtk.Grid()
+
+   self.store =  Gtk.ListStore.new {
+      [Column.NAME] = GObject.Type.STRING,
+      [Column.PLAYER] = GObject.Type.STRING,
+      [Column.XP] = GObject.Type.UINT,
+   }
+
+   local scroll = Gtk.ScrolledWindow({shadow_type = 'ETCHED_IN'})
+   self.treeview = Gtk.TreeView(
+      { id = 'players',
+        model = self.store,
+        hexpand = true,
+        vexpand = true,
+        Gtk.TreeViewColumn({title = "Name"}),
+        Gtk.TreeViewColumn({title = "Player"}),
+        Gtk.TreeViewColumn({title = "XP"}),
+   })
+   scroll:add(self.treeview)
+   self.grid:attach(scroll, 0, 0, 1, 1)
+
 end
 
 function party_page:on_repository_open()
+   for _, p in base.pairs(self.repository.character) do
+      local item = { p.name, p.player, p.xp or 0 }
+      self.store:append(item)
+   end
+   -- UPDATE?
 end
 
 function party_page:new(repository)
