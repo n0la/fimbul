@@ -80,7 +80,7 @@ function party_page:on_repository_open()
    }
 
    for _, p in base.pairs(self.repository.character) do
-      local item = { p.name, p.player, 0 }
+      local item = { p.name, p.player, p.xp or 0 }
       self.store:append(item)
    end
    self.players:set_model(self.store)
