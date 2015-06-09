@@ -9,7 +9,9 @@ local r = repository:new(arg[1])
 r:load()
 
 local item = r:parse_item("Light Hammer")
-pretty.dump(item)
+print(item:string(true))
+--pretty.dump(item)
 
 item = r:parse_item("+1 Longsword")
-pretty.dump(item)
+print(item:string(true))
+--pretty.dump(item)

@@ -5,13 +5,30 @@ local item = {}
 local base = _G
 local util = require('fimbul.util')
 
+item.TINY = 'tiny'
+item.SMALL = 'small'
+item.MEDIUM = 'medium'
+item.LARGE = 'large'
+item.HUGE = 'huge'
+item.GIGANTIC = 'gigantic'
+
+item.SIZES = { item.TINY, item.SMALL, item.MEDIUM,
+               item.LARGE, item.HUGE, item.GIGANTIC }
+
 function item:new(y)
    local neu = y or {}
 
    setmetatable(neu, self)
    self.__index = self
 
+   self._size = 'medium'
+
    return neu
+end
+
+function item:size()
+   local s = self._size or 'medium'
+   return s
 end
 
 function item:spawn(r, t)

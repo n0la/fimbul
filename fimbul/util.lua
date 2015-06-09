@@ -308,7 +308,7 @@ function util.default(a, v)
 end
 
 function util.split(str, glob)
-   local g = glob or '%a+'
+   local g = glob or '%g+'
    local t = {}
 
    for w in string.gmatch(str, g) do
@@ -324,12 +324,16 @@ function util.join(tbl, sep)
 
    for i = 1, #tbl do
       if i > 1 then
-         str = str .. sep
+         str = str .. s
       end
-      str = str ..tbl[i]
+      str = str .. base.tostring(tbl[i])
    end
 
    return str
+end
+
+function util.capitalise(str)
+   return string.upper(str:sub(0, 1)) .. str:sub(2)
 end
 
 return util

@@ -1,6 +1,7 @@
 ---@module fimbul.logger
 
 local logger = {}
+package.loaded["fimbul.logger"] = engine
 
 logger.VERBOSE = false
 logger.INFO = false

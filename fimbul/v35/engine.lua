@@ -87,8 +87,9 @@ function engine:parse_item(r, s)
       local it = self:_find_item_and_spawn(r, w)
 
       if it then
-         table.remove(parts, i)
-         it:_parse_attributes(r, util.join(parts))
+         t = util.shallowcopy(parts)
+         table.remove(t, i)
+         it:_parse_attributes(r, util.join(t))
          return it
       end
    end
@@ -98,9 +99,10 @@ function engine:parse_item(r, s)
       local it = self:_find_item_and_spawn(r, w)
 
       if it then
-         table.remove(parts, i)
-         table.remove(parts, i+1)
-         it:_parse_attributes(r, util.join(parts))
+         t = util.deepcopy(parts)
+         table.remove(t, i)
+         table.remove(t, i)
+         it:_parse_attributes(r, util.join(t))
          return it
       end
    end
