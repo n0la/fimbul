@@ -41,4 +41,23 @@ rules.modifier_prices = {
    [10] = 100000,
 }
 
+rules.weapons = {}
+
+-- Additional cost for mastework items
+rules.weapons.mastework_price = 300
+
+rules.weapons.modifier_prices = {
+   [0] = 0,
+   [1] = 2000,
+   [2] = 8000,
+   [3] = 18000,
+   [4] = 32000,
+   [5] = 50000,
+   [6] = 72000,
+   [7] = 98000,
+   [8] = 128000,
+   [9] = 162000,
+   [10] = 200000,
+}
+
 return rules

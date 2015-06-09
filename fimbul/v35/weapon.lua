@@ -4,6 +4,7 @@ local base = _G
 local util = require('fimbul.util')
 local logger = require('fimbul.logger')
 local item = require('fimbul.v35.item')
+local material = require('fimbul.v35.material')
 
 local rules = require('fimbul.v35.rules')
 
@@ -18,6 +19,8 @@ function weapon:new(y)
    self.modifier = 0
    self.masterwork = false
    self.abilities = {}
+   -- Spawn a mysterious default material
+   self.material = material:spawn(nil, {name = 'default'})
 
    return neu
 end
@@ -55,14 +58,48 @@ function weapon:damage(size)
    return b
 end
 
+function weapon:is_masterwork()
+   if self.modifier > 0 then
+      -- If it has a modifier it is automatically considered
+      -- masterwork.
+      return true
+   elseif self.material.masterwork then
+      -- If the material requires masterwork, then so be it.
+      return true
+   else
+      -- Was it specified to be masterwork?
+      return self.masterwork
+   end
+end
+
 function weapon:_parse_attributes(r, str)
    local tbl = util.split(str)
+   local hadmaterial = false
 
-   for _, w in base.pairs(tbl) do
+   for i = 1, #tbl do
+      local w = tbl[i]
       local s = string.lower(w)
 
+      -- Check this or this + 1 for material
+      if tbl[i+1] and not hadmaterial then
+         local mat = r:find("material", (w .. ' ' .. (tbl[i+1] or '')))
+
+         if #mat > 0 then
+            self.material = r:spawn(mat[1])
+            hadmaterial = true
+         end
+      end
+
+      if not hadmaterial then
+         local mat = r:find("material", w)
+         if #mat > 0 then
+            self.material = r:spawn(mat[1])
+            hadmaterial = true
+         end
+      end
+
       -- Check for a modifier
-      mod = string.match(s, "[+](%d+)")
+      local mod = string.match(s, "[+](%d+)")
       if mod then
          local m = base.tonumber(mod)
          if not m or m > 10 then
@@ -126,16 +163,36 @@ end
 
 function weapon:price()
    local p = 0
+   local enhancement = false
 
    -- Add base price
    p = p + (self.cost or 0)
 
-   -- Base price for modifier
-   if self.modifier > 0 then
-      p = p + rules.modifier_prices[self.modifier]
+   if self.material then
+      -- Ask for base price from the material
+      p = self.material:additional_cost(self.category, p)
    end
 
-   -- TODO add material
+   -- Additional cost for masterwork, twice if double weapon
+   if self:is_masterwork() then
+      if self.double then
+         p = p + (rules.weapons.mastework_price * 2)
+      else
+         p = p + rules.weapons.mastework_price
+      end
+   end
+
+   -- Base price for modifier
+   if self.modifier > 0 then
+      p = p + rules.weapons.modifier_prices[self.modifier]
+      enhancement = true
+   end
+
+   if enhancement then
+      if self.material then
+         p = self.material:additional_cost('enhancement', p)
+      end
+   end
 
    return p
 end
@@ -154,6 +211,10 @@ function weapon:string(extended)
 
    if self:size() ~= item.MEDIUM or e then
       str = str .. util.capitalise(self:size()) .. ' '
+   end
+
+   if (self.material.name ~= "default" and self.material ~= "Iron") or e then
+      str =  str .. self.material.name .. ' '
    end
 
    str = str .. self.type

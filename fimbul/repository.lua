@@ -173,13 +173,15 @@ function repository:_load_array(what, template, tbl)
    end
 end
 
-function repository:find(tbl, what)
+function repository:find(tbl, ...)
    local t = {}
 
    for _, i in base.pairs(self[tbl]) do
       local name = i.name
-      if string.lower(name) == string.lower(what) then
-         table.insert(t, i)
+      for _, what in base.pairs({...}) do
+         if string.lower(name) == string.lower(what) then
+            table.insert(t, i)
+         end
       end
    end
 
@@ -200,6 +202,7 @@ function repository:load()
    self:_load_files("encounters", "encounter_template", "encounter")
    self:_load_files("characters", "character_template", "character")
    self:_load_array("weapons", "weapon_template", "weapon")
+   self:_load_array("materials", "material_template", "material")
 
    local items = {}
 
@@ -246,6 +249,7 @@ function repository:new(p)
    neu.encounter = {}
    neu.character = {}
    neu.weapon = {}
+   neu.material = {}
 
    if p ~= nil then
       neu:open(p)

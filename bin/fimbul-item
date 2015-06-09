@@ -12,6 +12,6 @@ local item = r:parse_item("Light Hammer")
 print(item:string(true))
 --pretty.dump(item)
 
-item = r:parse_item("+1 Longsword")
+item = r:parse_item("+2 Cold Iron Longsword")
 print(item:string(true))
 --pretty.dump(item)

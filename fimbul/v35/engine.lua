@@ -19,11 +19,13 @@ local damage = require("fimbul.v35.damage")
 
 local item = require("fimbul.v35.item")
 local weapon = require("fimbul.v35.weapon")
+local material = require("fimbul.v35.material")
 
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
 local character_template = require("fimbul.v35.character_template")
 local weapon_template = require("fimbul.v35.weapon_template")
+local material_template = require("fimbul.v35.material_template")
 
 function engine.stacked_value(c)
    -- Compose a new stacked value with proper v35 rules
@@ -45,6 +47,8 @@ function engine:create_template(what, ...)
       return character_template:new(...)
    elseif what == "weapon_template" then
       return weapon_template:new(...)
+   elseif what == "material_template" then
+      return material_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -59,6 +63,8 @@ function engine:spawn(repository, template)
       return character:spawn(repository, template)
    elseif template.templatetype == "weapon" then
       return weapon:spawn(repository, template)
+   elseif template.templatetype == "material" then
+      return material:spawn(repository, template)
    else
       logger.critical("Unsupported spawnable in v35: " .. template.templatetype)
    end
