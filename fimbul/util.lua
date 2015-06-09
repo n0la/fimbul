@@ -307,4 +307,29 @@ function util.default(a, v)
    end
 end
 
+function util.split(str, glob)
+   local g = glob or '%a+'
+   local t = {}
+
+   for w in string.gmatch(str, g) do
+      table.insert(t, w)
+   end
+
+   return t
+end
+
+function util.join(tbl, sep)
+   local s = sep or ' '
+   local str = ''
+
+   for i = 1, #tbl do
+      if i > 1 then
+         str = str .. sep
+      end
+      str = str ..tbl[i]
+   end
+
+   return str
+end
+
 return util

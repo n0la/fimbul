@@ -7,6 +7,7 @@ local lfs = require("lfs")
 
 local pretty = require("pl.pretty")
 
+local logger = require("fimbul.logger")
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
 
@@ -74,6 +75,32 @@ function repository:find_all(dirname, glob)
    return results
 end
 
+function repository:_load_common()
+   local home = os.getenv('HOME')
+   local fimbulhome = home .. '/.fimbul'
+   local common = fimbulhome .. '/common'
+
+   if home == nil or not util.isdir(common) then
+      return nil
+   end
+
+   self.home = fimbulhome
+   self.common = common
+
+   for iter, dir in lfs.dir(common) do
+      if iter ~= "." and iter ~= ".." then
+         local full = util.realpath(common .. "/" .. iter)
+
+         if util.isdir(full) then
+            -- Load common repository
+            local repo = data_repository:new({name = iter,
+                                              path = full})
+            table.insert(self.data, repo)
+         end
+      end
+   end
+end
+
 function repository:open(path)
    local p = path or lfs.currentdir()
 
@@ -105,9 +132,13 @@ function repository:open(path)
    table.insert(self.data,
                 data_repository:new({name = "_local", path = self.root}))
 
+   self:_load_common()
 end
 
-function repository:_load_what(what, template, tbl)
+-- This method is useful if there are files called <WHAT>.yml and
+-- each of these files has one element in it.
+--
+function repository:_load_files(what, template, tbl)
    local w = self:find_all(what)
    local t = tbl or what
 
@@ -118,6 +149,27 @@ function repository:_load_what(what, template, tbl)
       end
       local tmp = self.engine:create_template(template, y)
       table.insert(self[t], tmp)
+   end
+end
+
+-- This method is used if there are files called <WHAT>.yml and have
+-- array of elements in them.
+--
+function repository:_load_array(what, template, tbl)
+   local w = self:find_all('', what .. '.yml')
+   local t = tbl or what
+
+   for _, m in pairs(w) do
+      local y = util.yaml_loadfile(m)
+
+      if not y then
+         error("Failed to load file " .. m)
+      end
+
+      for _, i in pairs(y) do
+         local tmp = self.engine:create_template(template, i)
+         table.insert(self[t], tmp)
+      end
    end
 end
 
@@ -144,9 +196,16 @@ function repository:all(what)
 end
 
 function repository:load()
-   self:_load_what("monsters", "monster_template", "monster")
-   self:_load_what("encounters", "encounter_template", "encounter")
-   self:_load_what("characters", "character_template", "character")
+   self:_load_files("monsters", "monster_template", "monster")
+   self:_load_files("encounters", "encounter_template", "encounter")
+   self:_load_files("characters", "character_template", "character")
+   self:_load_array("weapons", "weapon_template", "weapon")
+
+   local items = {}
+
+   items = util.concat_table(items, self.weapon)
+
+   self.items = items
 end
 
 function repository:spawn_characters()
@@ -160,7 +219,13 @@ function repository:spawn_characters()
    return t
 end
 
+function repository:parse_item(s)
+   logger.verbose("Parsing item " .. s)
+   return self.engine:parse_item(self, s)
+end
+
 function repository:spawn(t)
+   logger.verbose("Spawning " .. t.templatetype .. " " .. t.name)
    return self.engine:spawn(self, t)
 end
 
@@ -180,6 +245,7 @@ function repository:new(p)
    neu.monster = {}
    neu.encounter = {}
    neu.character = {}
+   neu.weapon = {}
 
    if p ~= nil then
       neu:open(p)

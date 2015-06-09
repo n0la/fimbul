@@ -24,7 +24,7 @@ function common_context:_on_help(d, args)
    d:say([[
 Common - methods common to every context
 
-"roll" "dice" "d" .                   ... Roll a dice expression and display the result.
+"roll" "dice" "d" "eval" "expr" .     ... Evaluate a dice expression and display the result.
 "spawn" [encounter|monster] n         ... Spawn an encounter, or monster and switch context.
 "help"                                ... This bogus.
    ]])
@@ -90,5 +90,7 @@ end
 -- Aliases for "on_roll"
 common_context.on_dice = common_context.on_roll
 common_context.on_d = common_context.on_roll
+common_context.on_eval = common_context.on_roll
+common_context.on_expr = common_context.on_roll
 
 return common_context

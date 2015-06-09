@@ -10,6 +10,7 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 local console_page = require("fimbul.gtk.mainwindow.console_page")
 local party_page = require("fimbul.gtk.mainwindow.party_page")
+local item_page = require("fimbul.gtk.mainwindow.item_page")
 
 function mainwindow:_emit(f)
    for _, p in base.pairs(self.pages) do
@@ -92,6 +93,9 @@ function mainwindow:_setup()
 
    self.party = party_page:new(self.repository)
    table.insert(self.pages, self.party)
+
+   self.item = item_page:new(self.repository)
+   table.insert(self.pages, self.item)
 
    for _, page in base.pairs(self.pages) do
       self.notebook:append_page(page:widget(),

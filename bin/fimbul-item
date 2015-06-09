@@ -1,0 +1,15 @@
+#/usr/bin/env lua52
+
+local pretty = require("pl.pretty")
+
+local util = require("fimbul.util")
+local repository = require("fimbul.repository")
+
+local r = repository:new(arg[1])
+r:load()
+
+local item = r:parse_item("Light Hammer")
+pretty.dump(item)
+
+item = r:parse_item("+1 Longsword")
+pretty.dump(item)
