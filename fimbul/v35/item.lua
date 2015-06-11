@@ -5,6 +5,10 @@ local item = {}
 local base = _G
 local util = require('fimbul.util')
 
+item.ARMOR = 'armor'
+item.SHIELD = 'shield'
+item.WEAPON = 'weapon'
+
 item.TINY = 'tiny'
 item.SMALL = 'small'
 item.MEDIUM = 'medium'

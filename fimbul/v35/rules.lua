@@ -23,11 +23,15 @@ rules.stacking_rules = {
       --   with one another unless otherwise specified."
       [rules.types.DODGE] = stacked_value.STACK,
       [rules.types.CIRCUMSTANCE] = stacked_value.STACK,
-      -- This is a handy hack to stack up negative levels
+      -- Negative levels do stack
       [rules.types.NEGATIVE_LEVEL] = stacked_value.STACK,
 }
 
-rules.modifier_prices = {
+rules.armors = {}
+-- PHB 126
+rules.armors.masterwork_price = 250
+-- DMG 216
+rules.armors.modifier_prices = {
    [0] = 0,
    [1] = 1000,
    [2] = 4000,
@@ -41,11 +45,13 @@ rules.modifier_prices = {
    [10] = 100000,
 }
 
+-- Per PHB armor == shields in this regard
+rules.shields = rules.armors
+
 rules.weapons = {}
-
--- Additional cost for mastework items
-rules.weapons.mastework_price = 300
-
+-- PHB 122
+rules.weapons.masterwork_price = 300
+-- DMG 222
 rules.weapons.modifier_prices = {
    [0] = 0,
    [1] = 2000,

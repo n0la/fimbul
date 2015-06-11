@@ -19,12 +19,16 @@ local damage = require("fimbul.v35.damage")
 
 local item = require("fimbul.v35.item")
 local weapon = require("fimbul.v35.weapon")
+local armor = require("fimbul.v35.armor")
+local shield = require("fimbul.v35.shield")
 local material = require("fimbul.v35.material")
 
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
 local character_template = require("fimbul.v35.character_template")
 local weapon_template = require("fimbul.v35.weapon_template")
+local armor_template = require("fimbul.v35.armor_template")
+local shield_template = require("fimbul.v35.shield_template")
 local material_template = require("fimbul.v35.material_template")
 
 function engine.stacked_value(c)
@@ -49,6 +53,10 @@ function engine:create_template(what, ...)
       return weapon_template:new(...)
    elseif what == "material_template" then
       return material_template:new(...)
+   elseif what == 'armor_template' then
+      return armor_template:new(...)
+   elseif what == 'shield_template' then
+      return shield_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -65,6 +73,10 @@ function engine:spawn(repository, template)
       return weapon:spawn(repository, template)
    elseif template.templatetype == "material" then
       return material:spawn(repository, template)
+   elseif template.templatetype == "armor" then
+      return armor:spawn(repository, template)
+   elseif template.templatetype == "shield" then
+      return shield:spawn(repository, template)
    else
       logger.critical("Unsupported spawnable in v35: " .. template.templatetype)
    end
@@ -88,6 +100,10 @@ end
 function engine:parse_item(r, s)
    local parts = util.split(s)
 
+   if #parts == 0 then
+      return nil
+   end
+
    for i = 1, #parts do
       local w = parts[i]
       local it = self:_find_item_and_spawn(r, w)
@@ -100,16 +116,34 @@ function engine:parse_item(r, s)
       end
    end
 
-   for i = 1, #parts - 1 do
-      local w = parts[i] .. ' ' .. parts[i+1]
-      local it = self:_find_item_and_spawn(r, w)
+   if #parts > 1 then
+      for i = 1, #parts - 1 do
+         local w = parts[i] .. ' ' .. parts[i+1]
+         local it = self:_find_item_and_spawn(r, w)
 
-      if it then
-         t = util.deepcopy(parts)
-         table.remove(t, i)
-         table.remove(t, i)
-         it:_parse_attributes(r, util.join(t))
-         return it
+         if it then
+            t = util.deepcopy(parts)
+            table.remove(t, i)
+            table.remove(t, i)
+            it:_parse_attributes(r, util.join(t))
+            return it
+         end
+      end
+   end
+
+   if #parts > 2 then
+      for i = 1, #parts - 2 do
+         local w = parts[i] .. ' ' .. parts[i+1] .. ' ' .. parts[i+2]
+         local it = self:_find_item_and_spawn(r, w)
+
+         if it then
+            t = util.deepcopy(parts)
+            table.remove(t, i)
+            table.remove(t, i)
+            table.remove(t, i)
+            it:_parse_attributes(r, util.join(t))
+            return it
+         end
       end
    end
 

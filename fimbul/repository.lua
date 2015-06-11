@@ -198,15 +198,21 @@ function repository:all(what)
 end
 
 function repository:load()
+   -- PCs and NPCs
    self:_load_files("monsters", "monster_template", "monster")
    self:_load_files("encounters", "encounter_template", "encounter")
    self:_load_files("characters", "character_template", "character")
+   -- Items and Gear
    self:_load_array("weapons", "weapon_template", "weapon")
    self:_load_array("materials", "material_template", "material")
+   self:_load_array("armors", "armor_template", "armor")
+   self:_load_array("shields", "shield_template", "shield")
 
    local items = {}
 
    items = util.concat_table(items, self.weapon)
+   items = util.concat_table(items, self.armor)
+   items = util.concat_table(items, self.shield)
 
    self.items = items
 end
@@ -250,6 +256,8 @@ function repository:new(p)
    neu.character = {}
    neu.weapon = {}
    neu.material = {}
+   neu.armor = {}
+   neu.shield = {}
 
    if p ~= nil then
       neu:open(p)

@@ -36,7 +36,7 @@ function material:spawn(r, t)
    neu.weight = t.weight or 1
 
    neu.dex_bonus = t.dex_bonus or 0
-   neu.acf_bonus = t.acf_bonus or 0
+   neu.asf_bonus = t.asf_bonus or 0
    neu.acp_bonus = t.acp_bonus or 0
    neu.category_bonus = t.category_bonus or 0
 
