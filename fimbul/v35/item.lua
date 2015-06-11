@@ -21,13 +21,13 @@ function item:new(y)
    setmetatable(neu, self)
    self.__index = self
 
-   self._size = 'medium'
+   self._size = item.MEDIUM
 
    return neu
 end
 
 function item:size()
-   local s = self._size or 'medium'
+   local s = self._size or item.MEDIUM
    return s
 end
 
