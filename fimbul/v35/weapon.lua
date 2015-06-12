@@ -2,6 +2,7 @@
 
 local base = _G
 
+local table = require('table')
 local magical_item = require('fimbul.v35.magical_item')
 local item = require('fimbul.v35.item')
 
@@ -26,7 +27,7 @@ function weapon:new(y)
 end
 
 function weapon:is_ranged()
-   return neu.ranged or false
+   return self.ranged or false
 end
 
 function weapon:is_simple()
@@ -52,6 +53,47 @@ function weapon:damage(size)
       b = b .. '+' .. self.modifier
    end
    return b
+end
+
+function weapon:_check_ability(a)
+   -- Call super method
+   magical_item._check_ability(self, a)
+
+   -- Nothing to check
+   if a.weapon == nil then
+      return
+   end
+
+   -- Check if we have 'ranged' only ability
+   if a.weapon.ranged then
+      if not a.weapon.ranged and self:is_ranged() then
+         error('The ability "' .. a.name .. '" does not apply to ' ..
+                  'ranged weapons.')
+      elseif a.weapon.ranged and not self:is_ranged() then
+         error('The ability "' .. a.name .. '" only applies to ' ..
+                  'ranged weapons.')
+      end
+   end
+
+   -- Damage types
+   local found = false
+
+   if a.weapon.damagetypes then
+      for _, dt in base.ipairs(self.damagetypes) do
+         if util.contains(a.weapon.damagetypes, dt) then
+            found = true
+            break
+         end
+      end
+   end
+
+   if not found then
+      error('The ability "' .. a.name .. '" only applies to weapons ' ..
+               'dealing the following damage types: [' ..
+               table.concat(a.weapon.damagetypes, ',') .. '] but this ' ..
+               'weapon only deals the following damage types: [' ..
+               table.concat(self.damagetypes, ',') .. '].')
+   end
 end
 
 function weapon:_parse_attributes(r, str)

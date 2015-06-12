@@ -28,6 +28,14 @@ function ability:spawn(r, t)
    neu.name = t.name
    neu.slots = util.deepcopy(t.slots or {})
 
+   if t.weapon then
+      neu.weapon = util.deepcopy(t.weapon)
+   end
+
+   if t.armor then
+      neu.armor = util.deepcopy(t.armor)
+   end
+
    neu.school = t.school
    neu.grade = t.grade
    neu.cl = t.cl

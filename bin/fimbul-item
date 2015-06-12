@@ -42,3 +42,29 @@ end
 
 item = r:parse_item("+8 Anarchic Greataxe")
 dump_item(item)
+
+item = r:parse_item("+1 Morningstar of Human Bane")
+dump_item(item)
+
+ok, item = pcall(repository.parse_item, r, "+1 Flaming Leather Armor")
+if not ok then
+   print(item)
+end
+
+ok, item = pcall(repository.parse_item, r, "+1 Distance Morningstar")
+if not ok then
+   print(item)
+end
+
+ok, item = pcall(repository.parse_item, r, "+1 Disruption Dagger")
+if not ok then
+   print(item)
+end
+
+ok, item = pcall(repository.parse_item, r, "+1 Keen Club")
+if not ok then
+   print(item)
+end
+
+item = r:parse_item("+1 Flaming Flaming Burst Longsword of Frost")
+dump_item(item)

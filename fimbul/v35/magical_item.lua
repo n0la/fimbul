@@ -154,6 +154,14 @@ function magical_item:price()
    return pr:value(), pr
 end
 
+function magical_item:_check_ability(a)
+   -- Check if the slot fits.
+   if #a.slots > 0 and not util.contains(a.slots, self.slot) then
+      error('Ability "' .. a.name .. '" is only supported on the ' ..
+               'following slots: [' .. table.concat(a.slots, ',') ..
+               '] but this item is on slot: ' .. self.slot .. '.')
+   end
+end
 
 function magical_item:_parse_attributes(r, str)
    local tbl = util.split(str)
@@ -194,6 +202,8 @@ function magical_item:_parse_attributes(r, str)
 
          if #a > 0 then
             ability = r:spawn(a[1])
+            -- Check ability
+            self:_check_ability(ability)
             table.insert(self.abilities, ability)
             i = i + 2
             goto end_of_loop
@@ -206,6 +216,8 @@ function magical_item:_parse_attributes(r, str)
 
          if #a > 0 then
             ability = r:spawn(a[1])
+            -- Check ability
+            self:_check_ability(ability)
             table.insert(self.abilities, ability)
             i = i + 1
             goto end_of_loop
@@ -215,6 +227,8 @@ function magical_item:_parse_attributes(r, str)
       a = r:find("ability", s)
       if #a > 0 then
          ability = r:spawn(a[1])
+         -- Check ability
+         self:_check_ability(ability)
          table.insert(self.abilities, ability)
       end
 
