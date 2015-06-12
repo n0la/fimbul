@@ -60,6 +60,21 @@ function magical_item:spawn(r, t)
    return neu
 end
 
+-- The modifier that determines the price and the power of
+-- the item.
+--
+function magical_item:magic_modifier()
+   local m = self.modifier
+
+   for _, w in base.ipairs(self.abilities) do
+      if w.modifier ~= 0 then
+         m = m + w.modifier
+      end
+   end
+
+   return m
+end
+
 function magical_item:is_masterwork()
    if self.modifier > 0 then
       -- If it has a modifier it is automatically considered
@@ -119,9 +134,12 @@ function magical_item:price()
       end
 
       -- Base price for modifier
-      if self.modifier > 0 then
-         p = price_table.modifier_prices[self.modifier]
+      if self:magic_modifier() > 0 then
+         p = price_table.modifier_prices[self:magic_modifier()]
          pr:add(p, 'modifier')
+      end
+
+      if self.modifier > 0 or #self.abilities > 0 then
          enhancement = true
       end
    end
@@ -139,34 +157,71 @@ end
 
 function magical_item:_parse_attributes(r, str)
    local tbl = util.split(str)
-   local hadmaterial = false
+   local i = 1
 
-   for i = 1, #tbl do
+   while i <= #tbl do
       local w = tbl[i]
       local s = string.lower(w)
+      local mat = nil
+      local a, am, ability
+      local mod, m
+
+      if s == 'of' then
+         goto end_of_loop
+      end
 
       -- Check this or this + 1 for material
-      if tbl[i+1] and not hadmaterial then
-         local mat = r:find("material", (w .. ' ' .. (tbl[i+1] or '')))
+      if tbl[i+1] then
+         mat = r:find("material", (s .. ' ' .. (tbl[i+1] or '')))
 
          if #mat > 0 then
             self.material = r:spawn(mat[1])
-            hadmaterial = true
+            i = i + 1
+            goto end_of_loop
          end
       end
 
-      if not hadmaterial then
-         local mat = r:find("material", w)
-         if #mat > 0 then
-            self.material = r:spawn(mat[1])
-            hadmaterial = true
+      mat = r:find("material", s)
+      if #mat > 0 then
+         self.material = r:spawn(mat[1])
+      end
+
+      -- Check for abilities
+      --
+      if tbl[i+1] and tbl[i+2] then
+         am = s .. ' ' .. tbl[i+1] .. ' ' .. tbl[i+2]
+         a = r:find("ability", am)
+
+         if #a > 0 then
+            ability = r:spawn(a[1])
+            table.insert(self.abilities, ability)
+            i = i + 2
+            goto end_of_loop
          end
+      end
+
+      if tbl[i+1] then
+         am = s .. ' ' .. tbl[i+1]
+         a = r:find("ability", am)
+
+         if #a > 0 then
+            ability = r:spawn(a[1])
+            table.insert(self.abilities, ability)
+            i = i + 1
+            goto end_of_loop
+         end
+      end
+
+      a = r:find("ability", s)
+      if #a > 0 then
+         ability = r:spawn(a[1])
+         table.insert(self.abilities, ability)
       end
 
       -- Check for a modifier
-      local mod = string.match(s, "[+](%d+)")
+      mod = string.match(s, "[+](%d+)")
       if mod then
-         local m = base.tonumber(mod)
+         m = base.tonumber(mod)
          if not m or m > 10 then
             logger.error("Modifiers above +10 are not valid in d20srd.")
             return false
@@ -185,6 +240,20 @@ function magical_item:_parse_attributes(r, str)
       -- Check for special magical attributes
       -- TODO
 
+      -- End of loop - for continue
+      ::end_of_loop::
+      i = i + 1
+   end
+
+   if self.modifier > rules.MAX_MODIFIER then
+      error('Ability modifier of item cannot exceed the maximum of '
+               .. rules.MAX_MODIFIER)
+   end
+
+   -- Sanity checks
+   if self:magic_modifier() > rules.MAX_MODIFIER then
+      error('Cummulative modifier of item cannot exceed the maximum of '
+               .. rules.MAX_MODIFIER)
    end
 
    return true
@@ -217,6 +286,10 @@ function magical_item:_string(extended)
       str = str .. '+' .. self.modifier .. ' '
    end
 
+   for _, a in base.pairs(self.abilities) do
+      str = str .. a.name .. ' '
+   end
+
    if self:size() ~= item.MEDIUM or e then
       str = str .. util.capitalise(self:size()) .. ' '
    end
@@ -229,6 +302,10 @@ function magical_item:_string(extended)
 
    if self:is_artefact() then
       str = str .. ']'
+   end
+
+   if self:magic_modifier() > 0 then
+      str = str .. ' [MOD: +' .. self:magic_modifier() .. ']'
    end
 
    str = str .. ' (' .. self:price() .. ' GP)'

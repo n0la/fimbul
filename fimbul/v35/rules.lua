@@ -27,6 +27,8 @@ rules.stacking_rules = {
       [rules.types.NEGATIVE_LEVEL] = stacked_value.STACK,
 }
 
+rules.MAX_MODIFIER = 10
+
 rules.armors = {}
 -- PHB 126
 rules.armors.masterwork_price = 250

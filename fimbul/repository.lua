@@ -207,6 +207,8 @@ function repository:load()
    self:_load_array("materials", "material_template", "material")
    self:_load_array("armors", "armor_template", "armor")
    self:_load_array("shields", "shield_template", "shield")
+   -- Special magical abilities
+   self:_load_array("abilities", "ability_template", "ability")
 
    local items = {}
 
@@ -258,6 +260,7 @@ function repository:new(p)
    neu.material = {}
    neu.armor = {}
    neu.shield = {}
+   neu.ability = {}
 
    if p ~= nil then
       neu:open(p)

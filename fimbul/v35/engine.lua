@@ -22,6 +22,7 @@ local weapon = require("fimbul.v35.weapon")
 local armor = require("fimbul.v35.armor")
 local shield = require("fimbul.v35.shield")
 local material = require("fimbul.v35.material")
+local ability = require("fimbul.v35.ability")
 
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
@@ -30,6 +31,7 @@ local weapon_template = require("fimbul.v35.weapon_template")
 local armor_template = require("fimbul.v35.armor_template")
 local shield_template = require("fimbul.v35.shield_template")
 local material_template = require("fimbul.v35.material_template")
+local ability_template = require("fimbul.v35.ability_template")
 
 function engine.stacked_value(c)
    -- Compose a new stacked value with proper v35 rules
@@ -57,6 +59,8 @@ function engine:create_template(what, ...)
       return armor_template:new(...)
    elseif what == 'shield_template' then
       return shield_template:new(...)
+   elseif what == 'ability_template' then
+      return ability_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -77,6 +81,8 @@ function engine:spawn(repository, template)
       return armor:spawn(repository, template)
    elseif template.templatetype == "shield" then
       return shield:spawn(repository, template)
+   elseif template.templatetype == "ability" then
+      return ability:spawn(repository, template)
    else
       logger.critical("Unsupported spawnable in v35: " .. template.templatetype)
    end

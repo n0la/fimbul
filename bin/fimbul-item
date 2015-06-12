@@ -31,3 +31,14 @@ dump_item(item)
 
 item = r:parse_item("+1 Mithral Breastplate")
 dump_item(item)
+
+item = r:parse_item("+1 Anarchic Battleaxe")
+dump_item(item)
+
+ok, item = pcall(repository.parse_item, r, "+9 Anarchic Longsword")
+if not ok then
+   print(item)
+end
+
+item = r:parse_item("+8 Anarchic Greataxe")
+dump_item(item)
