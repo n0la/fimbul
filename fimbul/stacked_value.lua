@@ -122,6 +122,27 @@ function stacked_value:stacking_rule(t)
 end
 
 function stacked_value:load(o)
+   error('TODO')
+end
+
+function stacked_value:string()
+   local str = ''
+
+   for i = 1, #self.values do
+      local v = self.values[i]
+      if i > 1 then
+         if v.value >= 0 then
+            str = str .. ' + '
+         else
+            str = str .. ' - '
+         end
+      end
+      str = str .. v.value .. ' [' .. v.type .. ']'
+   end
+
+   str = str .. ' = ' .. self:value()
+
+   return str
 end
 
 function stacked_value:new(rules)

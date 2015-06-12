@@ -1,5 +1,7 @@
 --- @module fimbul.v35.item
 
+local stacked_value = require('fimbul.stacked_value')
+
 local item = require('fimbul.v35.item')
 local rules = require('fimbul.v35.rules')
 local material = require('fimbul.v35.material')
@@ -80,12 +82,19 @@ function magical_item:price()
    local p = 0
    local enhancement = false
 
-   -- Add base price
-   p = p + (self.cost or 0)
+   local pr = stacked_value:new({stack = true})
+
+   local base = self.cost or 0
+   pr:add(base, 'base')
 
    if self.material then
-      -- Ask for base price from the material
-      p = self.material:additional_cost(self:category(), p)
+      p, new = self.material:additional_cost(self:category(), base)
+      if new then
+         p = p - base
+      end
+      if p ~= 0 then
+         pr:add(p, 'material')
+      end
    end
 
    local price_table = nil
@@ -102,26 +111,29 @@ function magical_item:price()
       -- Additional cost for masterwork, twice if double weapon
       if self:is_masterwork() then
          if self.double then
-            p = p + (price_table.masterwork_price * 2)
+            p = (price_table.masterwork_price * 2)
          else
-            p = p + price_table.masterwork_price
+            p = price_table.masterwork_price
          end
+         pr:add(p, 'masterwork')
       end
 
       -- Base price for modifier
       if self.modifier > 0 then
-         p = p + price_table.modifier_prices[self.modifier]
+         p = price_table.modifier_prices[self.modifier]
+         pr:add(p, 'modifier')
          enhancement = true
       end
    end
 
-   if enhancement then
-      if self.material then
-         p = self.material:additional_cost('enhancement', p)
+   if enhancement and self.material then
+      p = self.material:additional_cost('enhancement', 0)
+      if p ~= 0 then
+         pr:add(p, 'material_enhancement')
       end
    end
 
-   return p
+   return pr:value(), pr
 end
 
 

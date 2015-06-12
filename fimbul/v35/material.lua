@@ -51,22 +51,22 @@ function material:additional_cost(t, price)
 
    -- No additional cost associated
    if not self.cost then
-      return price
+      return 0
    end
 
    if self.cost[t] then
       -- Additional cost depending on type
-      return price + self.cost[tp]
+      return self.cost[tp]
    elseif self.cost['multiplier'] then
       -- New price is a multiple of base price
-      return price * tonumber(self.cost['multiplier'])
+      return price * tonumber(self.cost['multiplier']), true
    elseif t == 'enhancement' and self.cost['enhancement'] then
       -- Additional price for enhancements
-      return price + tonumber(self.cost['enhancement'])
+      return tonumber(self.cost['enhancement'])
    end
 
    -- No additional cost associated
-   return price
+   return 0
 end
 
 return material

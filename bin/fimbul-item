@@ -8,19 +8,26 @@ local repository = require("fimbul.repository")
 local r = repository:new(arg[1])
 r:load()
 
+function dump_item(i)
+   print(i:string(true))
+   local p, sv = i:price()
+   print(sv:string())
+end
+
 local item = r:parse_item("Light Hammer")
-print(item:string(true))
---pretty.dump(item)
+dump_item(item)
 
 item = r:parse_item("+2 Cold Iron Longsword")
-print(item:string(true))
---pretty.dump(item)
+dump_item(item)
 
 item = r:parse_item("Full Plate")
-print(item:string(true))
+dump_item(item)
+
+item = r:parse_item("Adamantine Full Plate")
+dump_item(item)
 
 item = r:parse_item("+2 Adamantine Half Plate")
-print(item:string(true))
+dump_item(item)
 
 item = r:parse_item("+1 Mithral Breastplate")
-print(item:string(true))
+dump_item(item)
