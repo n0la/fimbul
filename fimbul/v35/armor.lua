@@ -45,7 +45,7 @@ function armor:spawn(r, t)
    end
    neu._category = t.category or armor.NONE
 
-   neu.ac = t.ac or 0
+   neu._ac = t.ac or 0
    neu.dex = t.dex or 0
    neu._acp = t.acp or 0
    neu._asf = t.asf or 0
@@ -71,6 +71,16 @@ function armor:acp()
    -- TODO: Find out if these stack.
    if self.material.acp_bonus then
       a = a + self.material.acp_bonus
+   end
+
+   return a
+end
+
+function armor:ac()
+   local a = self._ac
+
+   if self.modifier > 0 then
+      a = a + self.modifier
    end
 
    return a
@@ -121,7 +131,7 @@ function armor:string(expanded)
 
    if e then
       str = str .. '[' .. util.capitalise(self:category()) .. ' Armor] '
-      str = str .. '[AC: ' .. self.ac .. ', '
+      str = str .. '[AC: ' .. self:ac() .. ', '
       str = str .. 'DEX: ' .. self:max_dex() .. ', '
       str = str .. 'ACP: ' .. self:acp() .. ', '
       str = str .. 'ASF: ' .. self:asf() .. '%]'
