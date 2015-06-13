@@ -33,6 +33,22 @@ function shield:_parse_attributes(r, str)
    return ret
 end
 
+function shield:_check_ability(a)
+   -- Call super method
+   magical_item._check_ability(self, a)
+
+   if a.shield == nil then
+      return
+   end
+
+   if a.shield.category then
+      if not util.contains(a.shield.category, self.category) then
+         error('The Ability "' .. a.name .. '" does not apply to ' ..
+                  'shields of the category "' .. self.category .. '".');
+      end
+   end
+end
+
 function shield:price()
    local p, pr = magical_item.price(self)
    local base = self.cost or 0
@@ -71,9 +87,17 @@ function shield:spawn(r, t)
 
    -- Cost & Weight
    neu.cost = t.cost or 0
-   neu.weight = t.weight or 1
+   neu._weight = t.weight or 1
 
    return neu
+end
+
+function shield:string(extended)
+   local e = extended or false
+   local fmt = magical_item._string(self, e)
+   local str = ''
+
+   return string.format(fmt, str)
 end
 
 return shield

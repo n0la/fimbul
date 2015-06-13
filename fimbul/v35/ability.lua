@@ -36,6 +36,10 @@ function ability:spawn(r, t)
       neu.armor = util.deepcopy(t.armor)
    end
 
+   if t.shield then
+      neu.shield = util.deepcopy(t.shield)
+   end
+
    neu.school = t.school
    neu.grade = t.grade
    neu.cl = t.cl
