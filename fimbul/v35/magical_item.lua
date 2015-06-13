@@ -99,8 +99,8 @@ function magical_item:price()
 
    local pr = stacked_value:new({stack = true})
 
-   local base = self.cost or 0
-   pr:add(base, 'base')
+   local b = self.cost or 0
+   pr:add(b, 'base')
 
    local price_table = nil
 
@@ -138,6 +138,13 @@ function magical_item:price()
       p = self.material:additional_cost('enhancement', self)
       if p ~= 0 then
          pr:add(p, 'material_enhancement')
+      end
+   end
+
+   -- Check if any abilities require flat amount of money to be added
+   for _, a in base.ipairs(self.abilities) do
+      if a.price and a.price ~= 0 then
+         pr:add(a.price, a.name)
       end
    end
 
