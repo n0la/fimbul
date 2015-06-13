@@ -11,4 +11,8 @@ local r = repository:new()
 wnd = mainwindow:new(r)
 wnd:show()
 
+if arg[1] then
+   wnd:open_repository(arg[1])
+end
+
 Gtk.main()

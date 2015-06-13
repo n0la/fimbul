@@ -37,22 +37,25 @@ function mainwindow:_file_open()
    if res == Gtk.ResponseType.ACCEPT then
       local filename = dlg:get_filename()
       dlg:destroy()
-
-      ok, err = pcall(self.repository.open, self.repository, filename)
-
-      if not ok then
-         self.console:error(err);
-      else
-         -- Load repository
-         ok, err = pcall(self.repository.load, self.repository)
-         if not ok then
-            self.console:error(err)
-         else
-            self:_emit("repository_open")
-         end
-      end
+      self:open_repository(filename)
    else
       dlg:destroy()
+   end
+end
+
+function mainwindow:open_repository(filename)
+   local ok, err = pcall(self.repository.open, self.repository, filename)
+
+   if not ok then
+      self.console:error(err);
+   else
+      -- Load repository
+      ok, err = pcall(self.repository.load, self.repository)
+      if not ok then
+         self.console:error(err)
+      else
+         self:_emit("repository_open")
+      end
    end
 end
 
