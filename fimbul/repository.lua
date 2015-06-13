@@ -231,11 +231,17 @@ function repository:spawn_characters()
 end
 
 function repository:parse_item(s)
+   if not self.engine then
+      error('No engine loaded. Please load a repository first.')
+   end
    logger.verbose("Parsing item " .. s)
    return self.engine:parse_item(self, s)
 end
 
 function repository:spawn(t)
+   if not self.engine then
+      error('No engine loaded. Please load a repository first.')
+   end
    logger.verbose("Spawning " .. t.templatetype .. " " .. t.name)
    return self.engine:spawn(self, t)
 end
