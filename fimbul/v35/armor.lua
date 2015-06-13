@@ -86,6 +86,24 @@ function armor:ac()
    return a
 end
 
+function armor:price()
+   local p, pr = magical_item.price(self)
+   local base = self.cost or 0
+
+   if self.material then
+      -- Use real category not the one lessened by material.
+      p, new = self.material:additional_cost(self._category, self)
+      if new then
+         p = p - new
+      end
+      if p ~= 0 then
+         pr:add(p, 'material')
+      end
+   end
+
+   return pr:value(), pr
+end
+
 function armor:category()
    local c = self._category
 

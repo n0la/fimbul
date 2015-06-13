@@ -102,16 +102,6 @@ function magical_item:price()
    local base = self.cost or 0
    pr:add(base, 'base')
 
-   if self.material then
-      p, new = self.material:additional_cost(self:category(), base)
-      if new then
-         p = p - base
-      end
-      if p ~= 0 then
-         pr:add(p, 'material')
-      end
-   end
-
    local price_table = nil
 
    if self.slot == item.WEAPON then
@@ -145,7 +135,7 @@ function magical_item:price()
    end
 
    if enhancement and self.material then
-      p = self.material:additional_cost('enhancement', 0)
+      p = self.material:additional_cost('enhancement', self)
       if p ~= 0 then
          pr:add(p, 'material_enhancement')
       end

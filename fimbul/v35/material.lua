@@ -46,7 +46,7 @@ function material:spawn(r, t)
    return neu
 end
 
-function material:additional_cost(t, price)
+function material:additional_cost(t, item)
    local tp = string.lower(t)
 
    -- No additional cost associated
@@ -54,15 +54,18 @@ function material:additional_cost(t, price)
       return 0
    end
 
-   if self.cost[t] then
-      -- Additional cost depending on type
-      return self.cost[tp]
-   elseif self.cost['multiplier'] then
-      -- New price is a multiple of base price
-      return price * tonumber(self.cost['multiplier']), true
-   elseif t == 'enhancement' and self.cost['enhancement'] then
-      -- Additional price for enhancements
-      return tonumber(self.cost['enhancement'])
+   if self.cost[item.slot] then
+      local t = self.cost[item.slot]
+      if t[tp] then
+         -- Additional cost depending on type
+         return t[tp]
+      elseif t['multiplier'] then
+         -- New price is a multiple of base price
+         return item.cost * tonumber(t['multiplier']), true
+      elseif tp == 'enhancement' and t['enhancement'] then
+         -- Additional price for enhancements
+         return tonumber(t['enhancement'])
+      end
    end
 
    -- No additional cost associated

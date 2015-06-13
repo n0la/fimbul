@@ -30,6 +30,10 @@ function weapon:is_ranged()
    return self.ranged or false
 end
 
+function weapon:is_double()
+   return self.double or false
+end
+
 function weapon:is_simple()
    return self:category() == weapon.SIMPLE
 end
@@ -45,6 +49,27 @@ end
 function weapon:base_damage(size)
    local s = size or self:size()
    return self._damage[s]
+end
+
+function weapon:price()
+   local p, pr = magical_item.price(self)
+   local base = self.cost or 0
+
+   if self.material then
+      if self:is_double() then
+         p, new = self.material:additional_cost('double', self)
+      else
+         p, new = self.material:additional_cost(self.class, self)
+      end
+      if new then
+         p = p - base
+      end
+      if p ~= 0 then
+         pr:add(p, 'material')
+      end
+   end
+
+   return pr:value(), pr
 end
 
 function weapon:damage(size)

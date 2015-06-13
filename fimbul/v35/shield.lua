@@ -29,6 +29,24 @@ function shield:_parse_attributes(r, str)
    return ret
 end
 
+function shield:price()
+   local p, pr = magical_item.price(self)
+   local base = self.cost or 0
+
+   if self.material then
+      -- Use real category not the one lessened by material.
+      p, new = self.material:additional_cost('shield', self)
+      if new then
+         p = p - new
+      end
+      if p ~= 0 then
+         pr:add(p, 'material')
+      end
+   end
+
+   return pr:value(), pr
+end
+
 function shield:spawn(r, t)
    local neu = shield:new()
 
