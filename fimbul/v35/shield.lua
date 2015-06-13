@@ -8,6 +8,10 @@ local base = _G
 
 local shield = magical_item:new()
 
+shield.LIGHT = 'light'
+shield.HEAVY = 'heavy'
+shield.NONE  = 'none'
+
 function shield:new(y)
    local neu = magical_item:new(y)
 
@@ -56,7 +60,7 @@ function shield:spawn(r, t)
    else
       neu.type = t.type
    end
-   neu.category = t.category
+   neu.category = t.category or shield.NONE
    neu.basematerial = t.material
 
    neu.ac = t.ac or 0
