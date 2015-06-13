@@ -1,19 +1,18 @@
 --- @module fimbul.v35.item
 
-local stacked_value = require('fimbul.stacked_value')
-
 local item = require('fimbul.v35.item')
+
 local rules = require('fimbul.v35.rules')
 local material = require('fimbul.v35.material')
+
+local stacked_value = require('fimbul.stacked_value')
+local util = require('fimbul.util')
+local logger = require('fimbul.logger')
 
 local magical_item = item:new()
 
 local base = _G
-
-local pretty = require('pl.pretty')
-
-local util = require('fimbul.util')
-local logger = require('fimbul.logger')
+local math = require('math')
 
 function magical_item:new(y)
    local neu = item:new(y)
@@ -136,6 +135,8 @@ function magical_item:price()
       end
    end
 
+   -- TODO: Check/ask if each enhancement costs more or it just costs
+   -- more once (like we have now)
    if enhancement and self.material then
       p = self.material:additional_cost('enhancement', self)
       if p ~= 0 then
@@ -364,6 +365,34 @@ function magical_item:weight(size)
    return w
 end
 
+function magical_item:craft_price()
+   local p, pr = self:price()
+
+   pr:remove_all_type("base")
+   pr:remove_all_type("masterwork")
+   pr:remove_all_type("material")
+
+   return pr:value(), pr
+end
+
+function magical_item:craft_xp()
+   local p, pr = self:craft_price()
+
+   p = pr:value() * rules.crafting.XP_COST
+
+   return p, pr
+end
+
+function magical_item:craft_days()
+   local p, pr = self:craft_price()
+   return math.ceil(p / rules.crafting.GP_PER_DAY)
+end
+
+function magical_item:craft_materials()
+   local p, pr = self:craft_price()
+   return (p * rules.crafting.MATERIAL_COST)
+end
+
 -- This function will build a string for a name
 -- and leave a %s inside this string were base classes
 -- can add their own information.
@@ -407,6 +436,14 @@ function magical_item:_string(extended)
    str = str .. ' (' .. self:price() .. ' GP)'
    if self:weight() > 0 and e then
       str = str .. ' (' .. self:weight() .. ' lbs)'
+   end
+
+   if e and self:craft_price() ~= 0 then
+      str = str .. "\n"
+      str = str .. 'Crafting: [Price: ' .. self:craft_price() .. ', '
+      str = str .. 'XP: ' .. self:craft_xp() .. ', '
+      str = str .. 'Materials: ' .. self:craft_materials() .. ', '
+      str = str .. 'Days: ' .. self:craft_days() .. ']'
    end
 
    return str

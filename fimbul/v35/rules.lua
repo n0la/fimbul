@@ -68,4 +68,12 @@ rules.weapons.modifier_prices = {
    [10] = 200000,
 }
 
+rules.crafting = {}
+-- How many GP per day
+rules.crafting.GP_PER_DAY = 1000
+-- XP cost: 1/25
+rules.crafting.XP_COST = 0.04
+-- Material cost: half
+rules.crafting.MATERIAL_COST = 0.5
+
 return rules

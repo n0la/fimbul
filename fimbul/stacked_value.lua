@@ -53,6 +53,12 @@ function stacked_value:remove_if(f)
    end
 end
 
+function stacked_value:remove_all_type(t)
+   self:remove_if(function (v)
+         return string.lower(t) == string.lower(v.type)
+   end)
+end
+
 function stacked_value:remove_all(v, t)
    self:remove_if(function(value)
          return value.value == v and value.type == t
