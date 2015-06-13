@@ -198,10 +198,17 @@ function magical_item:_parse_attributes(r, str)
          a = r:find("ability", am)
 
          if #a > 0 then
-            ability = r:spawn(a[1])
-            -- Check ability
-            self:_check_ability(ability)
-            table.insert(self.abilities, ability)
+            for i = 1, #a do
+               ability = r:spawn(a[i])
+               -- Check ability
+               ok, err = pcall(self._check_ability, self, ability)
+               if not ok and i == #a then
+                  error(err)
+               elseif ok then
+                  table.insert(self.abilities, ability)
+                  break
+               end
+            end
             i = i + 2
             goto end_of_loop
          end
@@ -212,10 +219,17 @@ function magical_item:_parse_attributes(r, str)
          a = r:find("ability", am)
 
          if #a > 0 then
-            ability = r:spawn(a[1])
-            -- Check ability
-            self:_check_ability(ability)
-            table.insert(self.abilities, ability)
+            for i = 1, #a do
+               ability = r:spawn(a[i])
+               -- Check ability
+               ok, err = pcall(self._check_ability, self, ability)
+               if not ok and i == #a then
+                  error(err)
+               elseif ok then
+                  table.insert(self.abilities, ability)
+                  break
+               end
+            end
             i = i + 1
             goto end_of_loop
          end
@@ -223,10 +237,17 @@ function magical_item:_parse_attributes(r, str)
 
       a = r:find("ability", s)
       if #a > 0 then
-         ability = r:spawn(a[1])
-         -- Check ability
-         self:_check_ability(ability)
-         table.insert(self.abilities, ability)
+         for i = 1, #a do
+            ability = r:spawn(a[i])
+            -- Check ability
+            ok, err = pcall(self._check_ability, self, ability)
+            if not ok and i == #a then
+               error(err)
+            elseif ok then
+               table.insert(self.abilities, ability)
+               break
+            end
+         end
       end
 
       -- Check for a modifier
