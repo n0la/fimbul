@@ -34,6 +34,28 @@ function armor:_parse_attributes(r, str)
    return ret
 end
 
+function armor:_check_ability(r, a)
+   -- Call super method
+   magical_item._check_ability(self, r, a)
+
+   -- Nothing to do
+   if not a.armor then
+      return
+   end
+
+   if a.armor.categories then
+      -- For all intents and purposes use self:category() as we allow
+      -- mithral to make the weapon count as one lower.
+      --
+      if not util.contains(a.armor.categories, self:category()) then
+         error('The ability "' .. a.name .. '" requires an armor of ' ..
+                  'the categories: [' ..
+                  table.concat(a.armor.categories, ', ') .. '] ' ..
+                  'instead of: ' .. self:category() .. '.')
+      end
+   end
+end
+
 function armor:spawn(r, t)
    local neu = armor:new()
 

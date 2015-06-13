@@ -34,16 +34,16 @@ function shield:_parse_attributes(r, str)
    return ret
 end
 
-function shield:_check_ability(a)
+function shield:_check_ability(r, a)
    -- Call super method
-   magical_item._check_ability(self, a)
+   magical_item._check_ability(self, r, a)
 
    if a.shield == nil then
       return
    end
 
-   if a.shield.category then
-      if not util.contains(a.shield.category, self.category) then
+   if a.shield.categories then
+      if not util.contains(a.shield.categories, self.category) then
          error('The Ability "' .. a.name .. '" does not apply to ' ..
                   'shields of the category "' .. self.category .. '".');
       end

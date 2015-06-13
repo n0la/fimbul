@@ -80,9 +80,9 @@ function weapon:damage(size)
    return b
 end
 
-function weapon:_check_ability(a)
+function weapon:_check_ability(r, a)
    -- Call super method
-   magical_item._check_ability(self, a)
+   magical_item._check_ability(self, r, a)
 
    -- Nothing to check
    if a.weapon == nil then

@@ -10,6 +10,8 @@ local magical_item = item:new()
 
 local base = _G
 
+local pretty = require('pl.pretty')
+
 local util = require('fimbul.util')
 local logger = require('fimbul.logger')
 
@@ -151,12 +153,57 @@ function magical_item:price()
    return pr:value(), pr
 end
 
-function magical_item:_check_ability(a)
+function magical_item:_check_ability(r, a)
    -- Check if the slot fits.
    if #a.slots > 0 and not util.contains(a.slots, self.slot) then
       error('Ability "' .. a.name .. '" is only supported on the ' ..
-               'following slots: [' .. table.concat(a.slots, ',') ..
+               'following slots: [' .. table.concat(a.slots, ', ') ..
                '] but this item is on slot: ' .. self.slot .. '.')
+   end
+
+   -- Check requirements
+   if a.requires then
+      -- All of these must be present, so add them to the
+      -- ability list. But mark them for later, so we don't have
+      -- to print them in the :string() method.
+      --
+      if a.requires.allof then
+         for _, ab in base.ipairs(a.requires.allof) do
+            local temp = r:find("ability", ab)
+
+            if not temp or #temp == 0 then
+               error('Ability "' .. a.name .. '" depends on an ' ..
+                        'ability named "' .. ab '" but no such ' ..
+                        'ability could be found.')
+            end
+
+            local abil = r:spawn(temp[1])
+            -- Check if we can even have it
+            --
+            self:_check_ability(r, abil)
+            -- Mark for later
+            --
+            abil.wasdependency = true
+            table.insert(self.abilities, abil)
+         end
+      end
+
+      -- One of these must be present
+      --
+      if a.requires.oneof then
+         local found = false
+         for _, rm in base.ipairs(a.requires.oneof) do
+            if util.containsbyname(self.abilities, rm) then
+               found = true
+            end
+         end
+
+         if not found then
+            error('Ability "' .. a.name .. '" requires one of the ' ..
+                     'following abilities to be present: [' ..
+                     table.concat(a.requires.oneof, ', ') .. ']')
+         end
+      end
    end
 end
 
@@ -193,6 +240,27 @@ function magical_item:_parse_attributes(r, str)
 
       -- Check for abilities
       --
+      if tbl[i+1] and tbl[i+2] and tbl[i+3] then
+         am = s .. ' ' .. tbl[i+1] .. ' ' .. tbl[i+2] .. ' ' .. tbl[i+3]
+         a = r:find("ability", am)
+
+         if #a > 0 then
+            for i = 1, #a do
+               ability = r:spawn(a[i])
+               -- Check ability
+               ok, err = pcall(self._check_ability, self, r, ability)
+               if not ok and i == #a then
+                  error(err)
+               elseif ok then
+                  table.insert(self.abilities, ability)
+                  break
+               end
+            end
+            i = i + 3
+            goto end_of_loop
+         end
+      end
+
       if tbl[i+1] and tbl[i+2] then
          am = s .. ' ' .. tbl[i+1] .. ' ' .. tbl[i+2]
          a = r:find("ability", am)
@@ -201,7 +269,7 @@ function magical_item:_parse_attributes(r, str)
             for i = 1, #a do
                ability = r:spawn(a[i])
                -- Check ability
-               ok, err = pcall(self._check_ability, self, ability)
+               ok, err = pcall(self._check_ability, self, r, ability)
                if not ok and i == #a then
                   error(err)
                elseif ok then
@@ -222,7 +290,7 @@ function magical_item:_parse_attributes(r, str)
             for i = 1, #a do
                ability = r:spawn(a[i])
                -- Check ability
-               ok, err = pcall(self._check_ability, self, ability)
+               ok, err = pcall(self._check_ability, self, r, ability)
                if not ok and i == #a then
                   error(err)
                elseif ok then
@@ -240,7 +308,7 @@ function magical_item:_parse_attributes(r, str)
          for i = 1, #a do
             ability = r:spawn(a[i])
             -- Check ability
-            ok, err = pcall(self._check_ability, self, ability)
+            ok, err = pcall(self._check_ability, self, r, ability)
             if not ok and i == #a then
                error(err)
             elseif ok then
@@ -313,7 +381,9 @@ function magical_item:_string(extended)
    end
 
    for _, a in base.pairs(self.abilities) do
-      str = str .. a.name .. ' '
+      if not a.wasdependency or e then
+         str = str .. a.name .. ' '
+      end
    end
 
    if self:size() ~= item.MEDIUM or e then

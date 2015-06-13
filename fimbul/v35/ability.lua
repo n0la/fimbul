@@ -27,6 +27,9 @@ function ability:spawn(r, t)
 
    neu.name = t.name
    neu.slots = util.deepcopy(t.slots or {})
+   if t.requires then
+      neu.requires = util.deepcopy(t.requires)
+   end
 
    if t.weapon then
       neu.weapon = util.deepcopy(t.weapon)

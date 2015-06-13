@@ -205,6 +205,19 @@ function util.contains(t, v)
    return false
 end
 
+function util.containsbyname(t, v)
+   local n1 = string.lower(util.getname(v))
+
+   for _, value in base.pairs(t) do
+      local n2 = util.getname(value)
+      if n1 == string.lower(n2) then
+         return true
+      end
+   end
+
+   return false
+end
+
 function util.containsif(t, v, C)
    for _, value in base.pairs(t) do
       if C(value, v) then
