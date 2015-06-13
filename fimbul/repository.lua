@@ -177,10 +177,11 @@ function repository:find(tbl, ...)
    local t = {}
 
    for _, i in base.pairs(self[tbl]) do
-      local name = i.name
-      for _, what in base.pairs({...}) do
-         if string.lower(name) == string.lower(what) then
-            table.insert(t, i)
+      for _, name in base.pairs({i.name, table.unpack(i.aliases or {})}) do
+         for _, what in base.pairs({...}) do
+            if string.lower(name) == string.lower(what) then
+               table.insert(t, i)
+            end
          end
       end
    end
