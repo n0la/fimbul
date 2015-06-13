@@ -266,12 +266,6 @@ function magical_item:_parse_attributes(r, str)
          self._size = s
       end
 
-      -- Check for material descriptor
-      -- TODO
-
-      -- Check for special magical attributes
-      -- TODO
-
       -- End of loop - for continue
       ::end_of_loop::
       i = i + 1
