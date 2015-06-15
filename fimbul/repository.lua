@@ -211,6 +211,10 @@ function repository:load()
    -- Special magical abilities
    self:_load_array("abilities", "ability_template", "ability")
 
+   self:update_items()
+end
+
+function repository:update_items()
    local items = {}
 
    items = util.concat_table(items, self.weapon)
