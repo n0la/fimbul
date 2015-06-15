@@ -224,6 +224,11 @@ function magical_item:_parse_attributes(r, str)
          goto end_of_loop
       end
 
+      if s == 'masterwork' then
+         self.masterwork = true
+         goto end_of_loop
+      end
+
       -- Check this or this + 1 for material
       if tbl[i+1] then
          mat = r:find("material", (s .. ' ' .. (tbl[i+1] or '')))
@@ -408,6 +413,8 @@ function magical_item:_string(extended)
 
    if self.modifier > 0 then
       str = str .. '+' .. self.modifier .. ' '
+   elseif self:magic_modifier() == 0 and self:is_masterwork() then
+      str = str .. 'Masterwork '
    end
 
    for _, a in base.pairs(self.abilities) do
