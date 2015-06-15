@@ -33,10 +33,10 @@ function test_util_realpath()
    local res
 
    res = util.realpath("/..")
-   assert(res == "/", "Does got beyound root path.")
+   assert(res == "/", "Does go beyound root path.")
 
    res = util.realpath("/../../../..")
-   assert(res == "/", "Does got beyound root path.")
+   assert(res == "/", "Does go beyound root path.")
 
    res = util.realpath(".")
    assert(res == c, "Does not properly resolve single '.'")
