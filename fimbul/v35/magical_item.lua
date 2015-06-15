@@ -129,24 +129,25 @@ function magical_item:price()
          p = price_table.modifier_prices[self:magic_modifier()]
          pr:add(p, 'modifier')
       end
-
-      if self.modifier > 0 or #self.abilities > 0 then
-         enhancement = true
-      end
    end
 
-   -- TODO: Check/ask if each enhancement costs more or it just costs
-   -- more once (like we have now)
-   if enhancement and self.material then
-      p = self.material:additional_cost('enhancement', self)
-      if p ~= 0 then
-         pr:add(p, 'material_enhancement')
-      end
+   local addcost = self.material:additional_cost('enhancement', self)
+
+   if self.modifier > 0 and addcost ~= 0 then
+      pr:add(addcost, 'material_enhancement')
    end
 
-   -- Check if any abilities require flat amount of money to be added
-   for _, a in base.ipairs(self.abilities) do
-      if a.price and a.price ~= 0 then
+   for _, ab in base.ipairs(self.abilities) do
+      if ab.material ~= nil and ab.material.enhancement ~= nil then
+         if ab.material.enhancement ~= 0 then
+            pr:add(ab.material.enhancement, 'material_enhancement')
+         end
+      elseif addcost ~= nil and addcost ~= 0 then
+         pr:add(addcost, 'material_enhancement')
+      end
+
+      -- Check if any abilities require flat amount of money to be added
+      if ab.price ~= nil and ab.price ~= 0 then
          pr:add(a.price, a.name)
       end
    end
