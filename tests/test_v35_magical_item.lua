@@ -30,6 +30,10 @@ local template_longsword = {
    weight = 4,
 }
 
+local template_iron = {
+   name = 'Iron',
+}
+
 local template_cold_iron = {
    name = 'Cold Iron',
    hardness = '10',
@@ -41,12 +45,14 @@ local template_cold_iron = {
    },
 }
 
-function test_parse_item_simple()
-   table.insert(r.weapon, weapon_template:new(template_longsword))
-   table.insert(r.material, material_template:new(template_cold_iron))
-   r:update_items()
+-- Setup environment
+table.insert(r.weapon, weapon_template:new(template_longsword))
+table.insert(r.material, material_template:new(template_cold_iron))
+table.insert(r.material, material_template:new(template_iron))
+r:update_items()
+r.engine = engine:new()
 
-   r.engine = engine:new()
+function test_parse_item_simple()
    local item = r:parse_item('Longsword')
 
    assert(item ~= nil, 'parse_item does not parse a simple weapon.')
@@ -63,4 +69,45 @@ function test_parse_item_simple()
    assert(item:craft_price() == 0,
           'Item is magical and requires price to craft.')
    assert(item:craft_days() == 0, 'Item requires days to craft.')
+end
+
+function test_parse_item_masterwork()
+   local item = r:parse_item('Masterwork Longsword')
+
+   assert(item ~= nil,
+          'parse_item does not parse a masterwork longsword.')
+   assert(item:is_masterwork() == true,
+          'Masterwork Longsword is not masterwork.')
+   assert(item:price() == 315, 'Masterwork is not added to the price.')
+end
+
+-- Cold Iron is perfect. It has some unique properties, and its
+-- name is similar to another material Iron, which tests the parser.
+function test_parse_item_cold_iron()
+   local item = r:parse_item('Cold Iron Longsword')
+
+   assert(item ~= nil,
+          'parse_item does not parse a Cold Iron Longsword')
+   assert(item.material.name == 'Cold Iron',
+          'Cold Iron Longsword is not made out of Cold Iron')
+   assert(item:price() == 30,
+          'Cold Iron Longsword does not cost double.')
+end
+
+function test_parse_item_magical_cold_iron()
+   local item = r:parse_item('+2 Cold Iron Longsword')
+
+   assert(item ~= nil,
+          'parse_item does not parse a Cold Iron Longsword')
+   assert(item.material.name == 'Cold Iron',
+          'Cold Iron Longsword is not made out of Cold Iron')
+   -- The PHB lists this as the example on how to calculate a Cold Iron
+   -- weapon: A +2 Cold Iron Longsword must cost 10330 gold:
+   --    8000 [modifier] (+2 modifier)
+   -- +  2000 [enchantment] (extra cost due to Cold Iron for +2)
+   -- +   300 [masterwork] (must be masterwork)
+   -- +    30 [base] (double base price due to Cold Iron)
+   -- = 10330
+   assert(item:price() == 10330,
+          'Cold Iron Longsword does not cost as much as PHB says.')
 end
