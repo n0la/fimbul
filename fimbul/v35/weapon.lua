@@ -81,6 +81,8 @@ function weapon:damage(size)
 end
 
 function weapon:_check_ability(r, a)
+   local found = false
+
    -- Call super method
    magical_item._check_ability(self, r, a)
 
@@ -90,35 +92,63 @@ function weapon:_check_ability(r, a)
    end
 
    -- Check if we have 'ranged' only ability
-   if a.weapon.ranged then
-      if not a.weapon.ranged and self:is_ranged() then
+   if a.weapon.ranged ~= nil then
+      if a.weapon.ranged == false and self:is_ranged() then
          error('The ability "' .. a.name .. '" does not apply to ' ..
                   'ranged weapons.')
-      elseif a.weapon.ranged and not self:is_ranged() then
+      elseif a.weapon.ranged == true and not self:is_ranged() then
          error('The ability "' .. a.name .. '" only applies to ' ..
                   'ranged weapons.')
       end
    end
 
-   -- Damage types
-   local found = false
+   -- Types
+   if a.weapon.categories then
+      if not util.contains(a.weapon.categories, self._category) then
+         error('The ability "' .. a.name .. '" only works on the ' ..
+                  'following weapon categories: [' ..
+                  table.concat(a.weapon.categories, ', ') .. '].')
+      end
+   end
 
+   -- Types
+   if a.weapon.types then
+      if not util.contains(a.weapon.types, self.type) then
+         error('The ability "' .. a.name .. '" only works on the ' ..
+                  'following weapons: [' ..
+                  table.concat(a.weapon.types, ', ') .. '].')
+      end
+   end
+
+   -- Classes
+   if a.weapon.classes then
+      if not util.contains(a.weapon.classes, self.class) then
+         error('The ability "' .. a.name .. '" only works on the ' ..
+                  'following weapon classes : [' ..
+                  table.concat(a.weapon.classes, ', ') .. '].')
+      end
+   end
+
+   -- Damage types
    if a.weapon.damagetypes then
+      found = false
       for _, dt in base.ipairs(self.damagetypes) do
          if util.contains(a.weapon.damagetypes, dt) then
             found = true
             break
          end
       end
+
+      if not found then
+         error('The ability "' .. a.name .. '" only applies to ' ..
+                  'weapons dealing the following damage types: [' ..
+                  table.concat(a.weapon.damagetypes, ',') ..
+                  '] but this weapon only deals the following damage ' ..
+                  'types: [' .. table.concat(self.damagetypes, ',') ..
+                  '].')
+      end
    end
 
-   if not found then
-      error('The ability "' .. a.name .. '" only applies to weapons ' ..
-               'dealing the following damage types: [' ..
-               table.concat(a.weapon.damagetypes, ',') .. '] but this ' ..
-               'weapon only deals the following damage types: [' ..
-               table.concat(self.damagetypes, ',') .. '].')
-   end
 end
 
 function weapon:_parse_attributes(r, str)
