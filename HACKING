@@ -1,0 +1,46 @@
+HACKING
+-------
+
+ * 4 spaces. No tabs.
+ * No tabs.
+ * *NIX line ending.
+ * UTF-8
+ * Lower case naming with underscores as separators.
+ * Follow my LUA object framework, check the following object hierarchy
+   to see how it is done, and now it functions:
+    `fimbul.v35.item`
+      \_ `fimbul.v35.magical_item`
+        \_ `fimbul.v35.weapon'
+        \_ `fimbul.v35.armor`
+        \_ `fimbul.v35.shield`
+ * The following libraries are available:
+    * luastdlib
+    * luafs
+    * yaml xor lyaml
+    * penlight
+    * lgi (optional, for GTK GUI)
+ * Do not use monkey patching.
+ * DO NOT USE MONKEY PATCHING.
+ * The error handling is currently done using error() and pcall(), and
+   mixes internal errors with errors intended for the users. Use
+   `fimbul.util.prettify` to make the output user friendly.
+ * No tabs. They are evil.
+
+ARCHITECTURE
+------------
+
+ * If you have a value that is composed of multiple values adding up,
+   consider using `fimbul.stacked_value`. Users sometimes want to know
+   how their values are calculated.
+ * Everything should be user editable. Game engines are vast, complex and
+   sometimes the players and/or the DM have to make adjustments.
+ * If you are adding a new game engine: Sorry that everything is so v35
+   centric.
+ * The template system has one point: The template describes how the item,
+   monster or whatever should look like, and the object spawned from it
+   describes one such instance of the description.
+ * The object `fimbul.repository` is the central storage object. Passing
+   it around is not a crime if classes need to look up things from its
+   data_repositories.
+ * At first, write code that accesses the repository read only. We do not
+   want to mess with the player's and/or DM's files.

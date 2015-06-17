@@ -11,6 +11,11 @@ TODO
    error prone tasks should be handled by the {C,G}CI
  * The whole thing currently only works on Linux and/or *BSD. Windows
    support would be nice.
+ * I wrote a perl tool long ago called `bdt`. It searched the current
+   directory and subfolders for asciidoc, markdown, ReST, images, and
+   other media files; built them if appropriate and copied them together
+   in an output folder called `build`. It worked similar to `sphinx`,
+   and was really handy. It should be ported to fimbul.
 
 TODO v35
 --------
