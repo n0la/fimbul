@@ -1,0 +1,31 @@
+TODO
+----
+
+ * There is currently little documentation and very few unit tests.
+ * The calendar functionality was added but has since been neglected. It
+   requires an easy interface to move the current date forward, do
+   calculations and add notes to past and future dates for easy campaign
+   management.
+ * There are currently very little command line utilities and/or GUI
+   functions to help with a day to day campaign management. Tedious, or
+   error prone tasks should be handled by the {C,G}CI
+ * The whole thing currently only works on Linux and/or *BSD. Windows
+   support would be nice.
+
+TODO v35
+--------
+
+ * The item infrastructure currently only supports  Armour, shields,
+   and weapons. This should be fixed to include wands, goggles, belts,
+   and so forth. No special subclass should be needed for those items,
+   just use `fimbul.v35.magical_item`.
+ * The abilities currently do not support spells that are either a must
+   or optional. Just like with the synergy requirements, restructure the
+   `spells' array into a structure containing `allof' and/or `oneof'.
+ * Crafting currently does not take spell cost into factor (especially
+   with expensive spells like `Wish' or `Miracle'). This is due to
+   missing spell information.
+ * Encounters have been abandoned because currently its far easier to
+   do encounters on paper. With more functions, a complete d20srd
+   monster library, and an easy intuitive GUI this should be the core
+   functionality of fimbul.
