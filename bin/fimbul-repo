@@ -1,9 +1,96 @@
 #!/usr/bin/env lua
 
 local pretty = require("pl.pretty")
+local std = require('std')
 
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 
-local r = repository:new(arg[1])
-r:load()
+local optparser = std.optparse(
+[[
+fimbul-repo 0.1
+
+Part of the fimbul project. All rights reserved.
+
+Usage: fimbul-repo [command] (options)
+
+The fimbul-repo command helps you to set up a repository and campaign
+in a specified directory. It creates all the necessary files, folders
+with a appropriate content to get you started.
+
+Options:
+   -d --directory=DIR  The directory were to do things.
+   -g --game=GAME      What game engine to use [v35].
+   -n --name=NAME      Name for the new game
+   -h --help           This bogus.
+
+Commands:
+   init                Create a new repository.
+
+Please report bugs to https://github.com/n0la/fimbul.
+]])
+
+function check_option(name, t)
+   local tp = t or 'string'
+
+   if opts[name] ~= nil then
+      return type(opts[name]) == tp
+   else
+      return false
+   end
+end
+
+function repo_init()
+   local dir = '.'
+   local args = { name = 'New Game', game = 'v35' }
+
+   if check_option('directory') then
+      dir = opts.directory
+   end
+
+   if check_option('name') then
+      args.name = opts.name
+   end
+
+   if check_option('game') then
+      --TODO
+      if not util.contains({'v35'}, opts.game) then
+         error('Invalid game engine: ' .. opts.game)
+      end
+   end
+
+   local fulldir = util.realpath(dir)
+   if not util.isdir(fulldir) then
+      if not lfs.mkdir(fulldir) then
+         error('Failed to create directory: ' .. dir)
+      end
+   end
+
+   -- Create repository
+   repository.create(fulldir, args)
+
+   return 0
+end
+
+local commands = {
+   init = { handler = repo_init },
+}
+
+if arg[1] == nil or not util.containskey(commands, arg[1]) then
+   optparser:help()
+   os.exit(1)
+end
+
+-- Remove command
+local cmd = arg[1]
+table.remove(arg, 1)
+_G.arg, _G.opts = optparser:parse(_G.arg)
+
+-- Call commands
+local ok, ret = pcall(commands[cmd].handler)
+if ok then
+   os.exit(ret or 0)
+else
+   print(util.prettify(ret))
+   os.exit(3)
+end

@@ -256,6 +256,34 @@ function repository:create_battle(e)
    return self.engine:create_battle(e, self:spawn_characters())
 end
 
+function repository.create(dir, args)
+   local configdir = dir .. '/.pnp'
+   local configfile = configdir .. '/config.yml'
+
+   if args.name == nil then
+      error('New repository parameters do not contain a name.')
+   end
+
+   if args.game == nil then
+      error('New repository parameters do not contain a game.')
+   end
+
+   if util.isdir(configdir) then
+      error('Path is already a repository: ' .. dir)
+   end
+
+   if not lfs.mkdir(configdir) then
+      error('Failed to create a new repository path: ' .. configdir)
+   end
+
+   -- Try to create a new file.
+   local ok, err = pcall(util.yaml_dumpfile, configfile, args)
+   if not ok then
+      lfs.rmdir(configdir)
+      error(util.prettify(err))
+   end
+end
+
 function repository:new(p)
    local neu = {}
 

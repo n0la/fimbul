@@ -69,6 +69,18 @@ function util.min(t, fn)
     return key, value
 end
 
+function util.yaml_dumpfile(file, o)
+   if not yamlok then
+      error('No suitable YAML dumping mechanism found.')
+   end
+
+   local file = io.open(file, "w")
+   local str = yaml.dump(o)
+
+   file:write(str)
+   file:close()
+end
+
 function util.yaml_loadfile(str)
    -- There are two lua-yaml libraries out there.
    --   lyaml: https://github.com/gvvaughan/lyaml
@@ -195,7 +207,7 @@ function util.is_relative(path)
    end
 end
 
-function util.contains(t, v)
+function util.containsvalue(t, v)
    for _, value in base.pairs(t) do
       if value == v then
          return true
@@ -204,6 +216,18 @@ function util.contains(t, v)
 
    return false
 end
+
+function util.containskey(t, k)
+   for key, _ in base.pairs(t) do
+      if key == k then
+         return true
+      end
+   end
+
+   return false
+end
+
+util.contains = util.containsvalue
 
 function util.containsbyname(t, v)
    local n1 = string.lower(util.getname(v))
@@ -347,6 +371,16 @@ end
 
 function util.capitalise(str)
    return string.upper(str:sub(0, 1)) .. str:sub(2)
+end
+
+function util.prettify(err)
+   local s, e = string.find(err, ':%d+:')
+
+   if e ~= nil then
+      return string.sub(err, e+2)
+   end
+
+   return err
 end
 
 return util
