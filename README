@@ -1,0 +1,24 @@
+README
+------
+
+fimbul Copyright (C) 2014 by Florian Stinglmayr <florian_AT_n0la_DOT_.org>
+
+fimbul aims to be a Pen & Paper framework to make the life of the dungeon
+master (DM) easier. It is setup and designed to work with a folder
+containing everything related to your current campaign. It stores
+every information it needs hidden away, but the main goal is that you
+are in control of everything. All information and configuration is
+stored in easily edited YAML format for your text editing pleasure.
+
+fimbul is currently under heavy development, and many features are
+either missing, or subject to change.
+
+Furthermore fimbul is licenced under the GPLv2 (or any later version
+of of the licence) licence and thus free and open source software.
+Note that many information this framework may use are perhaps under
+different licences, for example the d20srd is under the Open Gaming
+Licence.
+
+Contact the developer:
+
+Florian Stinglmayr <florian_AT_n0la_DOT_org>
