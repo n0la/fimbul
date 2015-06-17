@@ -20,7 +20,7 @@ TODO
 TODO v35
 --------
 
- * The item infrastructure currently only supports  Armour, shields,
+ * The item infrastructure currently only supports armour, shields,
    and weapons. This should be fixed to include wands, goggles, belts,
    and so forth. No special subclass should be needed for those items,
    just use `fimbul.v35.magical_item`.
