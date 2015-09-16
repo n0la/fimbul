@@ -1,70 +1,61 @@
 #/usr/bin/env lua52
 
 local pretty = require("pl.pretty")
+local std = require("std")
 
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 
-local r = repository:new(arg[1])
-r:load()
+local optparser = std.optparse(
+[[
+fimbul-item 0.1 - Calculate prices for craftable items and artefacts.
+Part of the fimbul project. Copyright (c) 2014 Florian Stinglmayr
+
+Usage: fimbul-item [options] item1, item2, ..., itemN
+
+Options:
+
+   -h --help             This bogus.
+   -p --price            Print how the price is calculated. Default: off
+   -r --repository=DIR   Directory of the repository. Default: .
+   -v --verbose          Print verbose item output. Default: off
+      --version          Version information.
+
+Please report bugs to https://github.com/n0la/fimbul.
+]])
 
 function dump_item(i)
-   print(i:string(true))
-   local p, sv = i:price()
-   print(sv:string())
+   if opts['verbose'] ~= nil then
+      print(i:string(true))
+   else
+      print(i:string(false))
+   end
+
+   if opts['price'] ~= nil then
+      local p, sv = i:price()
+      print(sv:string())
+   end
 end
 
-local item = r:parse_item("Light Hammer")
-dump_item(item)
+_G.arg, _G.opts = optparser:parse(_G.arg)
+-- Repository
+local r, repo
 
-item = r:parse_item("+2 Cold Iron Longsword")
-dump_item(item)
-
-item = r:parse_item("Full Plate")
-dump_item(item)
-
-item = r:parse_item("Adamantine Full Plate")
-dump_item(item)
-
-item = r:parse_item("+2 Adamantine Half Plate")
-dump_item(item)
-
-item = r:parse_item("+1 Mithral Breastplate")
-dump_item(item)
-
-item = r:parse_item("+1 Anarchic Battleaxe")
-dump_item(item)
-
-ok, item = pcall(repository.parse_item, r, "+9 Anarchic Longsword")
-if not ok then
-   print(item)
+if opts['repository'] ~= nil then
+   repo = opts['repository']
+else
+   repo = '.'
 end
 
-item = r:parse_item("+8 Anarchic Greataxe")
-dump_item(item)
+r = repository:new(repo)
+r:load()
 
-item = r:parse_item("+1 Morningstar of Human Bane")
-dump_item(item)
-
-ok, item = pcall(repository.parse_item, r, "+1 Flaming Leather Armor")
-if not ok then
-   print(item)
+for _, i in pairs(arg) do
+   ok, item = pcall(repository.parse_item, r, i)
+   if not ok then
+      io.stderr:write('Error parsing item "' .. i .. '": ' ..
+                         util.prettify(item))
+   else
+      dump_item(item)
+   end
 end
-
-ok, item = pcall(repository.parse_item, r, "+1 Distance Morningstar")
-if not ok then
-   print(item)
-end
-
-ok, item = pcall(repository.parse_item, r, "+1 Disruption Dagger")
-if not ok then
-   print(item)
-end
-
-ok, item = pcall(repository.parse_item, r, "+1 Keen Club")
-if not ok then
-   print(item)
-end
-
-item = r:parse_item("+1 Flaming Flaming Burst Longsword of Frost")
-dump_item(item)
