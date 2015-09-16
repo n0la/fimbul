@@ -170,7 +170,7 @@ function armor:string(expanded)
    local str = ''
 
    if e then
-      str = str .. '[' .. util.capitalise(self:category()) .. ' Armor] '
+      str = str .. ' [' .. util.capitalise(self:category()) .. ' Armor] '
       str = str .. '[AC: ' .. self:ac() .. ', '
       str = str .. 'DEX: ' .. self:max_dex() .. ', '
       str = str .. 'ACP: ' .. self:acp() .. ', '

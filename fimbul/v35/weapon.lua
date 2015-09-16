@@ -203,7 +203,7 @@ function weapon:string(extended)
    local str = ''
 
    if e then
-      str = str .. self:damage()
+      str = str .. ' ' .. self:damage()
       str = str .. ' [' .. util.join(self.threat, ',') .. ']x' ..
          self.multiplier
    end

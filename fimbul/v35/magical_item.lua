@@ -431,7 +431,7 @@ function magical_item:_string(extended)
       str =  str .. self.material.name .. ' '
    end
 
-   str = str .. self.type .. ' %s'
+   str = str .. self.type .. '%s'
 
    if self:is_artefact() then
       str = str .. ']'
