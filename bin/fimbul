@@ -48,4 +48,4 @@ if ! [ -e $SCRIPT ]; then
 fi
 
 shift
-$LUA $SCRIPT $@
+$LUA $SCRIPT "$@"
