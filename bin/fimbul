@@ -1,0 +1,46 @@
+#!/bin/sh
+
+LUA=lua
+MODULEPATH=/usr/lib/fimbul
+
+usage()
+{
+    COUNT=0
+    echo -n "usage fimbul ["
+    for i in $MODULEPATH/fimbul-*; do
+        MODULE=$(basename "$i" | sed 's/fimbul-//')
+        if [ $COUNT -ne 0 ]; then
+            echo -n ", "
+        else
+            COUNT=1
+        fi
+        echo -n "$MODULE"
+    done
+    echo "] args"
+}
+
+for li in lua5.2 lua52; do
+    LI=$(which $li)
+    RET=$?
+    if [ $RET = 0 ]; then
+        LUA="$LI"
+        break
+    fi
+done
+
+MODULE=$1
+
+if [ -z "$MODULE" ]; then
+    usage
+    exit 1
+fi
+
+SCRIPT="$MODULEPATH/fimbul-$MODULE"
+
+if ! [ -e $SCRIPT ]; then
+    >&2 echo "Unknown module $MODULE."
+    exit 2
+fi
+
+shift
+$LUA $SCRIPT $@
