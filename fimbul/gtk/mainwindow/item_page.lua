@@ -39,11 +39,15 @@ function item_page:_on_input()
 
    ok, item = pcall(repository.parse_item, self.repository, s)
    if ok then
-      -- Print information about the item parsed
-      self:_append_text(item:string(true))
-      -- Print the price in detail
-      local pr, sv = item:price()
-      self:_append_text(sv:string())
+      if item ~= nil then
+         -- Print information about the item parsed
+         self:_append_text(item:string(true))
+         -- Print the price in detail
+         local pr, sv = item:price()
+         self:_append_text(sv:string())
+      else
+         self:_append_text('No base item found in the input: ' .. s)
+      end
    else
       self:_append_text('Error: ' .. item)
    end
