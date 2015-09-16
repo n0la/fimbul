@@ -35,6 +35,11 @@ if [ -z "$MODULE" ]; then
     exit 1
 fi
 
+if [ "$MODULE" = "help" ]; then
+    usage
+    exit 0
+fi
+
 SCRIPT="$MODULEPATH/fimbul-$MODULE"
 
 if ! [ -e $SCRIPT ]; then
