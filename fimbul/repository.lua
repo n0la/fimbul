@@ -10,6 +10,8 @@ local pretty = require("pl.pretty")
 local logger = require("fimbul.logger")
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
+local config = require("fimbul.config")
+local sources = require("fimbul.sources")
 
 local repository = {}
 
@@ -75,29 +77,27 @@ function repository:find_all(dirname, glob)
    return results
 end
 
-function repository:_load_common()
-   local home = os.getenv('HOME')
-   local fimbulhome = home .. '/.fimbul'
-   local common = fimbulhome .. '/common'
+function repository:_load_sources()
+   local src = sources:new()
 
-   if home == nil or not util.isdir(common) then
-      return nil
+   if self.config.sources == nil then
+      return
    end
 
-   self.home = fimbulhome
-   self.common = common
+   for _, item in base.ipairs(self.config.sources) do
+      source = src.data[item]
 
-   for iter, dir in lfs.dir(common) do
-      if iter ~= "." and iter ~= ".." then
-         local full = util.realpath(common .. "/" .. iter)
-
-         if util.isdir(full) then
-            -- Load common repository
-            local repo = data_repository:new({name = iter,
-                                              path = full})
-            table.insert(self.data, repo)
-         end
+      if source == nil then
+         error("Repository references unknown source: " .. item)
       end
+
+      local block = {}
+
+      block.path = source.path
+      block.name = source.name
+
+      local repo = data_repository:new(block)
+      table.insert(self.data, repo)
    end
 end
 
@@ -132,7 +132,7 @@ function repository:open(path)
    table.insert(self.data,
                 data_repository:new({name = "_local", path = self.root}))
 
-   self:_load_common()
+   self:_load_sources()
 end
 
 -- This method is useful if there are files called <WHAT>.yml and

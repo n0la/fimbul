@@ -14,6 +14,12 @@ function config.init()
          assert(lfs.mkdir(config.path),
                 "Could not create save directory in " .. config.path)
       end
+
+      config.sources = config.path .. "/sources"
+      if not util.isdir(config.sources) then
+         assert(lfs.mkdir(config.sources),
+                "Could not create sources directory in " .. config.path)
+      end
    end
 end
 

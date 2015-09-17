@@ -1,0 +1,68 @@
+#!/usr/bin/env lua52
+
+local std = require("std")
+
+local repository = require("fimbul.repository")
+local sources = require("fimbul.sources")
+local util = require("fimbul.util")
+
+local optparser = std.optparse(
+[[
+fimbul-sources 0.1
+Part of the fimbul project. All rights reserved.
+
+Usage: fimbul-sources [command] (options)
+
+The fimbul-sources command helps you to keep your data sources up
+to date so that your campaigns always use the most recent data.
+
+Options:
+   -h --help     This bogus.
+      --verson   Version information.
+
+Commands:
+   import        Import new source.
+   update        Update all sources.
+
+Please report bugs to https://github.com/n0la/fimbul.
+]])
+
+local src = sources:new()
+
+function sources_update()
+   for k, v in pairs(src.data) do
+      print('Updating source ' .. util.getname(v.name) .. ':')
+      ok, ret = pcall(src.update, src, v)
+
+      if not ok then
+         io.stderr:write(util.prettify(ret))
+         os.exit(3)
+      end
+   end
+end
+
+function sources_import()
+end
+
+local commands = {
+   update = { handler = sources_update },
+   import = { handler = sources_import },
+}
+
+if arg[1] == nil or not util.containskey(commands, arg[1]) then
+   optparser:help()
+   os.exit(1)
+end
+
+local cmd = arg[1]
+table.remove(arg, 1)
+_G.arg, _G.opts = optparser:parse(_G.arg)
+
+-- Call commands
+local ok, ret = pcall(commands[cmd].handler)
+if ok then
+   os.exit(ret or 0)
+else
+   print(util.prettify(ret))
+   os.exit(3)
+end
