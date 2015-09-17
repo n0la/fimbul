@@ -47,7 +47,11 @@ else
    repo = '.'
 end
 
-r = repository:new(repo)
+ok, r = pcall(repository.new, repository, repo)
+if not ok then
+   io.stderr:write(util.prettify(r))
+   os.exit(3)
+end
 r:load()
 
 for _, i in pairs(arg) do
