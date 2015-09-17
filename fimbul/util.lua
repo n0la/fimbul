@@ -9,6 +9,8 @@ local lyamlok, lyaml = pcall(require, "lyaml")
 
 local table = require("table")
 local string = require("string")
+local io = require("io")
+local std = require("std")
 
 local lfs = require("lfs")
 local pretty = require("pl.pretty")
@@ -268,6 +270,18 @@ function util.foreach_in(str, F, m, ...)
    for _, i in base.pairs({...}) do
       self:foreach(t, F, m)
    end
+end
+
+function util.tempdir(prefix)
+   local tmp = prefix .. '.XXXXXXXXXX'
+   local cmd = 'mktemp -d -t "' .. tmp .. '"'
+
+   handle = io.popen(cmd, "r")
+   path = handle:read("*all")
+   handle:close()
+
+   path = std.string.trim(path)
+   return path
 end
 
 function util.realpath(p)
