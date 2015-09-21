@@ -110,50 +110,27 @@ function engine:parse_item(r, s)
       return nil
    end
 
-   for i = 1, #parts do
-      local w = parts[i]
-      local it = self:_find_item_and_spawn(r, w)
+   it = nil
 
-      if it then
+   -- Function that will check if a given string is a valid item.
+   --
+   spawner = function(str, pos)
+      it = self:_find_item_and_spawn(r, str)
+      if it ~= nil then
          t = util.shallowcopy(parts)
-         table.remove(t, i)
-         it:_parse_attributes(r, util.join(t))
-         return it
+         table.remove(t, pos)
+         it:_parse_attributes(r, table.concat(t, " "))
+         return true
+      else
+         return false
       end
    end
 
-   if #parts > 1 then
-      for i = 1, #parts - 1 do
-         local w = parts[i] .. ' ' .. parts[i+1]
-         local it = self:_find_item_and_spawn(r, w)
-
-         if it then
-            t = util.deepcopy(parts)
-            table.remove(t, i)
-            table.remove(t, i)
-            it:_parse_attributes(r, util.join(t))
-            return it
-         end
-      end
+   for i = 1, #parts do
+      ok, str = util.lookahead(parts, i, spawner)
    end
 
-   if #parts > 2 then
-      for i = 1, #parts - 2 do
-         local w = parts[i] .. ' ' .. parts[i+1] .. ' ' .. parts[i+2]
-         local it = self:_find_item_and_spawn(r, w)
-
-         if it then
-            t = util.deepcopy(parts)
-            table.remove(t, i)
-            table.remove(t, i)
-            table.remove(t, i)
-            it:_parse_attributes(r, util.join(t))
-            return it
-         end
-      end
-   end
-
-   return nil
+   return it
 end
 
 function engine:new()

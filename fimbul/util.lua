@@ -21,7 +21,7 @@ function util.lookahead(t, pos, f)
    while i >= pos do
       str = table.concat(t, " ", pos, i)
 
-      if f(str) then
+      if f(str, pos) then
          return true, (i - pos)
       end
 
