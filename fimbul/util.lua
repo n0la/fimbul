@@ -385,20 +385,6 @@ function util.split(str, glob)
    return t
 end
 
-function util.join(tbl, sep)
-   local s = sep or ' '
-   local str = ''
-
-   for i = 1, #tbl do
-      if i > 1 then
-         str = str .. s
-      end
-      str = str .. base.tostring(tbl[i])
-   end
-
-   return str
-end
-
 function util.capitalise(str)
    return string.upper(str:sub(0, 1)) .. str:sub(2)
 end

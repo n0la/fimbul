@@ -204,7 +204,7 @@ function weapon:string(extended)
 
    if e then
       str = str .. ' ' .. self:damage()
-      str = str .. ' [' .. util.join(self.threat, ',') .. ']x' ..
+      str = str .. ' [' .. table.concat(self.threat, ',') .. ']x' ..
          self.multiplier
    end
 
