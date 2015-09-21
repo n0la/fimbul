@@ -116,7 +116,7 @@ function armor:price()
       -- Use real category not the one lessened by material.
       p, new = self.material:additional_cost(self._category, self)
       if new then
-         p = p - new
+         p = p - base
       end
       if p ~= 0 then
          pr:add(p, 'material')
