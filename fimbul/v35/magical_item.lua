@@ -209,6 +209,27 @@ function magical_item:_check_ability(r, a)
    end
 end
 
+function magical_item:lookup_ability(r, am)
+   a = r:find("ability", am)
+
+   if #a == 0 then
+      return false
+   end
+
+   for i = 1, #a do
+      ability = r:spawn(a[i])
+      ok, err = pcall(self._check_ability, self, r, ability)
+      if not ok and i == #a then
+         return false
+      else
+         table.insert(self.abilities, ability)
+         return true
+      end
+   end
+
+   return false
+end
+
 function magical_item:_parse_attributes(r, str)
    local tbl = util.split(str)
    local i = 1
@@ -245,84 +266,13 @@ function magical_item:_parse_attributes(r, str)
          self.material = r:spawn(mat[1])
       end
 
-      -- Check for abilities
-      --
-      if tbl[i+1] and tbl[i+2] and tbl[i+3] then
-         am = s .. ' ' .. tbl[i+1] .. ' ' .. tbl[i+2] .. ' ' .. tbl[i+3]
-         a = r:find("ability", am)
-
-         if #a > 0 then
-            for i = 1, #a do
-               ability = r:spawn(a[i])
-               -- Check ability
-               ok, err = pcall(self._check_ability, self, r, ability)
-               if not ok and i == #a then
-                  error(err)
-               elseif ok then
-                  table.insert(self.abilities, ability)
-                  break
-               end
-            end
-            i = i + 3
-            goto end_of_loop
-         end
+      bind = function(s, r)
+         return function(str) return magical_item.lookup_ability(s, r, str) end
       end
 
-      if tbl[i+1] and tbl[i+2] then
-         am = s .. ' ' .. tbl[i+1] .. ' ' .. tbl[i+2]
-         a = r:find("ability", am)
-
-         if #a > 0 then
-            for i = 1, #a do
-               ability = r:spawn(a[i])
-               -- Check ability
-               ok, err = pcall(self._check_ability, self, r, ability)
-               if not ok and i == #a then
-                  error(err)
-               elseif ok then
-                  table.insert(self.abilities, ability)
-                  break
-               end
-            end
-            i = i + 2
-            goto end_of_loop
-         end
-      end
-
-      if tbl[i+1] then
-         am = s .. ' ' .. tbl[i+1]
-         a = r:find("ability", am)
-
-         if #a > 0 then
-            for i = 1, #a do
-               ability = r:spawn(a[i])
-               -- Check ability
-               ok, err = pcall(self._check_ability, self, r, ability)
-               if not ok and i == #a then
-                  error(err)
-               elseif ok then
-                  table.insert(self.abilities, ability)
-                  break
-               end
-            end
-            i = i + 1
-            goto end_of_loop
-         end
-      end
-
-      a = r:find("ability", s)
-      if #a > 0 then
-         for i = 1, #a do
-            ability = r:spawn(a[i])
-            -- Check ability
-            ok, err = pcall(self._check_ability, self, r, ability)
-            if not ok and i == #a then
-               error(err)
-            elseif ok then
-               table.insert(self.abilities, ability)
-               break
-            end
-         end
+      ok, count = util.lookahead(tbl, i, bind(self, r))
+      if ok then
+         i = i + count
       end
 
       -- Check for a modifier

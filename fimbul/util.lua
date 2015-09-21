@@ -15,6 +15,22 @@ local std = require("std")
 local lfs = require("lfs")
 local pretty = require("pl.pretty")
 
+function util.lookahead(t, pos, f)
+
+   i = #t
+   while i >= pos do
+      str = table.concat(t, " ", pos, i)
+
+      if f(str) then
+         return true, (i - pos)
+      end
+
+      i = i - 1
+   end
+
+   return false, 0
+end
+
 function util.removeif_copy(t, F)
    local n = table.getn(t)
 
