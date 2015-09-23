@@ -312,7 +312,7 @@ end
 
 function magical_item:weight(size)
    local s = size or item.MEDIUM
-   local w = self._weight
+   local w = self._weight or 0
 
    if self.material.weight then
       w = w * self.material.weight

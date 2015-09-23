@@ -210,6 +210,8 @@ function repository:load()
    self:_load_array("shields", "shield_template", "shield")
    -- Special magical abilities
    self:_load_array("abilities", "ability_template", "ability")
+   -- Load artefacts
+   self:_load_array("artefacts", "artefact_template", "artefact")
 
    self:update_items()
 end
@@ -217,6 +219,9 @@ end
 function repository:update_items()
    local items = {}
 
+   -- Add artefacts
+   items = util.concat_table(items, self.artefact)
+   -- Add other items
    items = util.concat_table(items, self.weapon)
    items = util.concat_table(items, self.armor)
    items = util.concat_table(items, self.shield)
@@ -300,6 +305,7 @@ function repository:new(p)
    neu.armor = {}
    neu.shield = {}
    neu.ability = {}
+   neu.artefact = {}
 
    if p ~= nil then
       neu:open(p)

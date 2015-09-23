@@ -21,7 +21,7 @@ function util.lookahead(t, pos, f)
    while i >= pos do
       str = table.concat(t, " ", pos, i)
 
-      if f(str, pos) then
+      if f(str, pos, i) then
          return true, (i - pos)
       end
 
@@ -29,6 +29,15 @@ function util.lookahead(t, pos, f)
    end
 
    return false, 0
+end
+
+function util.remove(t, i, n)
+   local c = 0
+
+   while c < n and i >= #t do
+      table.remove(t, i)
+      c = c + 1
+   end
 end
 
 function util.removeif_copy(t, F)

@@ -6,6 +6,8 @@ package.loaded["fimbul.v35.engine"] = engine
 local base = _G
 local util = require("fimbul.util")
 
+local pretty = require("pl.pretty")
+
 local logger = require("fimbul.logger")
 local stacked_value = require("fimbul.stacked_value")
 
@@ -18,6 +20,7 @@ local rules = require("fimbul.v35.rules")
 local damage = require("fimbul.v35.damage")
 
 local item = require("fimbul.v35.item")
+local artefact = require("fimbul.v35.artefact")
 local weapon = require("fimbul.v35.weapon")
 local armor = require("fimbul.v35.armor")
 local shield = require("fimbul.v35.shield")
@@ -27,6 +30,7 @@ local ability = require("fimbul.v35.ability")
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
 local character_template = require("fimbul.v35.character_template")
+local artefact_template = require("fimbul.v35.artefact_template")
 local weapon_template = require("fimbul.v35.weapon_template")
 local armor_template = require("fimbul.v35.armor_template")
 local shield_template = require("fimbul.v35.shield_template")
@@ -61,6 +65,8 @@ function engine:create_template(what, ...)
       return shield_template:new(...)
    elseif what == 'ability_template' then
       return ability_template:new(...)
+   elseif what == 'artefact_template' then
+      return artefact_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -83,6 +89,8 @@ function engine:spawn(repository, template)
       return shield:spawn(repository, template)
    elseif template.templatetype == "ability" then
       return ability:spawn(repository, template)
+   elseif template.templatetype == "artefact" then
+      return artefact:spawn(repository, template)
    else
       logger.critical("Unsupported spawnable in v35: " .. template.templatetype)
    end
@@ -114,11 +122,12 @@ function engine:parse_item(r, s)
 
    -- Function that will check if a given string is a valid item.
    --
-   spawner = function(str, pos)
-      it = self:_find_item_and_spawn(r, str)
-      if it ~= nil then
+   spawner = function(str, pos, i)
+      local item = self:_find_item_and_spawn(r, str)
+      if item ~= nil and it == nil then
          t = util.shallowcopy(parts)
-         table.remove(t, pos)
+         util.remove(t, pos, i)
+         it = item
          it:_parse_attributes(r, table.concat(t, " "))
          return true
       else
