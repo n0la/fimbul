@@ -31,17 +31,21 @@ function artefact:spawn(r, t)
    neu.name = t.name
    neu.type = t.type
    neu.aliases = util.shallowcopy(t.aliases)
+   neu.lua = util.shallowcopy(t.lua) or {}
 
    -- Magic related things
    neu.school = t.school
    neu.grade = t.grade
    neu.cl = t.cl
-   neu.feats = util.shallowcopy(t.feats)
-   neu.spells = util.shallowcopy(t.spells)
+   neu.feats = util.shallowcopy(t.feats) or {}
+   neu.spells = util.shallowcopy(t.spells) or {}
    neu.craft = util.shallowcopy(t.craft) or {}
 
    neu.cost = t.price
    neu.description = t.description
+
+   -- Call any existing functions
+   neu:_call_function(r, "generate")
 
    return neu
 end
@@ -100,6 +104,16 @@ function artefact:string(extended)
    end
 
    return res
+end
+
+function artefact:_parse_attributes(r, str)
+   local tbl = util.split(str)
+   local ret = false
+
+   -- Call base class function to do basic resolving
+   ret = magical_item._parse_attributes(self, r, str)
+
+   return ret
 end
 
 return artefact

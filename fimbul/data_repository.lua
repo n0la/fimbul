@@ -16,6 +16,54 @@ function data_repository:open(blob)
    self.path = blob.path
    self.name = blob.name
    self.url = blob.url
+
+   self.codepath = self.path .. "/lib/"
+   self.blocks = {}
+
+   files = {}
+
+   if not util.isdir(self.codepath) then
+      return
+   end
+
+   -- load all code blocks if there are some
+   self:_find_all('', '^.*%.lua$', self.codepath, files)
+
+   for _, f in base.ipairs(files) do
+      local ok, fun = pcall(loadfile, f)
+
+      if not ok then
+         error(fun)
+      end
+
+      local block = fun()
+
+      if block == nil or type(block) ~= 'table' then
+         error('Code chunk "' .. f .. '" did not return a table.')
+      end
+
+      table.insert(self.blocks, block)
+   end
+end
+
+function data_repository:has_function(name)
+   for _, block in base.ipairs(self.blocks) do
+      if block[name] ~= nil and type(block[name]) == 'function' then
+         return true, block[name]
+      end
+   end
+
+   return false, nil
+end
+
+function data_repository:call_function(name, ...)
+   local ok, fun = self:has_function(name)
+
+   if ok then
+      return fun(...)
+   else
+      return nil
+   end
 end
 
 function data_repository:_find_all(directory, glob, path, results)

@@ -240,6 +240,26 @@ function repository:spawn_characters()
    return t
 end
 
+function repository:has_function(name, ...)
+   for _, repo in base.ipairs(self.data) do
+      if repo:has_function(name) then
+         return true
+      end
+   end
+
+   return false
+end
+
+function repository:call_function(name, ...)
+   for _, repo in base.ipairs(self.data) do
+      if repo:has_function(name) then
+         return repo:call_function(name, ...)
+      end
+   end
+
+   error('Requesting to call non-existant repo function: ' .. name)
+end
+
 function repository:parse_item(s)
    if not self.engine then
       error('No engine loaded. Please load a repository first.')

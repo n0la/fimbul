@@ -210,20 +210,21 @@ function magical_item:_check_ability(r, a)
 end
 
 function magical_item:lookup_ability(r, am)
-   a = r:find("ability", am)
-
-   if #a == 0 then
-      return false
+   if self:_has_function(r, 'ability') then
+      return self:_call_function(r, 'ability', am)
    end
 
-   for i = 1, #a do
-      ability = r:spawn(a[i])
-      ok, err = pcall(self._check_ability, self, r, ability)
-      if not ok and i == #a then
-         return false
-      else
-         table.insert(self.abilities, ability)
-         return true
+   a = r:find("ability", am)
+   if #a > 0 then
+      for i = 1, #a do
+         ability = r:spawn(a[i])
+         ok, err = pcall(self._check_ability, self, r, ability)
+         if not ok and i == #a then
+            return false
+         else
+            table.insert(self.abilities, ability)
+            return true
+         end
       end
    end
 
@@ -264,6 +265,7 @@ function magical_item:_parse_attributes(r, str)
       mat = r:find("material", s)
       if #mat > 0 then
          self.material = r:spawn(mat[1])
+         goto end_of_loop
       end
 
       bind = function(s, r)
@@ -272,7 +274,8 @@ function magical_item:_parse_attributes(r, str)
 
       ok, count = util.lookahead(tbl, i, bind(self, r))
       if ok then
-         i = i + count
+         i = i + (count - 1)
+         goto end_of_loop
       end
 
       -- Check for a modifier
@@ -284,11 +287,13 @@ function magical_item:_parse_attributes(r, str)
             return false
          end
          self.modifier = m
+         goto end_of_loop
       end
 
       -- Check for size descriptor
       if util.contains(item.SIZES, s) then
          self._size = s
+         goto end_of_loop
       end
 
       -- End of loop - for continue
@@ -308,6 +313,24 @@ function magical_item:_parse_attributes(r, str)
    end
 
    return true
+end
+
+function magical_item:_has_function(r, f)
+   if self.lua == nil or self.lua[f] == nil then
+      return false
+   end
+
+   if not r:has_function(self.lua[f]) then
+      error('Data repository has no such function: ' .. f)
+   end
+
+   return true
+end
+
+function magical_item:_call_function(r, f, ...)
+   if self.lua[f] ~= nil then
+      return r:call_function(self.lua[f], self, ...)
+   end
 end
 
 function magical_item:weight(size)
