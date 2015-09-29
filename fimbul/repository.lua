@@ -208,6 +208,7 @@ function repository:load()
    self:_load_array("materials", "material_template", "material")
    self:_load_array("armors", "armor_template", "armor")
    self:_load_array("shields", "shield_template", "shield")
+   self:_load_array("wondrous", "wondrous_item_template", "wondrous")
    -- Special magical abilities
    self:_load_array("abilities", "ability_template", "ability")
    -- Load artifacts
@@ -225,6 +226,7 @@ function repository:update_items()
    items = util.concat_table(items, self.weapon)
    items = util.concat_table(items, self.armor)
    items = util.concat_table(items, self.shield)
+   items = util.concat_table(items, self.wondrous)
 
    self.items = items
 end
@@ -326,6 +328,7 @@ function repository:new(p)
    neu.shield = {}
    neu.ability = {}
    neu.artifact = {}
+   neu.wondrous = {}
 
    if p ~= nil then
       neu:open(p)
