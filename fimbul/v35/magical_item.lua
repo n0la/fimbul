@@ -81,6 +81,8 @@ function magical_item:is_masterwork()
       -- If it has a modifier it is automatically considered
       -- masterwork.
       return true
+   elseif #self.abilities > 0 then
+      return true
    elseif self.material.masterwork then
       -- If the material requires masterwork, then so be it.
       return true
@@ -148,7 +150,7 @@ function magical_item:price()
 
       -- Check if any abilities require flat amount of money to be added
       if ab.price ~= nil and ab.price ~= 0 then
-         pr:add(a.price, a.name)
+         pr:add(ab.price, ab.name)
       end
    end
 
@@ -274,7 +276,7 @@ function magical_item:_parse_attributes(r, str)
 
       ok, count = util.lookahead(tbl, i, bind(self, r))
       if ok then
-         i = i + (count - 1)
+         i = i + count
          goto end_of_loop
       end
 
