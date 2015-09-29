@@ -39,13 +39,13 @@ end
 --
 -- name: Holy Avenger
 -- type: Longsword
--- artefact: YES
+-- artifact: YES
 --
 -- name: Greataxe
 -- type: Greataxe
--- artefact: NO
+-- artifact: NO
 --
-function magical_item:is_artefact()
+function magical_item:is_artifact()
    return self.name ~= self.type
 end
 
@@ -380,7 +380,7 @@ function magical_item:_string(extended)
    local e = extended or false
    local str = ''
 
-   if self:is_artefact() then
+   if self:is_artifact() then
       str = self.name .. ' ['
    end
 
@@ -406,7 +406,7 @@ function magical_item:_string(extended)
 
    str = str .. self.type .. '%s'
 
-   if self:is_artefact() then
+   if self:is_artifact() then
       str = str .. ']'
    end
 

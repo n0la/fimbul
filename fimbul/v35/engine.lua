@@ -20,7 +20,7 @@ local rules = require("fimbul.v35.rules")
 local damage = require("fimbul.v35.damage")
 
 local item = require("fimbul.v35.item")
-local artefact = require("fimbul.v35.artefact")
+local artifact = require("fimbul.v35.artifact")
 local weapon = require("fimbul.v35.weapon")
 local armor = require("fimbul.v35.armor")
 local shield = require("fimbul.v35.shield")
@@ -30,7 +30,7 @@ local ability = require("fimbul.v35.ability")
 local monster_template = require("fimbul.v35.monster_template")
 local encounter_template = require("fimbul.v35.encounter_template")
 local character_template = require("fimbul.v35.character_template")
-local artefact_template = require("fimbul.v35.artefact_template")
+local artifact_template = require("fimbul.v35.artifact_template")
 local weapon_template = require("fimbul.v35.weapon_template")
 local armor_template = require("fimbul.v35.armor_template")
 local shield_template = require("fimbul.v35.shield_template")
@@ -65,8 +65,8 @@ function engine:create_template(what, ...)
       return shield_template:new(...)
    elseif what == 'ability_template' then
       return ability_template:new(...)
-   elseif what == 'artefact_template' then
-      return artefact_template:new(...)
+   elseif what == 'artifact_template' then
+      return artifact_template:new(...)
    else
       error("Unsupported template in v35: " .. what)
    end
@@ -89,8 +89,8 @@ function engine:spawn(repository, template)
       return shield:spawn(repository, template)
    elseif template.templatetype == "ability" then
       return ability:spawn(repository, template)
-   elseif template.templatetype == "artefact" then
-      return artefact:spawn(repository, template)
+   elseif template.templatetype == "artifact" then
+      return artifact:spawn(repository, template)
    else
       logger.critical("Unsupported spawnable in v35: " .. template.templatetype)
    end

@@ -1,4 +1,4 @@
---- @module fimbul.v35.artefact
+--- @module fimbul.v35.artifact
 
 local base = _G
 
@@ -8,9 +8,9 @@ local stacked_value = require('fimbul.stacked_value')
 
 local util = require('fimbul.util')
 
-local artefact = magical_item:new()
+local artifact = magical_item:new()
 
-function artefact:new(y)
+function artifact:new(y)
    local neu = magical_item:new(y)
 
    setmetatable(neu, self)
@@ -19,8 +19,8 @@ function artefact:new(y)
    return neu
 end
 
-function artefact:spawn(r, t)
-   local neu = artefact:new()
+function artifact:spawn(r, t)
+   local neu = artifact:new()
 
    if t.type == nil then
       error('Artefact does not specify a base type.')
@@ -51,7 +51,7 @@ function artefact:spawn(r, t)
 end
 
 -- Override magical_item:price()
-function artefact:price()
+function artifact:price()
    local pr = stacked_value:new({stack = true})
 
    pr:add(self.cost or 0, 'base')
@@ -60,7 +60,7 @@ function artefact:price()
 end
 
 -- Override magical_item:craft_price()
-function artefact:craft_price()
+function artifact:craft_price()
    if self.craft.price then
       local pr = stacked_value:new({stack = true})
       pr:add(self.craft.price, 'base')
@@ -72,7 +72,7 @@ function artefact:craft_price()
 end
 
 -- Override crafting XP which is usually specified.
-function artefact:craft_xp()
+function artifact:craft_xp()
    if self.craft.xp then
       return self.craft.xp
    else
@@ -81,7 +81,7 @@ function artefact:craft_xp()
 end
 
 -- Material cost is different. You usually don't pay that.
-function artefact:craft_materials()
+function artifact:craft_materials()
    if not self.craft.materials then
       return 0
    end
@@ -89,7 +89,7 @@ function artefact:craft_materials()
    return self.craft.materials
 end
 
-function artefact:string(extended)
+function artifact:string(extended)
    local e = extended or false
    local fmt = magical_item._string(self, e)
    local str = ''
@@ -106,7 +106,7 @@ function artefact:string(extended)
    return res
 end
 
-function artefact:_parse_attributes(r, str)
+function artifact:_parse_attributes(r, str)
    local tbl = util.split(str)
    local ret = false
 
@@ -116,4 +116,4 @@ function artefact:_parse_attributes(r, str)
    return ret
 end
 
-return artefact
+return artifact
