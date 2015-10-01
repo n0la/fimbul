@@ -11,6 +11,9 @@ function wondrous_item:new(y)
    setmetatable(neu, self)
    self.__index = self
 
+   -- Wondrous items are seldomly masterwork
+   neu.allow_masterwork = false
+
    return neu
 end
 
@@ -23,6 +26,8 @@ function wondrous_item:spawn(r, t)
 
    neu.cost = t.cost or 0
    neu._weight = t.weight or 0
+
+   neu.allow_masterwork = t.allowmasterwork or false
 
    return neu
 end

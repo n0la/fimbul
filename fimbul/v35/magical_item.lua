@@ -77,6 +77,11 @@ function magical_item:magic_modifier()
 end
 
 function magical_item:is_masterwork()
+   -- Some items don't have masterwork.
+   if self.allow_masterwork ~= nil and self.allow_masterwork == false then
+      return false
+   end
+
    if self.modifier > 0 then
       -- If it has a modifier it is automatically considered
       -- masterwork.
