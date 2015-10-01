@@ -68,6 +68,22 @@ function ability:spawn(r, t)
    return neu
 end
 
+function ability:parse(tbl)
+   if self.has_bonus and #tbl > 0 then
+      if #tbl == 0 then
+         error('No bonus specified, but a bonus is required.')
+      end
+
+      mod = util.parse_modifier(tbl[1])
+      self.bonus = mod
+
+      -- We consumed one.
+      return true, 1
+   end
+
+   return false, 0
+end
+
 function ability:price()
    if self.lua.price ~= nil then
       ctx = {}

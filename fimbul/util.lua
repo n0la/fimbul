@@ -44,6 +44,13 @@ function util.remove(t, i, n)
    end
 end
 
+function util.splice(t, i, j)
+   local st = i or 1
+   local en = j or #t
+
+   return { table.unpack(t, st, en) }
+end
+
 function util.removeif_copy(t, F)
    local n = table.getn(t)
 
@@ -411,5 +418,26 @@ function util.prettify(err)
 
    return err
 end
+
+function util.parse_modifier(modstr)
+   local mod = 0
+
+   if modstr == nil then
+      error('No modifier string present.')
+   end
+
+   mod = string.match(modstr, "[+](%d+)")
+   if mod ~= nil then
+      return tonumber(mod)
+   end
+
+   mod = string.match(modstr, "%([+](%d+)%)")
+   if mod ~= nil then
+      return tonumber(mod)
+   end
+
+   error('Invalid mod specifier: ' .. modstr)
+end
+
 
 return util

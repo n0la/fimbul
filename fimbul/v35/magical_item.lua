@@ -216,28 +216,6 @@ function magical_item:_check_ability(r, a)
    end
 end
 
-function magical_item:parse_modifier(modstr)
-   local mod = 0
-
-   if modstr == nil then
-      error('No modifier string present.')
-   end
-
-   mod = string.match(modstr, "[+](%d+)")
-   if mod ~= nil then
-      return tonumber(mod)
-   end
-
-   mod = string.match(modstr, "%([+)(%d+)%)")
-   if mod ~= nil then
-      return tonumber(mod)
-   end
-
-   error('Invalid mod specifier: ' .. modstr)
-end
-
--- TODO: Make function fimbul/v35/ability.lua to do all of this.
---       It's not the task of magical_item.lua to parse magical abilities.
 function magical_item:lookup_ability(r, am, tbl, pos, i)
    local extra = 0
 
@@ -249,15 +227,14 @@ function magical_item:lookup_ability(r, am, tbl, pos, i)
    if #a > 0 then
       for i = 1, #a do
          ability = r:spawn(a[i])
+         -- Make some checks if we can even apply this item.
          ok, err = pcall(self._check_ability, self, r, ability)
          if not ok and i == #a then
             return false
          else
-            if ability.has_bonus then
-               mod = self:parse_modifier(tbl[pos+1])
-               ability.bonus = mod
-               -- We consumed one extra.
-               extra = extra + 1
+            ok, cons = ability:parse(util.splice(tbl, pos+1))
+            if ok then
+               extra = extra + cons
             end
 
             table.insert(self.abilities, ability)
@@ -318,8 +295,8 @@ function magical_item:_parse_attributes(r, str)
       end
 
       -- Check for a modifier
-      mod = string.match(s, "[+](%d+)")
-      if mod then
+      ok, mod = pcall(util.parse_modifier, s)
+      if ok then
          m = base.tonumber(mod)
          if not m or m > 10 then
             logger.error("Modifiers above +10 are not valid in d20srd.")
