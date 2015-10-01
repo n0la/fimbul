@@ -54,7 +54,7 @@ function ability:spawn(r, t)
    neu.school = t.school
    neu.grade = t.grade
    neu.cl = t.cl
-   neu.has_bonus = t.has_bonus or false
+   neu.bonus = util.deepcopy(t.bonus or {})
 
    neu.feats = util.deepcopy(t.feats or {})
    neu.spells = util.deepcopy(t.spells or {})
@@ -70,16 +70,20 @@ function ability:spawn(r, t)
 end
 
 function ability:parse(tbl)
-   if self.has_bonus and #tbl > 0 then
+   if self.bonus.required then
       if #tbl == 0 then
          error('No bonus specified, but a bonus is required.')
       end
 
       mod = util.parse_modifier(tbl[1])
-      if mod > rules.MAX_MODIFIER then
+      if self.bonus.maximum ~= nil and mod > self.bonus.maximum then
          error('No bonus can exceed the maximum allowed modifier: '
-                  .. rules.MAX_MODIFIER)
+                  .. self.bonus.maximum)
       end
+      if self.bonus.minimum ~= nil and mod < self.bonus.minimum then
+         error('No bonus can be lower than the minimum: ' .. self.bonus.minimum)
+      end
+
       self.bonus = mod
 
       -- We consumed one.
