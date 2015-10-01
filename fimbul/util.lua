@@ -426,12 +426,12 @@ function util.parse_modifier(modstr)
       error('No modifier string present.')
    end
 
-   mod = string.match(modstr, "[+](%d+)")
+   mod = string.match(modstr, "[+]?(%d+)")
    if mod ~= nil then
       return tonumber(mod)
    end
 
-   mod = string.match(modstr, "%([+](%d+)%)")
+   mod = string.match(modstr, "%([+]?(%d+)%)")
    if mod ~= nil then
       return tonumber(mod)
    end
