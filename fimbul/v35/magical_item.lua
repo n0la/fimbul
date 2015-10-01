@@ -253,7 +253,7 @@ function magical_item:lookup_ability(r, am, tbl, pos, i)
          if not ok and i == #a then
             return false
          else
-            if ability.has_modifier then
+            if ability.has_bonus then
                mod = self:parse_modifier(tbl[pos+1])
                ability.bonus = mod
                -- We consumed one extra.

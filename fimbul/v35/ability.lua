@@ -53,7 +53,7 @@ function ability:spawn(r, t)
    neu.school = t.school
    neu.grade = t.grade
    neu.cl = t.cl
-   neu.has_modifier = t.has_modifier or false
+   neu.has_bonus = t.has_bonus or false
 
    neu.feats = util.deepcopy(t.feats or {})
    neu.spells = util.deepcopy(t.spells or {})
