@@ -128,7 +128,7 @@ function engine:parse_item(r, s)
 
    -- Function that will check if a given string is a valid item.
    --
-   spawner = function(str, pos, i)
+   spawner = function(str, tbl, pos, i)
       local item = self:_find_item_and_spawn(r, str)
       if item ~= nil and it == nil then
          t = util.shallowcopy(parts)
@@ -142,7 +142,10 @@ function engine:parse_item(r, s)
    end
 
    for i = 1, #parts do
-      ok, str = util.lookahead(parts, i, spawner)
+      ok = util.lookahead(parts, i, spawner)
+      if ok then
+         break
+      end
    end
 
    return it

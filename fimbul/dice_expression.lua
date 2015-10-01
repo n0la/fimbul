@@ -18,9 +18,9 @@ function dice_expression.d(str)
    return ev
 end
 
-function dice_expression.evaluate(str)
+function dice_expression.evaluate(str, ctx)
    local s = "return (" .. str .. ")"
-   local context = {}
+   local context = ctx or {}
 
    -- Build sandbox
    context.d = dice_expression.d

@@ -154,8 +154,8 @@ function magical_item:price()
       end
 
       -- Check if any abilities require flat amount of money to be added
-      if ab.price ~= nil and ab.price ~= 0 then
-         pr:add(ab.price, ab.name)
+      if ab:price() ~= 0 then
+         pr:add(ab:price(), ab.name)
       end
    end
 
@@ -216,7 +216,31 @@ function magical_item:_check_ability(r, a)
    end
 end
 
-function magical_item:lookup_ability(r, am)
+function magical_item:parse_modifier(modstr)
+   local mod = 0
+
+   if modstr == nil then
+      error('No modifier string present.')
+   end
+
+   mod = string.match(modstr, "[+](%d+)")
+   if mod ~= nil then
+      return tonumber(mod)
+   end
+
+   mod = string.match(modstr, "%([+)(%d+)%)")
+   if mod ~= nil then
+      return tonumber(mod)
+   end
+
+   error('Invalid mod specifier: ' .. modstr)
+end
+
+-- TODO: Make function fimbul/v35/ability.lua to do all of this.
+--       It's not the task of magical_item.lua to parse magical abilities.
+function magical_item:lookup_ability(r, am, tbl, pos, i)
+   local extra = 0
+
    if self:_has_function(r, 'ability') then
       return self:_call_function(r, 'ability', am)
    end
@@ -229,8 +253,15 @@ function magical_item:lookup_ability(r, am)
          if not ok and i == #a then
             return false
          else
+            if ability.has_modifier then
+               mod = self:parse_modifier(tbl[pos+1])
+               ability.bonus = mod
+               -- We consumed one extra.
+               extra = extra + 1
+            end
+
             table.insert(self.abilities, ability)
-            return true
+            return true, extra
          end
       end
    end
@@ -275,13 +306,14 @@ function magical_item:_parse_attributes(r, str)
          goto end_of_loop
       end
 
-      bind = function(s, r)
-         return function(str) return magical_item.lookup_ability(s, r, str) end
+      bind = function(str, tbl, i, pos)
+         return magical_item.lookup_ability(self, r, str, tbl, i, pos)
       end
 
-      ok, count = util.lookahead(tbl, i, bind(self, r))
+      ok, count = util.lookahead(tbl, i, bind)
       if ok then
-         i = i + count
+         -- We add +1 after going to 'end_of_loop'
+         i = i + (count - 1)
          goto end_of_loop
       end
 
@@ -399,7 +431,7 @@ function magical_item:_string(extended)
 
    for _, a in base.pairs(self.abilities) do
       if not a.wasdependency or e then
-         str = str .. a.name .. ' '
+         str = str .. a:string() .. ' '
       end
    end
 

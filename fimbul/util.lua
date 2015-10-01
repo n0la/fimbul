@@ -21,8 +21,12 @@ function util.lookahead(t, pos, f)
    while i >= pos do
       str = table.concat(t, " ", pos, i)
 
-      if f(str, pos, i) then
-         return true, (i - pos)
+      ok, extra = f(str, t, pos, i)
+      if ok then
+         if extra == nil then
+            extra = 0
+         end
+         return true, ((i - pos) + extra + 1)
       end
 
       i = i - 1
