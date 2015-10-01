@@ -216,7 +216,7 @@ function magical_item:_check_ability(r, a)
    end
 end
 
-function magical_item:lookup_ability(r, am, tbl, pos, i)
+function magical_item:lookup_ability(r, am, tbl, pos, en)
    local extra = 0
 
    if self:_has_function(r, 'ability') then
@@ -232,7 +232,7 @@ function magical_item:lookup_ability(r, am, tbl, pos, i)
          if not ok and i == #a then
             return false
          else
-            ok, cons = ability:parse(util.splice(tbl, pos+1))
+            ok, cons = ability:parse(util.splice(tbl, en+1))
             if ok then
                extra = extra + cons
             end
@@ -283,8 +283,8 @@ function magical_item:_parse_attributes(r, str)
          goto end_of_loop
       end
 
-      bind = function(str, tbl, i, pos)
-         return magical_item.lookup_ability(self, r, str, tbl, i, pos)
+      bind = function(str, tbl, pos, i)
+         return magical_item.lookup_ability(self, r, str, tbl, pos, i)
       end
 
       ok, count = util.lookahead(tbl, i, bind)

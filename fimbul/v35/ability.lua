@@ -9,6 +9,7 @@ local ability = {}
 
 local dice_expression = require('fimbul.dice_expression')
 local util = require('fimbul.util')
+local rules = require('fimbul.v35.rules')
 
 function ability:new()
    local neu = {}
@@ -75,6 +76,10 @@ function ability:parse(tbl)
       end
 
       mod = util.parse_modifier(tbl[1])
+      if mod > rules.MAX_MODIFIER then
+         error('No bonus can exceed the maximum allowed modifier: '
+                  .. rules.MAX_MODIFIER)
+      end
       self.bonus = mod
 
       -- We consumed one.
