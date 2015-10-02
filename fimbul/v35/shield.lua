@@ -80,11 +80,11 @@ function shield:spawn(r, t)
    neu.category = t.category or shield.NONE
    neu.basematerial = t.basematerial
 
-   neu.ac = t.ac or 0
+   neu._ac = t.ac or 0
    -- -1 == Disabled
    neu.dex = t.dex or -1
-   neu.acp = t.acp or 0
-   neu.acf = t.acf or 0
+   neu._acp = t.acp or 0
+   neu._asf = t.acf or 0
 
    -- Cost & Weight
    neu.cost = t.cost or 0
@@ -93,10 +93,69 @@ function shield:spawn(r, t)
    return neu
 end
 
+function shield:acp()
+   local a = 0
+   -- PHB 126
+   if self._acp < 0 and self:is_masterwork() then
+      a = self._acp + 1
+   else
+      a = self._acp
+   end
+   -- TODO: Find out if these stack.
+   if self.material.acp_bonus then
+      a = a + self.material.acp_bonus
+   end
+
+   return a
+end
+
+function shield:ac()
+   local a = self._ac
+
+   if self.modifier > 0 then
+      a = a + self.modifier
+   end
+
+   return a
+end
+
+function shield:max_dex()
+   local d = self.dex
+
+   if d ~= -1 and self.material.dex_bonus then
+      d = d + self.material.dex_bonus
+   end
+
+   return d
+end
+
+function shield:asf()
+   local a = self._asf
+
+   if self.material.asf_bonus then
+      a = a + self.material.asf_bonus
+   end
+
+   if a < 0 then
+      a = 0
+   end
+
+   return a
+end
+
 function shield:string(extended)
    local e = extended or false
    local fmt = magical_item._string(self, e)
    local str = ''
+
+   if e then
+      str = str .. ' [AC: ' .. self:ac() .. ', '
+      if self:max_dex() > -1 then
+         str = str .. 'DEX: ' .. self:max_dex() .. ', '
+      end
+      str = str .. 'ACP: ' .. self:acp() .. ', '
+      str = str .. 'ASF: ' .. self:asf() .. '%]'
+   end
 
    return string.format(fmt, str)
 end
