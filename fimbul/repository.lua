@@ -307,7 +307,7 @@ function repository.create(dir, args)
    local ok, err = pcall(util.yaml_dumpfile, configfile, args)
    if not ok then
       lfs.rmdir(configdir)
-      error(util.prettify(err))
+      error(err)
    end
 end
 

@@ -113,7 +113,7 @@ function util.yaml_dumpfile(file, o)
    end
 
    local file = io.open(file, "w")
-   local str = yaml.dump(o)
+   local str = lyaml.dump(o)
 
    file:write(str)
    file:close()
