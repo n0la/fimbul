@@ -120,27 +120,17 @@ function util.yaml_dumpfile(file, o)
 end
 
 function util.yaml_loadfile(str)
-   -- There are two lua-yaml libraries out there.
-   --   lyaml: https://github.com/gvvaughan/lyaml
-   --   lua-yaml: http://yaml.luaforge.net
-   -- This function tries to work with either installed.
-   if yamlok and yaml.loadfile then
-      -- And there is my fork of lua-yaml with a loadfile()
-      -- function built in.
-      return yaml.loadfile(str)
-   else
-      local file = io.open(str, "r")
-      local content = file:read("*all")
-      file:close()
+   local file = io.open(str, "r")
+   local content = file:read("*all")
+   file:close()
 
-      if yamlok and yaml.load then
-         return yaml.load(content)
-      elseif lyamlok and lyaml.load then
-         return lyaml.load(content)
-      else
-         error("No suitable YAML loading mechanism found.")
-         return nil
-      end
+   if yamlok and yaml.load then
+      return yaml.load(content)
+   elseif lyamlok and lyaml.load then
+      return lyaml.load(content)
+   else
+      error("No suitable YAML loading mechanism found.")
+      return nil
    end
 end
 
