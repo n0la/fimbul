@@ -15,6 +15,34 @@ local sources = require("fimbul.sources")
 
 local repository = {}
 
+repository.SUPPORTED_GAMES = {'v35', 'eh'}
+
+function repository.supported_games()
+   -- TODO: Make dynamic
+   return repository.SUPPORTED_GAMES
+end
+
+function repository:load_engine(game)
+   if not util.contains(repository.supported_games(), game) then
+      error('Invalid game: ' .. game)
+   end
+
+   engine_class = require('fimbul.' .. game .. '.engine')
+   assert(engine_class, 'Could not load game engine: ' .. game)
+
+   engine = engine_class:new(self)
+   assert(engine, 'Could not create a new instance of the game engine: ' .. game)
+
+   return engine
+end
+
+function repository:game_information(game)
+   local engine = self:load_engine(game)
+   local info = { description = engine:description() }
+
+   return info
+end
+
 function repository:load_configuration(name)
    local configfile = self.datapath .. "/" .. name
    local status, c = pcall(util.yaml_loadfile, configfile)
@@ -30,10 +58,7 @@ function repository:_load_config()
    assert(c.name, "Please specify a name for your repository.")
    assert(c.game, "Please specify a game for your repository.")
 
-   local ename = "fimbul." .. c.game .. ".engine"
-   local engine = require(ename)
-
-   assert(engine, "Repository uses unsupported game " .. c.game)
+   local engine = self:load_engine(c.game)
 
    self.engine = engine
    -- Initialise engine.
@@ -136,6 +161,9 @@ function repository:open(path)
                 data_repository:new({name = "_local", path = self.root}))
 
    self:_load_sources()
+
+   -- Load data.
+   self:load()
 end
 
 -- This method is useful if there are files called <WHAT>.yml and
@@ -151,7 +179,7 @@ function repository:_load_files(what, template, tbl)
          error("Failed to load file " .. m)
       end
       local tmp = self.engine:create_template(template, y)
-      table.insert(self[t], tmp)
+      table.insert(t, tmp)
    end
 end
 
@@ -171,15 +199,22 @@ function repository:_load_array(what, template, tbl)
 
       for _, i in pairs(y) do
          local tmp = self.engine:create_template(template, i)
-         table.insert(self[t], tmp)
+         table.insert(t, tmp)
       end
    end
 end
 
 function repository:find(tbl, ...)
    local t = {}
+   local target
 
-   for _, i in base.pairs(self[tbl]) do
+   if type(tbl) == 'string' then
+      target = self[tbl]
+   elseif type(tbl) == 'table' then
+      target = tbl
+   end
+
+   for _, i in base.pairs(target) do
       for _, name in base.pairs({i.name, table.unpack(i.aliases or {})}) do
          for _, what in base.pairs({...}) do
             if string.lower(name) == string.lower(what) then
@@ -227,7 +262,7 @@ function repository:load()
       perror('Please select an engine first.')
    end
    -- Delegate loading to the engine.
-   self.engine:load_data(self)
+   self.engine:load(self)
 end
 
 function repository:call_function(name, ...)
@@ -252,7 +287,7 @@ function repository:spawn(t)
    if not self.engine then
       error('No engine loaded. Please load a repository first.')
    end
-   logger.verbose("Spawning " .. t.templatetype .. " " .. t.name)
+   logger.verbose("Spawning " .. t.templatetype .. ' with the name ' .. t.name)
    return self.engine:spawn(self, t)
 end
 

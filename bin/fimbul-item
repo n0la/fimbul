@@ -49,7 +49,7 @@ end
 
 ok, r = pcall(repository.new, repository, repo)
 if not ok then
-   io.stderr:write(util.prettify(r))
+   io.stderr:write(r .. "\n")
    os.exit(3)
 end
 r:load()

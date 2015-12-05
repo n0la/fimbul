@@ -19,13 +19,15 @@ in a specified directory. It creates all the necessary files, folders
 with a appropriate content to get you started.
 
 Options:
-   -d --directory=DIR  The directory were to do things.
+   -d --directory=DIR  The directory were to do things [.]
    -g --game=GAME      What game engine to use [v35].
-   -n --name=NAME      Name for the new game
+   -n --name=NAME      Name for the new game [New Game]
    -h --help           This bogus.
 
 Commands:
    init                Create a new repository.
+   show                Prints a detailed YAML representation of the repo.
+   list-games          Show a list of available game engines.
 
 Please report bugs to https://github.com/n0la/fimbul.
 ]])
@@ -37,6 +39,39 @@ function check_option(name, t)
       return type(opts[name]) == tp
    else
       return false
+   end
+end
+
+function check_option_default(name, def, t)
+   if not check_option(name, t) then
+      return def
+   else
+      return opts[name]
+   end
+end
+
+function list_games()
+   for _, game in pairs(repository.supported_games()) do
+      local info = repository:game_information(game)
+      print(game .. "\t" .. info.description)
+   end
+end
+
+function repo_show()
+   local r
+   local dir = check_option_default('directory', '.')
+
+   r = repository:new(dir)
+
+   print('---')
+   print('name: ' .. r.config.name)
+   print('game: ' .. r.config.game)
+
+   print('data: ')
+   for _, d in pairs(r.data) do
+      print('  - name: ' .. d.name)
+      print('    path: ' .. d.path)
+      print('    code: ' .. d.codepath)
    end
 end
 
@@ -53,10 +88,10 @@ function repo_init()
    end
 
    if check_option('game') then
-      --TODO
-      if not util.contains({'v35'}, opts.game) then
+      if not util.contains(repository.supported_games(), opts.game) then
          error('Invalid game engine: ' .. opts.game)
       end
+      args.game = opts.game
    end
 
    local fulldir = util.realpath(dir)
@@ -66,6 +101,9 @@ function repo_init()
       end
    end
 
+   print("Creating new game for '" .. args.game ..
+            "' called '" .. args.name ..
+            "'  in '" .. dir .. "'...")
    -- Create repository
    repository.create(fulldir, args)
 
@@ -73,7 +111,9 @@ function repo_init()
 end
 
 local commands = {
-   init = { handler = repo_init },
+   ['init'] = { handler = repo_init },
+   ['show'] = { handler = repo_show },
+   ['list-games'] = { handler = list_games },
 }
 
 if arg[1] == nil or not util.containskey(commands, arg[1]) then
@@ -91,6 +131,6 @@ local ok, ret = pcall(commands[cmd].handler)
 if ok then
    os.exit(ret or 0)
 else
-   print(util.prettify(ret))
+   io.stderr:write(ret .. "\n")
    os.exit(3)
 end

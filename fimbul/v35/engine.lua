@@ -106,6 +106,10 @@ function engine:create_battle(template, characters)
    return battle:new(template, characters)
 end
 
+function engine:description()
+   return "Engine for D&D v35 also known as d20srd."
+end
+
 function engine:init(r)
    -- Initialise tables for things
    -- we store. TODO: namespaces.
@@ -135,21 +139,21 @@ function engine:update_items(r)
    r.items = items
 end
 
-function engine:load_data(r)
+function engine:load(r)
    -- PCs and NPCs
-   r:_load_files("monsters", "monster_template", "monster")
-   r:_load_files("encounters", "encounter_template", "encounter")
-   r:_load_files("characters", "character_template", "character")
+   r:_load_files("monsters", "monster_template", r.monster)
+   r:_load_files("encounters", "encounter_template", r.encounter)
+   r:_load_files("characters", "character_template", r.character)
    -- Items and Gear
-   r:_load_array("weapons", "weapon_template", "weapon")
-   r:_load_array("materials", "material_template", "material")
-   r:_load_array("armors", "armor_template", "armor")
-   r:_load_array("shields", "shield_template", "shield")
-   r:_load_array("wondrous", "wondrous_item_template", "wondrous")
+   r:_load_array("weapons", "weapon_template", r.weapon)
+   r:_load_array("materials", "material_template", r.material)
+   r:_load_array("armors", "armor_template", r.armor)
+   r:_load_array("shields", "shield_template", r.shield)
+   r:_load_array("wondrous", "wondrous_item_template", r.wondrous)
    -- Special magical abilities
-   r:_load_array("abilities", "ability_template", "ability")
+   r:_load_array("abilities", "ability_template", r.ability)
    -- Load artifacts
-   r:_load_array("artifacts", "artifact_template", "artifact")
+   r:_load_array("artifacts", "artifact_template", r.artifact)
 
    self:update_items(r)
 end

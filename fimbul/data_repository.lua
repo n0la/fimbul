@@ -15,7 +15,6 @@ function data_repository:open(blob)
 
    self.path = blob.path
    self.name = blob.name
-   self.url = blob.url
 
    self.codepath = self.path .. "/lib/"
    self.blocks = {}
