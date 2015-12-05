@@ -4,8 +4,7 @@ local util = {}
 
 local base = _G
 
-local yamlok, yaml = pcall(require, "yaml")
-local lyamlok, lyaml = pcall(require, "lyaml")
+local lyaml = require("lyaml")
 
 local table = require("table")
 local string = require("string")
@@ -107,13 +106,9 @@ function util.min(t, fn)
     return key, value
 end
 
-function util.yaml_dumpfile(file, o)
-   if not yamlok then
-      error('No suitable YAML dumping mechanism found.')
-   end
-
-   local file = io.open(file, "w")
-   local str = lyaml.dump(o)
+function util.yaml_dumpfile(f, o)
+   local file = io.open(f, "w")
+   local str = lyaml.dump({o})
 
    file:write(str)
    file:close()
@@ -124,14 +119,7 @@ function util.yaml_loadfile(str)
    local content = file:read("*all")
    file:close()
 
-   if yamlok and yaml.load then
-      return yaml.load(content)
-   elseif lyamlok and lyaml.load then
-      return lyaml.load(content)
-   else
-      error("No suitable YAML loading mechanism found.")
-      return nil
-   end
+   return lyaml.load(content)
 end
 
 function util.getname(t)
