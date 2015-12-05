@@ -36,6 +36,9 @@ function repository:_load_config()
    assert(engine, "Repository uses unsupported game " .. c.game)
 
    self.engine = engine
+   -- Initialise engine.
+   self.engine:init(self)
+
    self.config = c
 end
 
@@ -198,39 +201,6 @@ function repository:all(what)
    return r
 end
 
-function repository:load()
-   -- PCs and NPCs
-   self:_load_files("monsters", "monster_template", "monster")
-   self:_load_files("encounters", "encounter_template", "encounter")
-   self:_load_files("characters", "character_template", "character")
-   -- Items and Gear
-   self:_load_array("weapons", "weapon_template", "weapon")
-   self:_load_array("materials", "material_template", "material")
-   self:_load_array("armors", "armor_template", "armor")
-   self:_load_array("shields", "shield_template", "shield")
-   self:_load_array("wondrous", "wondrous_item_template", "wondrous")
-   -- Special magical abilities
-   self:_load_array("abilities", "ability_template", "ability")
-   -- Load artifacts
-   self:_load_array("artifacts", "artifact_template", "artifact")
-
-   self:update_items()
-end
-
-function repository:update_items()
-   local items = {}
-
-   -- Add artifacts
-   items = util.concat_table(items, self.artifact)
-   -- Add other items
-   items = util.concat_table(items, self.weapon)
-   items = util.concat_table(items, self.armor)
-   items = util.concat_table(items, self.shield)
-   items = util.concat_table(items, self.wondrous)
-
-   self.items = items
-end
-
 function repository:spawn_characters()
    local t = {}
 
@@ -250,6 +220,14 @@ function repository:has_function(name, ...)
    end
 
    return false
+end
+
+function repository:load()
+   if not self.engine then
+      perror('Please select an engine first.')
+   end
+   -- Delegate loading to the engine.
+   self.engine:load_data(self)
 end
 
 function repository:call_function(name, ...)
@@ -318,17 +296,6 @@ function repository:new(p)
    self.__index =  self
 
    neu.data = {}
-
-   neu.monster = {}
-   neu.encounter = {}
-   neu.character = {}
-   neu.weapon = {}
-   neu.material = {}
-   neu.armor = {}
-   neu.shield = {}
-   neu.ability = {}
-   neu.artifact = {}
-   neu.wondrous = {}
 
    if p ~= nil then
       neu:open(p)

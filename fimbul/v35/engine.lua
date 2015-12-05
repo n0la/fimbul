@@ -106,6 +106,54 @@ function engine:create_battle(template, characters)
    return battle:new(template, characters)
 end
 
+function engine:init(r)
+   -- Initialise tables for things
+   -- we store. TODO: namespaces.
+   r.monster = {}
+   r.encounter = {}
+   r.character = {}
+   r.weapon = {}
+   r.material = {}
+   r.armor = {}
+   r.shield = {}
+   r.ability = {}
+   r.artifact = {}
+   r.wondrous = {}
+end
+
+function engine:update_items(r)
+   local items = {}
+
+   -- Add artifacts
+   items = util.concat_table(items, r.artifact)
+   -- Add other items
+   items = util.concat_table(items, r.weapon)
+   items = util.concat_table(items, r.armor)
+   items = util.concat_table(items, r.shield)
+   items = util.concat_table(items, r.wondrous)
+
+   r.items = items
+end
+
+function engine:load_data(r)
+   -- PCs and NPCs
+   r:_load_files("monsters", "monster_template", "monster")
+   r:_load_files("encounters", "encounter_template", "encounter")
+   r:_load_files("characters", "character_template", "character")
+   -- Items and Gear
+   r:_load_array("weapons", "weapon_template", "weapon")
+   r:_load_array("materials", "material_template", "material")
+   r:_load_array("armors", "armor_template", "armor")
+   r:_load_array("shields", "shield_template", "shield")
+   r:_load_array("wondrous", "wondrous_item_template", "wondrous")
+   -- Special magical abilities
+   r:_load_array("abilities", "ability_template", "ability")
+   -- Load artifacts
+   r:_load_array("artifacts", "artifact_template", "artifact")
+
+   self:update_items(r)
+end
+
 function engine:_find_item_and_spawn(r, s)
    local items = r:find("items", s)
 
