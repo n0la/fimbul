@@ -313,7 +313,7 @@ function magical_item:_parse_attributes(r, str)
       end
 
       -- End of loop - for continue
-      ::end_of_loop::
+::end_of_loop::
       i = i + 1
    end
 

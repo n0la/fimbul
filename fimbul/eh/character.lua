@@ -15,7 +15,7 @@ function character:new(y)
 
    -- Initialise abilities
    neu.abilities = {}
-   for _, a in base.pairs(rules.ability.names) do
+   for _, a in base.pairs(rules.abilities.names) do
       local lower = string.lower(a)
       neu[lower] = ability:new(a)
       table.insert(neu.abilities, neu[lower])
@@ -37,7 +37,7 @@ function character:spawn(r, t)
    neu.name = t.name
    neu.template = t
 
-   for _, a in base.pairs(rules.ability.names) do
+   for _, a in base.pairs(rules.abilities.names) do
       local at
       local name = string.lower(a)
       local ans = rules.short_ability_name(a)

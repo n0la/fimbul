@@ -1,70 +1,51 @@
 #!/usr/bin/env lua
 
-local util = require("fimbul.util")
-local lunit = require("lunit")
-local lfs = require("lfs")
-local pretty = require("pl.pretty")
+describe('util',
+function()
+   local util = require('fimbul.util')
+   local lfs = require('lfs')
 
-module("test_util", lunit.testcase, package.seeall)
+   function resolve(p)
+      local cur = lfs.currentdir()
 
-function resolve(p)
-   local cur = lfs.currentdir()
+      lfs.chdir(p)
+      local res = lfs.currentdir()
+      lfs.chdir(cur)
 
-   lfs.chdir(p)
-   local res = lfs.currentdir()
-   lfs.chdir(cur)
+      return res
+   end
 
-   return res
-end
+   describe('is_relative',
+   function()
+      assert.is.equal(util.is_relative("/test"), false)
+      assert.is.equal(util.is_relative("./test"), true)
+      assert.is.equal(util.is_relative("test"), true)
+   end)
 
-function test_util_is_relative()
-   assert(util.is_relative("/test") == false,
-          "A path starting with '/' is not relative.")
+   describe('realpath',
+   function()
+      local c = lfs.currentdir()
+      local res
 
-   assert(util.is_relative("./test") == true,
-          "A path starting with '.' is relative")
+      assert.is.equal(util.realpath("/.."), "/")
+      assert.is.equal(util.realpath("/../../../.."), "/")
+      assert.is.equal(util.realpath("."), c)
+      assert.is.equal(util.realpath(c), c)
+      assert.is.equal(util.realpath("myfile.txt"), c .."/myfile.txt")
 
-   assert(util.is_relative("test") == true,
-          "A path not starting with '/' is relative.")
-end
+      assert.is.equal(util.realpath("../../myfile.txt"),
+                      resolve(c .. "/../..") .. "/myfile.txt")
 
-function test_util_realpath()
-   local c = lfs.currentdir()
-   local res
+      res = util.realpath("../../../../../../../../../../../../myfile.txt")
+      assert.is.equal(res, "/myfile.txt")
 
-   res = util.realpath("/..")
-   assert(res == "/", "Does go beyound root path.")
+      res = util.realpath(".././myfile.txt")
+      assert.is.equal(res, resolve(c .. "/..") .. "/myfile.txt")
 
-   res = util.realpath("/../../../..")
-   assert(res == "/", "Does go beyound root path.")
+      res = util.realpath("./myfile.txt")
+      assert.is.equal(res, c .. "/myfile.txt")
 
-   res = util.realpath(".")
-   assert(res == c, "Does not properly resolve single '.'")
-
-   res = util.realpath(c)
-   assert(res == c, "Does not properly resolve current working dir")
-
-   res = util.realpath("myfile.txt")
-   assert(res == c .."/myfile.txt",
-          "Does not properly resolve local filenames.")
-
-   res = util.realpath("../../myfile.txt")
-   assert(res == resolve(c .. "/../..") .. "/myfile.txt",
-          "Does not properly resolve '..'")
-
-   res = util.realpath("../../../../../../../../../../../../myfile.txt")
-   assert(res == "/myfile.txt",
-          "Does not properly resolve multiple '..'")
-
-   res = util.realpath(".././myfile.txt")
-   assert(res == resolve(c .. "/..") .. "/myfile.txt",
-          "Does not properly resolve '..' and '.'")
-
-   res = util.realpath("./myfile.txt")
-   assert(res == c .. "/myfile.txt",
-          "Does not propertly ignore current markers.")
-
-   res = util.realpath("////myfile.txt")
-   assert(res == "/myfile.txt",
-          "Does not remove multiple '/'")
-end
+      res = util.realpath("////myfile.txt")
+      assert.is.equal(res, "/myfile.txt")
+   end)
+end)

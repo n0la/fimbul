@@ -1,46 +1,47 @@
 #!/usr/bin/env lua
 
--- Unit test for stacked value
-module("test_v35_attribute", lunit.testcase, package.seeall)
+describe('fimbul.v35.engine',
+function()
+   local attribute = require("fimbul.v35.attribute")
 
-local attribute = require("fimbul.v35.attribute")
-local lunit = require("lunit")
-local pretty = require("pl.pretty")
+   describe('constructor',
+   function()
+      local a = attribute:new()
 
-function test_construction()
-   local a = attribute:new()
+      assert.are_not.equal(a, nil)
 
-   assert(a, "no object was created")
+      assert.is.equal(a:value(), 0)
+      assert.is.equal(a:count(), 0)
+      assert.is.equal(a:modifier(), -5)
+   end)
 
-   assert(a:value() == 0, "object was not properly initialised")
-   assert(a:count() == 0, "object was not properly initialised")
-   assert(a:modifier() == -5, "object does not properly calculate modifier")
-end
+   describe('rules',
+   function()
+      local a = attribute:new()
 
-function test_rules()
-   local a = attribute:new()
+      assert.are_not.equal(a, nil)
+      assert.is.equal(a:stacking_rule("dodge"), true)
+   end)
 
-   assert(a, "no object created")
-   assert(a:stacking_rule("dodge") == true, "dodge don't stack")
-end
+   describe('modifier',
+   function()
+      local a = attribute:new()
 
-function test_modifier()
-   local a = attribute:new()
+      a:add(10, "base")
+      assert.is.equal(a:modifier(), 0)
 
-   a:add(10, "base")
-   assert(a:modifier() == 0, "invalid modifier")
+      a:add(6, "enhancement")
+      assert.is.equal(a:modifier(), 3)
 
-   a:add(6, "enhancement")
-   assert(a:modifier() == 3, "invalid modifier")
+      a:add(5, "level")
+      assert.is.equal(a:modifier(), 5)
 
-   a:add(5, "level")
-   assert(a:modifier() == 5, "invalid modifier")
+      a:add(3, "inherent")
+      assert.is.equal(a:value(), 24)
+      assert.is.equal(a:modifier(), 7)
 
-   a:add(3, "inherent")
-   assert(a:value() == 24, "invalid value")
-   assert(a:modifier() == 7, "invalid modifier")
-
-   a:add(-2, "race")
-   assert(a:value() == 22, "invalid value")
-   assert(a:modifier() == 6, "invalid modifier")
-end
+      a:add(-2, "race")
+      assert.is.equal(a:value(), 22)
+      assert.is.equal(a:modifier(), 6)
+   end)
+end)

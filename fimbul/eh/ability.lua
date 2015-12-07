@@ -10,8 +10,8 @@ local rules = require('fimbul.eh.rules')
 function ability:new(name)
    local neu = {}
 
-   neu.name = name
-   neu._rank = rules.ability.AVERAGE
+   neu._name = name
+   neu._rank = rules.abilities.AVERAGE
 
    setmetatable(neu, self)
    self.__index = self
@@ -22,13 +22,16 @@ end
 -- Name of this ability
 --
 function ability:name()
-   return self.name
+   return self._name
 end
 
 -- Short name: first three letters capitalised
 --
 function ability:short_name()
-   return string.upper(self.name:sub(0, 3))
+   if self:name() == nil then
+      return nil
+   end
+   return string.upper(self:name():sub(0, 3))
 end
 
 -- Rank
@@ -37,6 +40,14 @@ function ability:rank(value)
    if value == nil then
       return self._rank
    else
+      if value < rules.abilities.LOWEST_RANK then
+         error('Ability rank below ' .. rules.abilities.LOWEST_RANK ..
+                  ' are not allowed: ' .. value)
+      end
+      if value > rules.abilities.HIGHEST_RANK then
+         error('Ability rank above ' .. rules.abilities.HIGHEST_RANK ..
+                  ' are not allowed: ' .. value)
+      end
       -- TODO: Checks:
       self._rank = value
    end
@@ -46,7 +57,7 @@ end
 --
 function ability:cost()
    local r = self:rank()
-   if r >= rules.ability.AVERAGE then
+   if r >= rules.abilities.AVERAGE then
       return rules.calculate_rank_cost(5, r)
    else
       -- Below 4 is minus cost.
@@ -57,7 +68,7 @@ end
 -- Ability modifier
 --
 function ability:modifier()
-   return self:rank() - rules.ability.AVERAGE
+   return self:rank() - rules.abilities.AVERAGE
 end
 
 return ability

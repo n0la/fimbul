@@ -1,14 +1,14 @@
 #!/usr/bin/env lua
 
--- Unit test for stacked value
-module("test_v35_creature", lunit.testcase, package.seeall)
+describe('test_v35_creature',
+function()
 
-local creature = require("fimbul.v35.creature")
-local lunit = require("lunit")
-local pretty = require("pl.pretty")
+   local creature = require("fimbul.v35.creature")
 
-function test_construction()
-   local c = creature:new()
+   describe('constructor',
+   function()
+      local c = creature:new()
+      -- The class is far from finished. So: TODO
+   end)
 
-   -- TODO
-end
+end)

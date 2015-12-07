@@ -7,7 +7,7 @@ local skill = {}
 local rules = require('fimbul.eh.rules')
 
 function skill:new(y)
-   local neu = y or {}
+   local neu = {}
 
    neu._rank = 0
 
@@ -53,6 +53,14 @@ function skill:is_speciality()
    return self.specialityof ~= nil
 end
 
+function skill:speciality_of(neu)
+   if neu ~= nil then
+      self.specialityof = neu
+   else
+      return self.specialityof
+   end
+end
+
 -- Name of the parent skill
 --
 function skill:parent_skill()
@@ -65,8 +73,18 @@ function skill:rank(neu)
    if neu == nil then
       return self._rank or 0
    else
-      -- TODO: Checks.
+      if neu < rules.skills.LOWEST_RANK then
+         error('Skill ranks below ' .. rules.skills.LOWEST_RANK ..
+                  ' are not allowed: ' .. neu)
+      end
+
+      if neu > rules.skills.HIGHEST_RANK then
+         error('Skill ranks above ' .. rules.skills.HIGHEST_RANK ..
+                  ' are not allowed: ' .. neu)
+      end
+
       self._rank = neu
+      self._activated = (neu > 0)
    end
 end
 
@@ -79,7 +97,7 @@ end
 -- Is the skill activated?
 --
 function skill:activated()
-   return self.activated or false
+   return self._activated or false
 end
 
 -- Calculate the cost of the skill including activation and ranks.

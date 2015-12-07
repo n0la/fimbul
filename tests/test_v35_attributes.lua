@@ -1,27 +1,27 @@
 #!/usr/bin/env lua
 
--- Unit test for stacked value
-module("test_v35_attributes", lunit.testcase, package.seeall)
+describe('test_v35_attributes',
+function()
 
-local attributes = require("fimbul.v35.attributes")
-local lunit = require("lunit")
-local pretty = require("pl.pretty")
+   local attributes = require("fimbul.v35.attributes")
 
-local function test_attribute(a, name)
-   assert(a, "no " .. name .. " attribute")
-   assert(a:value() == 0, "attribute " .. name .. " is not zero")
-   assert(a:modifier() == -5, "attribute " .. name .. " modifier is wrong")
-end
+   function test_attribute(a, name)
+      assert.are_not.equal(a, nil)
+      assert.is.equal(a:value(), 0)
+      assert.is.equal(a:modifier(), -5)
+   end
 
-function test_construction()
-   local a = attributes:new()
+   describe('constructor',
+   function()
+      local a = attributes:new()
 
-   assert(a, "no object created")
+      assert.are_not.equal(a, nil)
 
-   test_attribute(a.strength, "strength")
-   test_attribute(a.dexterity, "dexterity")
-   test_attribute(a.constitution, "constitution")
-   test_attribute(a.intelligence, "intelligence")
-   test_attribute(a.wisdom, "wisdom")
-   test_attribute(a.charisma, "charisma")
-end
+      test_attribute(a.strength, "strength")
+      test_attribute(a.dexterity, "dexterity")
+      test_attribute(a.constitution, "constitution")
+      test_attribute(a.intelligence, "intelligence")
+      test_attribute(a.wisdom, "wisdom")
+      test_attribute(a.charisma, "charisma")
+   end)
+end)

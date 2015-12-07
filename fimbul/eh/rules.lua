@@ -7,13 +7,18 @@ local rules = {}
 
 local string = require('string')
 
-rules.ability = {}
-rules.ability.AVERAGE = 5
+rules.abilities = {}
 
-rules.ability.names = {'Strength', 'Constitution', 'Dexterity',
-                       'Perception', 'Intelligence', 'Charisma'}
+rules.abilities.LOWEST_RANK = 0
+rules.abilities.HIGHEST_RANK = 10
+rules.abilities.AVERAGE = 5
+rules.abilities.names = {'Strength', 'Constitution', 'Dexterity',
+                         'Perception', 'Intelligence', 'Charisma'}
 
 rules.skills = {}
+
+rules.skills.LOWEST_RANK = 0
+rules.skills.HIGHEST_RANK = 10
 
 rules.skills.SPECIAL_ACTIVATION_COST = 10
 rules.skills.ACTIVATION_COST = 1

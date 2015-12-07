@@ -58,12 +58,9 @@ function repository:_load_config()
    assert(c.name, "Please specify a name for your repository.")
    assert(c.game, "Please specify a game for your repository.")
 
-   local engine = self:load_engine(c.game)
+   local e = self:load_engine(c.game)
 
-   self.engine = engine
-   -- Initialise engine.
-   self.engine:init(self)
-
+   self:engine(e)
    self.config = c
 end
 
@@ -178,7 +175,7 @@ function repository:_load_files(what, template, tbl)
       if not y then
          error("Failed to load file " .. m)
       end
-      local tmp = self.engine:create_template(template, y)
+      local tmp = self._engine:create_template(template, y)
       table.insert(t, tmp)
    end
 end
@@ -198,7 +195,7 @@ function repository:_load_array(what, template, tbl)
       end
 
       for _, i in pairs(y) do
-         local tmp = self.engine:create_template(template, i)
+         local tmp = self._engine:create_template(template, i)
          table.insert(t, tmp)
       end
    end
@@ -257,12 +254,18 @@ function repository:has_function(name, ...)
    return false
 end
 
+function repository:engine(neu)
+   self._engine = neu
+   -- Initialise engine.
+   self._engine:init(self)
+end
+
 function repository:load()
-   if not self.engine then
+   if not self._engine then
       perror('Please select an engine first.')
    end
    -- Delegate loading to the engine.
-   self.engine:load(self)
+   self._engine:load(self)
 end
 
 function repository:call_function(name, ...)
@@ -276,24 +279,24 @@ function repository:call_function(name, ...)
 end
 
 function repository:parse_item(s)
-   if not self.engine then
+   if not self._engine then
       error('No engine loaded. Please load a repository first.')
    end
    logger.verbose("Parsing item " .. s)
-   return self.engine:parse_item(self, s)
+   return self._engine:parse_item(self, s)
 end
 
 function repository:spawn(t)
-   if not self.engine then
+   if not self._engine then
       error('No engine loaded. Please load a repository first.')
    end
    logger.verbose("Spawning " .. t.templatetype .. ' with the name ' .. t.name)
-   return self.engine:spawn(self, t)
+   return self._engine:spawn(self, t)
 end
 
 function repository:create_battle(e)
    -- Create battle with template and spawned characters
-   return self.engine:create_battle(e, self:spawn_characters())
+   return self._engine:create_battle(e, self:spawn_characters())
 end
 
 function repository.create(dir, args)
