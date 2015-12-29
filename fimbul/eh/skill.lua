@@ -28,17 +28,25 @@ function skill:spawn(r, t)
       error('Skill must specify abilities')
    end
 
-   neu.name = t.name or ''
+   neu._name = t.name or ''
    -- Is it special?
-   neu.special = t.special or false
+   neu._special = t.special or false
    -- Abilities it uses
-   neu.uses = t.uses or {}
+   neu._uses = t.uses or {}
 
    -- Is it a speciality?
-   neu.specialityof = t.specialiaty_of or nil
+   neu._specialityof = t.specialiaty_of or nil
    -- TODO: Check speciality parent skill for existence
 
    return neu
+end
+
+function skill:uses()
+   return self._uses
+end
+
+function skill:name()
+   return self._name
 end
 
 -- Is the skill special?

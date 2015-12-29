@@ -118,7 +118,7 @@ local commands = {
 
 if arg[1] == nil or not util.containskey(commands, arg[1]) then
    optparser:help()
-   os.exit(1)
+   os.exit(0)
 end
 
 -- Remove command

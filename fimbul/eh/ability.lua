@@ -3,18 +3,21 @@
 local ability = {}
 
 local base = _G
-local string = require('string')
 
 local rules = require('fimbul.eh.rules')
 
-function ability:new(name)
+function ability:new(name, rank)
    local neu = {}
-
-   neu._name = name
-   neu._rank = rules.abilities.AVERAGE
 
    setmetatable(neu, self)
    self.__index = self
+
+   neu:rank(rank or rules.abilities.AVERAGE)
+   if not rules.valid_ability(name) then
+      error(name .. ' is not a valid ability for EH.')
+   end
+
+   neu._name = name
 
    return neu
 end
@@ -28,10 +31,7 @@ end
 -- Short name: first three letters capitalised
 --
 function ability:short_name()
-   if self:name() == nil then
-      return nil
-   end
-   return string.upper(self:name():sub(0, 3))
+   return rules.short_ability_name(self:name() or '')
 end
 
 -- Rank

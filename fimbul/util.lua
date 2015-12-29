@@ -34,6 +34,17 @@ function util.lookahead(t, pos, f)
    return false, 0
 end
 
+function util.shift(t)
+   if #t == 0 then
+      return nil
+   end
+
+   r = t[1]
+   table.remove(t, 1)
+
+   return r
+end
+
 function util.remove(t, i, n)
    local c = 0
 

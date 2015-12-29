@@ -6,6 +6,7 @@
 local rules = {}
 
 local string = require('string')
+local util = require('fimbul.util')
 
 rules.abilities = {}
 
@@ -22,6 +23,13 @@ rules.skills.HIGHEST_RANK = 10
 
 rules.skills.SPECIAL_ACTIVATION_COST = 10
 rules.skills.ACTIVATION_COST = 1
+
+function rules.valid_ability(name)
+   local n = string.lower(name)
+   n = util.capitalise(name)
+
+   return util.contains(rules.abilities.names, n)
+end
 
 function rules.short_ability_name(name)
    return string.upper(name:sub(0, 3))
