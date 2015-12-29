@@ -6,6 +6,7 @@ local background = {}
 
 local rules = require('fimbul.eh.rules')
 local ability = require('fimbul.eh.ability')
+local util = require('fimbul.util')
 
 function background:new(y)
    local neu = {}
@@ -34,7 +35,7 @@ function background:spawn(r, t)
    for ab, ra in base.pairs(t.abilities or {}) do
       -- Let ability do the name checking for us.
       a = ability:new(ab)
-      neu._abilities[a:name()] = ra
+      neu._abilities[util.capitalise(a:name())] = ra
    end
 
    for sk, ra in base.pairs(t.skills or {}) do
@@ -81,7 +82,7 @@ function background:actual_cost(r, t)
    end
 
    for _, a in base.pairs(self._abilities) do
-      cost = cost + (a * 5)
+      cost = cost + (a * rules.abilities.BACKGROUND_FLAT_COST)
    end
 
    return cost

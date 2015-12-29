@@ -10,6 +10,8 @@ local util = require('fimbul.util')
 
 rules.abilities = {}
 
+rules.abilities.BACKGROUND_FLAT_COST = 5
+
 rules.abilities.LOWEST_RANK = 0
 rules.abilities.HIGHEST_RANK = 10
 rules.abilities.AVERAGE = 5

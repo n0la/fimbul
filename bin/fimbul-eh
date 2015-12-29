@@ -36,19 +36,21 @@ local r
 local repo
 
 function print_background(b)
+   print("---")
    print('Name: ' .. b:name())
    print('Cost: ' .. b:cost())
    print('Actual Cost: ' .. b:actual_cost())
 
    print("Abilities:")
-   for _, a in ipairs(b:abilities()) do
-      print('  ' .. a:name() .. ': ' .. a:rank() .. "\n")
+   for a, r in pairs(b:abilities()) do
+      print('  ' .. a .. ': ' .. r)
    end
 
    print("Skills:")
    for _, s in ipairs(b:skills()) do
       print(' ' .. s:name() .. ': ' .. s:rank())
    end
+   print("...")
 end
 
 function eh_background()
@@ -66,6 +68,7 @@ function eh_background()
    -- Print background
    for _, i in ipairs(b) do
       local bg = r:spawn(i)
+      -- Make proper YAML
       print_background(bg)
    end
 end
