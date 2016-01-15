@@ -27,13 +27,11 @@ install:
 
 install-dev:
 	ln -sf ${WORK_DIR}/bin/fimbul ${PREFIX}/bin/fimbul
-	ln -sf ${WORK_DIR}/bin/dice ${PREFIX}/bin/dice
 	ln -sf ${WORK_DIR}/fimbul ${PREFIX}/share/lua/5.2/fimbul
 	ln -sf ${WORK_DIR}/bin ${PREFIX}/lib/fimbul
 
 uninstall-dev:
 	rm ${PREFIX}/bin/fimbul || true
-	rm ${PREFIX}/bin/dice || true
 	rm ${PREFIX}/share/lua/5.2/fimbul || true
 	rm ${PREFIX}/lib/fimbul || true
 
