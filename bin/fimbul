@@ -3,6 +3,10 @@
 LUA=lua
 MODULEPATH=/usr/lib/fimbul
 
+if ! [ -d "$MODULEPATH" ]; then
+    MODULEPATH=/usr/local/lib/fimbul
+fi
+
 usage()
 {
     COUNT=0
@@ -20,7 +24,7 @@ usage()
 }
 
 for li in lua5.2 lua52; do
-    LI=$(which $li)
+    LI=$(which $li 2>/dev/null)
     RET=$?
     if [ $RET = 0 ]; then
         LUA="$LI"

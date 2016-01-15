@@ -3,11 +3,17 @@
 
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 WORK_DIR := $(shell dirname ${MKFILE_PATH})
-LUA = $(shell which "lua5.2")
+LUA = $(shell which "lua5.2" 2>/dev/null)
+
+ifeq "${LUA}" ""
+LUA = $(shell which "lua52")
+endif
 
 TESTFOLDER := tests
 TESTS := $(wildcard ${TESTFOLDER}/*.lua)
 TESTTARGET := $(subst .lua,.test,${TESTS})
+
+PREFIX := /usr
 
 %.test: %.lua
 	busted --lua=${LUA} $<
@@ -20,16 +26,16 @@ install:
 	@echo "ahead with: sudo make install-dev."
 
 install-dev:
-	ln -sf ${WORK_DIR}/bin/fimbul /usr/bin/fimbul
-	ln -sf ${WORK_DIR}/bin/dice /usr/bin/dice
-	ln -sf ${WORK_DIR}/fimbul /usr/share/lua/5.2/fimbul
-	ln -sf ${WORK_DIR}/bin /usr/lib/fimbul
+	ln -sf ${WORK_DIR}/bin/fimbul ${PREFIX}/bin/fimbul
+	ln -sf ${WORK_DIR}/bin/dice ${PREFIX}/bin/dice
+	ln -sf ${WORK_DIR}/fimbul ${PREFIX}/share/lua/5.2/fimbul
+	ln -sf ${WORK_DIR}/bin ${PREFIX}/lib/fimbul
 
 uninstall-dev:
-	rm /usr/bin/fimbul || true
-	rm /usr/bin/dice || true
-	rm /usr/share/lua/5.2/fimbul || true
-	rm /usr/lib/fimbul || true
+	rm ${PREFIX}/bin/fimbul || true
+	rm ${PREFIX}/bin/dice || true
+	rm ${PREFIX}/share/lua/5.2/fimbul || true
+	rm ${PREFIX}/lib/fimbul || true
 
 test: ${TESTTARGET}
 
