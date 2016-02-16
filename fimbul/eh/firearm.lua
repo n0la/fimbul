@@ -16,8 +16,8 @@ function firearm:new(y)
    self.modes = {}
    self.magazine = {}
    self.recoil = 0
-   self.cost = 0
-   self.weight = 0
+   self._cost = 0
+   self._weight = 0
 
    return neu
 end
@@ -39,14 +39,22 @@ function firearm:spawn(r, t)
    neu.modes = util.deepcopy(t.modes)
    neu.magazine = util.deepcopy(t.magazine)
    neu.recoil = t.recoil or 1
-   neu.cost = t.cost or 50
-   neu.weight = t.weight or 0.7
+   neu._cost = t.cost or 50
+   neu._weight = t.weight or 0.7
 
    return neu
 end
 
 function firearm:_parse_attributes(r, s)
    -- Nothing to do.
+end
+
+function firearm:cost()
+   return self._cost
+end
+
+function firearm:weight()
+   return self._weight
 end
 
 function firearm:caliber()
@@ -72,8 +80,8 @@ function firearm:string(extended)
    s = self.name .. ' [' .. table.concat(self.ammunition, ', ') .. ']'
    if e then
       s = s .. "\n"
-      s = s .. "Weight: " .. self.weight .. "\n"
-      s = s .. "Cost: " .. self.cost .. "\n"
+      s = s .. "Weight: " .. self:weight() .. "\n"
+      s = s .. "Cost: " .. self:cost() .. "\n"
       s = s .. "Recoil: " .. self.recoil .. "\n"
       s = s .. "Modes: " .. table.concat(self.modes, ', ') .. "\n"
       s = s .. "Magazine cost: " .. self:magazine_cost()

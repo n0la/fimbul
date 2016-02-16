@@ -8,6 +8,10 @@ local rules = {}
 local string = require('string')
 local util = require('fimbul.util')
 
+rules.character = {}
+rules.character.BASE_HP = 25
+rules.character.BASE_CARRY_WEIGHT = 10
+
 rules.abilities = {}
 
 rules.abilities.BACKGROUND_FLAT_COST = 5

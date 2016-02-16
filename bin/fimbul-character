@@ -1,0 +1,63 @@
+#!/usr/bin/env lua
+
+local pretty = require('pl.pretty')
+local std = require('std')
+
+local util = require('fimbul.util')
+local repository = require('fimbul.repository')
+
+local cli = require('fimbul.ui.cli')
+
+local optparser = std.optparse(
+[[
+fimbul-character 0.1
+
+Part of the fimbul project. All rights reserved.
+
+Usage: fimbul-character [options] [command]
+
+The fimbul-character reads your character (PC or NPC) information from your
+repository (or a file) and does all sorts of calculations for you.
+
+Options:
+  -r --repository=DIR   Alternate path to repository to use.
+  -n --name=NAME        Name of the character
+
+Commands:
+  calculate         Calculate the character and show stats.
+
+Please report bugs to https://github.com/n0la/fimbul
+]])
+
+local repo, r
+local cmd
+
+_G.arg, _G.opts = optparser:parse(_G.arg)
+
+cmd = arg[1]
+table.remove(arg, 1)
+
+function char_calculate()
+   local n = opts['name']
+   local ct, c = r:spawn_character(n)
+
+   print('Character: ' .. c.name)
+   print('CCP cost: ' .. c:cost())
+   print('Max HP: ' .. c:max_hp())
+   print('Height: ' .. c:height())
+   print('Weight: ' .. c:weight())
+   print('Total weight: ' .. c:total_weight())
+   print('Max carry weight: ' .. c:max_carry_weight())
+   print('Equipment:')
+   print('  Weight: ' .. c:equipment_weight())
+   print('  Cost: ' .. c:equipment_cost())
+end
+
+local commands = {
+   ['calculate'] = {handler = char_calculate}
+}
+
+repo = cli.standard_args(_G.opts)
+r = cli.open_repository(repo)
+
+cli.dispatch_command(commands, cmd)

@@ -21,8 +21,8 @@ The fimbul-eh command helps with Endless Horizons specific tasks, such as
 calculating the cost of backgrounds and so forth.
 
 Options:
-  -r --repository   Alternate path to repository to use.
-  -v --verbose      Verbose output.
+  -r --repository=DIR   Alternate path to repository to use.
+  -v --verbose          Verbose output.
 
 Commands:
   background      Calculate cost of background. Takes one parameter: The

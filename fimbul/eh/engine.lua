@@ -105,6 +105,10 @@ function engine:create_template(what, ...)
    end
 end
 
+function engine:characters(r)
+   return r.eh.characters
+end
+
 function engine:load(r)
    r:_load_array('skills', 'skill_template', r.eh.skills)
    r:_load_array('backgrounds', 'background_template', r.eh.backgrounds)

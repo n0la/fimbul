@@ -224,24 +224,21 @@ function repository:find(tbl, ...)
    return t
 end
 
-function repository:all(what)
-   local r = {}
+function repository:spawn_character(name)
+   local ct
 
-   r = util.concat_table(r, self:find("monster", what))
-   r = util.concat_table(r, self:find("encounter", what))
-
-   return r
-end
-
-function repository:spawn_characters()
-   local t = {}
-
-   for _, c in base.pairs(self.character) do
-      local char = self:spawn(c)
-      table.insert(t, char)
+   ct = self:find(self._engine:characters(r), name)
+   if ct == nil or #ct == 0 then
+      error('No such character found: ' .. name)
    end
 
-   return t
+   local c = self:spawn(ct[1])
+
+   if c == nil then
+      error('Failed to spawn character: ' .. name)
+   end
+
+   return ct, c
 end
 
 function repository:has_function(name, ...)

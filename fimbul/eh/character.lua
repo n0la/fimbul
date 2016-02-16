@@ -22,6 +22,9 @@ function character:new(y)
    end
 
    neu.skills = {}
+   neu.equipment = {}
+   neu._credits = 0
+   neu._weight = 0
    neu.name = ''
 
    return neu
@@ -36,6 +39,10 @@ function character:spawn(r, t)
 
    neu.name = t.name
    neu.template = t
+
+   neu._weight = t.weight or 0
+   neu._height = t.height or 0
+   neu._credits = t.credits or 0
 
    for _, a in base.pairs(rules.abilities.names) do
       local at
@@ -58,11 +65,10 @@ function character:spawn(r, t)
       end
 
       if at then
-         neu[name] = ability:new(at)
+         neu[name] = ability:new(name, at)
       end
    end
 
-   pretty = require('pl.pretty')
    if t.skills then
       for skill, rank in base.pairs(t.skills) do
          local s = r:find(r.eh.skills, skill)
@@ -77,7 +83,63 @@ function character:spawn(r, t)
       end
    end
 
+   if t.equipment then
+      for _, item in base.pairs(t.equipment) do
+         local it = r:parse_item(item)
+
+         if it == nil then
+            error('No such item: ' .. item)
+         end
+
+         table.insert(neu.equipment, it)
+      end
+   end
+
    return neu
+end
+
+function character:weight()
+   return self._weight
+end
+
+function character:height()
+   return self._height
+end
+
+function character:max_hp()
+   return rules.character.BASE_HP
+      + self.strength:rank()
+      + self.constitution:rank()
+end
+
+function character:max_carry_weight()
+   return rules.character.BASE_CARRY_WEIGHT
+      + self.constitution:rank()
+      + self.constitution:rank()
+end
+
+function character:equipment_weight()
+   local w = 0
+
+   for _, i in base.pairs(self.equipment) do
+      w = w + i:weight()
+   end
+
+   return w
+end
+
+function character:equipment_cost()
+   local c = 0
+
+   for _, i in base.pairs(self.equipment) do
+      c = c + i:cost()
+   end
+
+   return c
+end
+
+function character:total_weight()
+   return self:weight() + self:equipment_weight()
 end
 
 function character:cost()
