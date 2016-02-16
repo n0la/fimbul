@@ -4,6 +4,7 @@ local firearm = {}
 
 local util = require('fimbul.util')
 local rules = require('fimbul.eh.rules')
+local range = require('fimbul.eh.range')
 
 function firearm:new(y)
    local neu = y or {}
@@ -12,7 +13,7 @@ function firearm:new(y)
    self.__index = self
 
    self.ammunition = {}
-   self.range = 0
+   self._range = range:new(0)
    self.modes = {}
    self.magazine = {}
    self.recoil = 0
@@ -35,7 +36,7 @@ function firearm:spawn(r, t)
    neu.aliases = util.deepcopy(t.aliases or {})
 
    neu.ammunition = util.deepcopy(t.ammunition)
-   neu.range = t.range or 50
+   neu._range:value(t.range or 0)
    neu.modes = util.deepcopy(t.modes)
    neu.magazine = util.deepcopy(t.magazine)
    neu.recoil = t.recoil or 1
@@ -47,6 +48,10 @@ end
 
 function firearm:_parse_attributes(r, s)
    -- Nothing to do.
+end
+
+function firearm:range()
+   return self._range
 end
 
 function firearm:cost()
@@ -70,7 +75,7 @@ function firearm:has_full_auto()
 end
 
 function firearm:magazine_cost()
-   return self.cost * rules.equipment.MAGAZINE_COST
+   return self:cost() * rules.equipment.MAGAZINE_COST
 end
 
 function firearm:string(extended)
@@ -80,6 +85,7 @@ function firearm:string(extended)
    s = self.name .. ' [' .. table.concat(self.ammunition, ', ') .. ']'
    if e then
       s = s .. "\n"
+      s = s .. "Ranges: [" .. table.concat(self:range():ranges(), ', ') .. "]\n"
       s = s .. "Weight: " .. self:weight() .. "\n"
       s = s .. "Cost: " .. self:cost() .. "\n"
       s = s .. "Recoil: " .. self.recoil .. "\n"

@@ -34,6 +34,21 @@ rules.equipment = {}
 
 rules.equipment.MAGAZINE_COST = 0.1
 
+rules.combat = {}
+
+rules.combat.OUTOF_RANGE = 'outof'
+rules.combat.MAXIMUM_RANGE = 'maximum'
+rules.combat.FAR_RANGE = 'far'
+rules.combat.MEDIUM_RANGE = 'medium'
+rules.combat.CLOSE_RANGE = 'close'
+
+rules.combat.range = {
+   [rules.combat.MAXIMUM_RANGE] = 0.5,
+   [rules.combat.FAR_RANGE] = 0.25,
+   [rules.combat.MEDIUM_RANGE] = 0.15,
+   [rules.combat.CLOSE_RANGE] = 0.0
+}
+
 function rules.valid_ability(name)
    local n = string.lower(name)
    n = util.capitalise(name)
