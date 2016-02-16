@@ -26,6 +26,10 @@ rules.skills.HIGHEST_RANK = 10
 rules.skills.SPECIAL_ACTIVATION_COST = 10
 rules.skills.ACTIVATION_COST = 1
 
+rules.equipment = {}
+
+rules.equipment.MAGAZINE_COST = 0.1
+
 function rules.valid_ability(name)
    local n = string.lower(name)
    n = util.capitalise(name)

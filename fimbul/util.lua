@@ -48,10 +48,12 @@ end
 function util.remove(t, i, n)
    local c = 0
 
-   while c < n and i >= #t do
+   while c < n and i <= #t do
       table.remove(t, i)
       c = c + 1
    end
+
+   return t
 end
 
 function util.splice(t, i, j)

@@ -58,7 +58,7 @@ for _, i in pairs(arg) do
    ok, item = pcall(repository.parse_item, r, i)
    if not ok then
       io.stderr:write('Error parsing item "' .. i .. '": ' ..
-                         util.prettify(item) .. "\n")
+                         item .. "\n")
    elseif ok and item == nil then
       io.stderr:write('No such base item: ' .. i .. "\n")
    else

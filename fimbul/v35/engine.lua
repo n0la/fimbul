@@ -186,6 +186,7 @@ function engine:parse_item(r, s)
          t = util.shallowcopy(parts)
          util.remove(t, pos, i)
          it = item
+         -- TODO: Most do split() anyhow.
          it:_parse_attributes(r, table.concat(t, " "))
          return true
       else
