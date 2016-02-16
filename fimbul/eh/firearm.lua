@@ -45,7 +45,7 @@ function firearm:spawn(r, t)
    return neu
 end
 
-function firearm:_parse_attribute(r, s)
+function firearm:_parse_attributes(r, s)
    -- Nothing to do.
 end
 
@@ -76,7 +76,7 @@ function firearm:string(extended)
       s = s .. "Cost: " .. self.cost .. "\n"
       s = s .. "Recoil: " .. self.recoil .. "\n"
       s = s .. "Modes: " .. table.concat(self.modes, ', ') .. "\n"
-      s = s .. "Magazine cost: " .. self:magazine_cost() .. "\n"
+      s = s .. "Magazine cost: " .. self:magazine_cost()
    end
 
    return s
