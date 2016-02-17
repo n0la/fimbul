@@ -146,8 +146,10 @@ function util.getname(t)
       return nil
    end
 
-   if t.name then
+   if type(t.name) == 'string' then
       return t.name
+   elseif type(t._name) == 'string' then
+      return t._name
    end
 
    for _, c in base.pairs(t) do
@@ -279,6 +281,23 @@ function util.containsif(t, v, C)
    end
 
    return false
+end
+
+function util.find_name(t, v)
+   local l = string.lower(v)
+
+   for _, i in base.pairs(t) do
+      if type(i) == 'table' then
+         local n = util.getname(i)
+         for _, name in base.pairs({n, table.unpack(i.aliases or {})}) do
+            if string.lower(name) == l then
+               return i
+            end
+         end
+      end
+   end
+
+   return nil
 end
 
 function util.foreach(t, f, m)

@@ -45,9 +45,9 @@ function char_calculate()
       return 3
    end
 
-   local ct, c = r:spawn_character(n)
+   local c = r:spawn_character(n)
 
-   if ct == nil or c == nil then
+   if c == nil then
       io.stderr:write("No such character: " .. name .. "\n")
       return 3
    end

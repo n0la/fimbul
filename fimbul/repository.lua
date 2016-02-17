@@ -224,21 +224,27 @@ function repository:find(tbl, ...)
    return t
 end
 
+function repository:create_combat()
+   return self._engine:create_combat(self)
+end
+
+function repository:find_spawn_first(tbl, ...)
+   local r = self:find(tbl, ...)
+
+   if r == nil or #r == 0 then
+      error('Nothing found for spawning.')
+   end
+
+   local o = self:spawn(r[1])
+   if o == nil then
+      error('Failed to spawn object')
+   end
+
+   return o, r[1]
+end
+
 function repository:spawn_character(name)
-   local ct
-
-   ct = self:find(self._engine:characters(r), name)
-   if ct == nil or #ct == 0 then
-      error('No such character found: ' .. name)
-   end
-
-   local c = self:spawn(ct[1])
-
-   if c == nil then
-      error('Failed to spawn character: ' .. name)
-   end
-
-   return ct, c
+   return self:find_spawn_first(self._engine:characters(self), name)
 end
 
 function repository:has_function(name, ...)

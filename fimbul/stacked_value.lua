@@ -32,12 +32,12 @@ stacked_value.STACK = true
 stacked_value.DONT_STACK = false
 stacked_value.DIFFERENT_VALUES = "value"
 
-function stacked_value:add(v, t)
+function stacked_value:add(v, t, n)
    assert(v, "No value given")
    -- Assume "base" type
    local ty = t or "untyped"
 
-   local value = { value = v, type = ty }
+   local value = { value = v, type = ty, note = n }
 
    -- Add value
    table.insert(self.values, value)
@@ -136,14 +136,20 @@ function stacked_value:string()
 
    for i = 1, #self.values do
       local v = self.values[i]
+      local val = v.value
       if i > 1 then
-         if v.value >= 0 then
+         if val >= 0 then
             str = str .. ' + '
          else
             str = str .. ' - '
+            -- Make positive for printing
+            val = val * -1
          end
       end
-      str = str .. v.value .. ' [' .. v.type .. ']'
+      str = str .. val .. ' [' .. v.type .. ']'
+      if v.note ~= nil then
+         str =  str .. ' (' .. v.note .. ')'
+      end
    end
 
    str = str .. ' = ' .. self:value()

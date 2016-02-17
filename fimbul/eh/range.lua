@@ -10,7 +10,7 @@ function range:new(value)
    setmetatable(neu, self)
    self.__index = self
 
-   neu._value = value
+   neu._value = value or 0
 
    return neu
 end
@@ -38,20 +38,36 @@ function range:ranges()
    return r
 end
 
+function range:maximum_upper_bound()
+   return self:value()
+end
+
 function range:maximum_lower_bound()
-   return self:value() * rules.combat.range[rules.combat.MAXIMUM_RANGE]
+   return self:value() * rules.combat.range.bounds[rules.combat.range.MAXIMUM]
+end
+
+function range:far_lower_bound()
+   return self:value() * rules.combat.range.bounds[rules.combat.range.FAR]
 end
 
 function range:far_upper_bound()
-   return self:value() * rules.combat.range[rules.combat.FAR_RANGE]
+   return self:maximum_lower_bound()
+end
+
+function range:medium_lower_bound()
+   return self:value() * rules.combat.range.bounds[rules.combat.range.MEDIUM]
 end
 
 function range:medium_upper_bound()
-   return self:value() * rules.combat.range[rules.combat.MEDIUM_RANGE]
+   return self:far_lower_bound()
+end
+
+function range:close_lower_bound()
+   return self:value() * rules.combat.range.bounds[rules.combat.range.CLOSE]
 end
 
 function range:close_upper_bound()
-   return self:value() * rules.combat.range[rules.combat.CLOSE_RANGE]
+   return self:medium_lower_bound()
 end
 
 function range:is_maximum_range(value)
@@ -59,16 +75,16 @@ function range:is_maximum_range(value)
 end
 
 function range:determine(v)
-   if v <= self:close_upper_bound() then
-      return rules.combat.CLOSE_RANGE
+   if v >= self:close_lower_bound() and v <= self:close_upper_bound() then
+      return rules.combat.range.CLOSE
    elseif v > self:close_upper_bound() and v <= self:medium_upper_bound() then
-      return rules.combat.MEDIUM_RANGE
+      return rules.combat.range.MEDIUM
    elseif v > self:medium_upper_bound() and v <= self:far_upper_bound() then
-      return rules.combat.FAR_RANGE
-   elseif v > self:far_upper_bound() and v <= self:value() then
+      return rules.combat.range.FAR
+   elseif v > self:far_upper_bound() and v <= self:maximum_upper_bound() then
       return rules.combat.MAXIMUM_RANGE
    elseif v > self:value() then
-      return rules.combat.OUTOF_RANGE
+      return rules.combat.range.OUTOF
    end
 
    return nil

@@ -111,7 +111,7 @@ function dice:new(values)
 
    neu.amount = o.amount or 1
    neu.sides = o.sides or 6
-   neu.reroll = o.amount or {}
+   neu.reroll = o.reroll or {}
    neu.drop_lowest = o.drop_lowest or 0
    neu.keep_highest = o.keep_highest or 0
 

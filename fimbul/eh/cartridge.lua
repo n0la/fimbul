@@ -75,6 +75,10 @@ function cartridge:amount(value)
    end
 end
 
+function cartridge:damage()
+   return self._damage
+end
+
 function cartridge:damage_dice()
    dt = {}
 

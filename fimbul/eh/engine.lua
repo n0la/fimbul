@@ -21,6 +21,8 @@ local cartridge_template = require('fimbul.eh.cartridge_template')
 local firearm = require('fimbul.eh.firearm')
 local firearm_template = require('fimbul.eh.firearm_template')
 
+local combat = require('fimbul.eh.combat')
+
 local util = require('fimbul.util')
 
 function engine:init(r)
@@ -35,6 +37,10 @@ function engine:init(r)
    -- Equipment
    r.eh.cartridges = {}
    r.eh.firearms = {}
+end
+
+function engine:create_combat(r)
+   return combat:new(r)
 end
 
 function engine:parse_item(r, s)

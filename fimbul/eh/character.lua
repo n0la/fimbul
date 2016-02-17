@@ -6,6 +6,9 @@ local base = _G
 
 local ability = require('fimbul.eh.ability')
 local rules = require('fimbul.eh.rules')
+local skill_check = require('fimbul.eh.skill_check')
+
+local util = require('fimbul.util')
 
 function character:new(y)
    local neu = y or {}
@@ -22,9 +25,12 @@ function character:new(y)
    end
 
    neu.skills = {}
-   neu.equipment = {}
+   neu._equipment = {}
    neu._credits = 0
    neu._weight = 0
+   neu._hp = 0
+   neu._stance = rules.combat.stance.STANDING
+   neu._movement = rules.combat.movement.SUBTLE
    neu.name = ''
 
    return neu
@@ -91,9 +97,11 @@ function character:spawn(r, t)
             error('No such item: ' .. item)
          end
 
-         table.insert(neu.equipment, it)
+         table.insert(neu._equipment, it)
       end
    end
+
+   neu._hp = neu:max_hp()
 
    return neu
 end
@@ -112,6 +120,84 @@ function character:max_hp()
       + self.constitution:rank()
 end
 
+function character:roll_zone()
+   local r = rules.combat.zone.dice:roll()
+   local z = rules.combat.zones[r]
+
+   if z == nil then
+      z = rules.combat.zone.default
+   end
+
+   return z
+end
+
+function character:damage(dmg, zone, source)
+   local d = dmg:value()
+
+   -- TODO: Armor
+
+   -- TODO: Hastily implement
+   if zone == rules.combat.zone.VITAL then
+      d = d * 9
+   elseif zone == rules.combat.zone.TORSO then
+      d = d * 2
+   elseif zone == rules.combat.zone.HEAD then
+      d = d * 3
+   end
+
+   self._hp = self._hp - d
+end
+
+function character:perform(r, t)
+   local s = t:skill()
+   local skill = r:find_spawn_first(r.eh.skills, s)
+   local sk = util.find_name(self.skills, s)
+   local mod = skill_check:new()
+
+   -- Handle ability modifiers
+   --
+   for _, a in base.pairs(skill:uses()) do
+      local m = self:ability(a):modifier()
+      if (m < 0 and sk == nil) or
+         (m >= 0 and sk ~= nil) then
+         mod:add(m, a)
+      end
+   end
+
+   -- Do we have a skill modifier?
+   --
+   if sk ~= nil then
+      local rk = sk:rank()
+      mod:add(rk, sk:name())
+   end
+
+   -- Roll
+   mod:roll()
+
+   if mod:value() >= t:value() then
+      return true, mod
+   end
+
+   return false, mod
+end
+
+function character:ability(a)
+   local n = string.lower(a)
+   return self[n]
+end
+
+function character:hp()
+   return self._hp
+end
+
+function character:is_dead()
+   return self:hp() <= 0
+end
+
+function character:equipment()
+   return self._equipment
+end
+
 function character:max_carry_weight()
    return rules.character.BASE_CARRY_WEIGHT
       + self.constitution:rank()
@@ -121,7 +207,7 @@ end
 function character:equipment_weight()
    local w = 0
 
-   for _, i in base.pairs(self.equipment) do
+   for _, i in base.pairs(self._equipment) do
       w = w + i:weight()
    end
 
@@ -131,7 +217,7 @@ end
 function character:equipment_cost()
    local c = 0
 
-   for _, i in base.pairs(self.equipment) do
+   for _, i in base.pairs(self._equipment) do
       c = c + i:cost()
    end
 
@@ -155,6 +241,37 @@ function character:cost()
    end
 
    return c
+end
+
+function character:stance(v)
+   if v == nil then
+      return self._stance
+   else
+      if not util.contains(rules.combat.stance, v) then
+         error('Invalid stance.')
+      end
+      self._stance = v
+   end
+end
+
+function character:movement(v)
+   if v == nil then
+      return self._movement
+   else
+      if not util.contains(rules.combat.movement, v) then
+         error('Invalid stance.')
+      end
+      self._movement = v
+   end
+end
+
+function character:roll_initiative()
+   return rules.combat.initiative_dice:roll()
+      + self.dexterity:modifier()
+end
+
+function character:size()
+   return rules.combat.size_by_stance[self:stance()]
 end
 
 return character
