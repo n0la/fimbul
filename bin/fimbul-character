@@ -39,7 +39,18 @@ table.remove(arg, 1)
 
 function char_calculate()
    local n = opts['name']
+
+   if n == nil then
+      io.stderr:write("No name specified.\n")
+      return 3
+   end
+
    local ct, c = r:spawn_character(n)
+
+   if ct == nil or c == nil then
+      io.stderr:write("No such character: " .. name .. "\n")
+      return 3
+   end
 
    print('Character: ' .. c.name)
    print('CCP cost: ' .. c:cost())
