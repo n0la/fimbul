@@ -22,6 +22,7 @@ function combat:new(r)
 
    neu.on_damage = {}
    neu.on_attack = {}
+   neu.on_death = {}
 
    return neu
 end
@@ -97,7 +98,7 @@ end
 function combat:next()
    self._cur = self._cur + 1
 
-   if self._cur >= #self._order then
+   if self._cur > #self._order then
       self:next_round()
    end
 end
@@ -136,9 +137,15 @@ function combat:attacks(target, gun, range)
 
    if ok then
       local dmg = g:roll_damage(self._r)
+      local dead = t:is_dead()
 
       dmg, zone = t:damage(dmg, g)
       self:raise('on_damage', c, t, g, dmg, zone)
+
+      -- is_dead and not dead: UNDEAD
+      if t:is_dead() and not dead then
+         self:raise('on_death', t)
+      end
    end
 end
 
