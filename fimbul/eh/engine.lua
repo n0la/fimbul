@@ -12,6 +12,9 @@ local skill_template = require('fimbul.eh.skill_template')
 local character = require('fimbul.eh.character')
 local character_template = require('fimbul.eh.character_template')
 
+local race = require('fimbul.eh.race')
+local race_template = require('fimbul.eh.race_template')
+
 local background = require('fimbul.eh.background')
 local background_template = require('fimbul.eh.background_template')
 
@@ -29,6 +32,7 @@ function engine:init(r)
    r.eh = {}
 
    r.eh.characters = {}
+   r.eh.races = {}
    r.eh.skills = {}
    r.eh.backgrounds = {}
    r.eh.perks = {}
@@ -90,6 +94,8 @@ function engine:spawn(r, t)
       return cartridge:spawn(r, t)
    elseif t.templatetype == 'firearm' then
       return firearm:spawn(r, t)
+   elseif t.templatetype == 'race' then
+      return race:spawn(r, t)
    else
       error('Unsupported template in EH: ' .. what)
    end
@@ -106,6 +112,8 @@ function engine:create_template(what, ...)
       return cartridge_template:new(...)
    elseif what == 'firearm_template' then
       return firearm_template:new(...)
+   elseif what == 'race_template' then
+      return race_template:new(...)
    else
       error('Unsupported template in EH: ' .. what)
    end
@@ -118,6 +126,7 @@ end
 function engine:load(r)
    r:_load_array('skills', 'skill_template', r.eh.skills)
    r:_load_array('backgrounds', 'background_template', r.eh.backgrounds)
+   r:_load_array('races', 'race_template', r.eh.races)
    r:_load_files('characters', 'character_template', r.eh.characters)
    -- Load equipment
    r:_load_array('cartridges', 'cartridge_template', r.eh.cartridges);

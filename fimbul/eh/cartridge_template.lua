@@ -6,7 +6,7 @@ function cartridge_template:new(y)
    local neu = y or {}
 
    setmetatable(neu, self)
-   neu.__index = self
+   self.__index = self
 
    neu.templatetype = 'cartridge'
 

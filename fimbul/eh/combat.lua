@@ -135,10 +135,9 @@ function combat:attacks(target, gun, range)
    self:raise('on_attack', c, t, g, ok, tk, mod)
 
    if ok then
-      local zone = c:roll_zone()
       local dmg = g:roll_damage(self._r)
 
-      t:damage(dmg, zone, g)
+      dmg, zone = t:damage(dmg, g)
       self:raise('on_damage', c, t, g, dmg, zone)
    end
 end

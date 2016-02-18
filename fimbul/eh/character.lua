@@ -46,6 +46,18 @@ function character:spawn(r, t)
    neu.name = t.name
    neu.template = t
 
+   -- Load race.
+   if t.race == nil then
+      error('Character does not have a race.')
+   end
+
+   local race = r:find_spawn_first(r.eh.races, t.race)
+   if race == nil then
+      error('No such race: ' .. t.race)
+   end
+
+   neu._race = race
+
    neu._weight = t.weight or 0
    neu._height = t.height or 0
    neu._credits = t.credits or 0
@@ -114,38 +126,30 @@ function character:height()
    return self._height
 end
 
+function character:race()
+   return self._race
+end
+
 function character:max_hp()
    return rules.character.BASE_HP
       + self.strength:rank()
       + self.constitution:rank()
 end
 
-function character:roll_zone()
-   local r = rules.combat.zone.dice:roll()
-   local z = rules.combat.zones[r]
-
-   if z == nil then
-      z = rules.combat.zone.default
-   end
-
-   return z
-end
-
-function character:damage(dmg, zone, source)
-   local d = dmg:value()
+function character:damage(dmg, source)
+   local d
+   local z = self:race():hitzone():roll_zone()
 
    -- TODO: Armor
 
-   -- TODO: Hastily implement
-   if zone == rules.combat.zone.VITAL then
-      d = d * 9
-   elseif zone == rules.combat.zone.TORSO then
-      d = d * 2
-   elseif zone == rules.combat.zone.HEAD then
-      d = d * 3
-   end
+   z:modify_damage(dmg)
 
+   d = dmg:value()
    self._hp = self._hp - d
+
+   -- TODO: Roll wounds
+
+   return dmg, z
 end
 
 function character:perform(r, t)
