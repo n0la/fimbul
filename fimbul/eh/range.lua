@@ -70,10 +70,6 @@ function range:close_upper_bound()
    return self:medium_lower_bound()
 end
 
-function range:is_maximum_range(value)
-   return value >= self:maximum_range()
-end
-
 function range:determine(v)
    if v >= self:close_lower_bound() and v <= self:close_upper_bound() then
       return rules.combat.range.CLOSE
@@ -82,8 +78,8 @@ function range:determine(v)
    elseif v > self:medium_upper_bound() and v <= self:far_upper_bound() then
       return rules.combat.range.FAR
    elseif v > self:far_upper_bound() and v <= self:maximum_upper_bound() then
-      return rules.combat.MAXIMUM_RANGE
-   elseif v > self:value() then
+      return rules.combat.range.MAXIMUM
+   elseif v > self:maximium_upper_bound() then
       return rules.combat.range.OUTOF
    end
 
