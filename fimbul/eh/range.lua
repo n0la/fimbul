@@ -79,7 +79,7 @@ function range:determine(v)
       return rules.combat.range.FAR
    elseif v > self:far_upper_bound() and v <= self:maximum_upper_bound() then
       return rules.combat.range.MAXIMUM
-   elseif v > self:maximium_upper_bound() then
+   elseif v > self:maximum_upper_bound() then
       return rules.combat.range.OUTOF
    end
 
