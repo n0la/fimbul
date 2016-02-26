@@ -159,9 +159,9 @@ function engine:load(r)
 end
 
 function engine:_find_item_and_spawn(r, s)
-   local items = r:find("items", s)
+   local items = r:find(r.items, s)
 
-   if items == nil or #items == 0 or #items > 1 then
+   if items == nil or #items == 0 then
       return nil
    end
 
