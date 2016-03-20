@@ -133,7 +133,7 @@ function magical_item:price()
 
       -- Base price for modifier
       if self:magic_modifier() > 0 then
-         p = price_table.modifier_prices[self:magic_modifier()]
+         p = price_table.modifier_prices.calculate(self:magic_modifier())
          pr:add(p, 'modifier')
       end
    end
@@ -298,10 +298,6 @@ function magical_item:_parse_attributes(r, str)
       ok, mod = pcall(util.parse_modifier, s)
       if ok then
          m = base.tonumber(mod)
-         if not m or m > 10 then
-            logger.error("Modifiers above +10 are not valid in d20srd.")
-            return false
-         end
          self.modifier = m
          goto end_of_loop
       end
@@ -317,18 +313,11 @@ function magical_item:_parse_attributes(r, str)
       i = i + 1
    end
 
-   if self.modifier > rules.MAX_MODIFIER then
-      error('Ability modifier of item cannot exceed the maximum of '
-               .. rules.MAX_MODIFIER)
-   end
-
-   -- Sanity checks
-   if self:magic_modifier() > rules.MAX_MODIFIER then
-      error('Cummulative modifier of item cannot exceed the maximum of '
-               .. rules.MAX_MODIFIER)
-   end
-
    return true
+end
+
+function magical_item:is_epic()
+   return (self:magic_modifier() > rules.MAX_MODIFIER)
 end
 
 function magical_item:_has_function(r, f)

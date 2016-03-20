@@ -47,6 +47,10 @@ rules.armors.modifier_prices = {
    [10] = 100000,
 }
 
+rules.armors.modifier_prices.calculate = function(mod)
+   return math.pow(mod, 2) * 1000
+end
+
 -- Per PHB armor == shields in this regard
 rules.shields = rules.armors
 
@@ -67,6 +71,10 @@ rules.weapons.modifier_prices = {
    [9] = 162000,
    [10] = 200000,
 }
+
+rules.weapons.modifier_prices.calculate = function(mod)
+   return math.pow(mod, 2) * 2000
+end
 
 rules.crafting = {}
 -- How many GP per day
