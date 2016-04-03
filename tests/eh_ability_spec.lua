@@ -20,7 +20,7 @@ function()
 
    describe('rank',
    function()
-      local a = ability:new()
+      local a = ability:new("strength")
 
       assert.has.errors(function() a:rank(rules.abilities.LOWEST_RANK - 1) end)
       assert.has.errors(function() a:rank(rules.abilities.HIGHEST_RANK + 1) end)
@@ -36,7 +36,7 @@ function()
 
    describe('modifier',
    function()
-      local a = ability:new()
+      local a = ability:new("strength")
 
       -- Since we are setting average the modifier has to be zero.
       assert.is.equal(a:modifier(), 0)
@@ -53,7 +53,7 @@ function()
 
    describe('cost',
    function()
-      local a = ability:new()
+      local a = ability:new("strength")
 
       -- The cost for an average ability has to be zero.
       assert.is.equal(a:cost(), 0)

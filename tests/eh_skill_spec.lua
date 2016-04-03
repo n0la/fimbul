@@ -10,7 +10,7 @@ function()
       local s = skill:new()
 
       assert.is_truthy(s)
-      assert.is_nil(s.name)
+      assert.is_nil(s:name())
 
       -- Check default values for empty skills
       assert.is_equal(s:rank(), 0)

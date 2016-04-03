@@ -13,11 +13,9 @@ function ability:new(name, rank)
    self.__index = self
 
    neu:rank(rank or rules.abilities.AVERAGE)
-   if not rules.valid_ability(name) then
-      error(name .. ' is not a valid ability for EH.')
+   if name and rules.valid_ability(name) then
+      neu._name = name
    end
-
-   neu._name = name
 
    return neu
 end
@@ -31,7 +29,10 @@ end
 -- Short name: first three letters capitalised
 --
 function ability:short_name()
-   return rules.short_ability_name(self:name() or '')
+   if not self:name() then
+      return nil
+   end
+   return rules.short_ability_name(self:name())
 end
 
 -- Rank
