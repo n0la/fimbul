@@ -6,6 +6,8 @@
 local engine = {}
 package.loaded['fimbul.eh.engine'] = engine
 
+local base = _G
+
 local skill = require('fimbul.eh.skill')
 local skill_template = require('fimbul.eh.skill_template')
 
@@ -23,6 +25,9 @@ local cartridge_template = require('fimbul.eh.cartridge_template')
 
 local firearm = require('fimbul.eh.firearm')
 local firearm_template = require('fimbul.eh.firearm_template')
+
+local magazine = require('fimbul.eh.magazine')
+local magazine_template = require('fimbul.eh.magazine_template')
 
 local combat = require('fimbul.eh.combat')
 
@@ -96,6 +101,8 @@ function engine:spawn(r, t)
       return firearm:spawn(r, t)
    elseif t.templatetype == 'race' then
       return race:spawn(r, t)
+   elseif t.templatetype == 'magazine' then
+      return magazine:spawn(r, t)
    else
       error('Unsupported template in EH: ' .. what)
    end
@@ -114,6 +121,8 @@ function engine:create_template(what, ...)
       return firearm_template:new(...)
    elseif what == 'race_template' then
       return race_template:new(...)
+   elseif what == 'magazine_template' then
+      return magazine_template:new(...)
    else
       error('Unsupported template in EH: ' .. what)
    end
@@ -121,6 +130,28 @@ end
 
 function engine:characters(r)
    return r.eh.characters
+end
+
+function engine:_create_magazines(r)
+   local mags = {}
+
+   for _, i in base.ipairs(r.eh.firearms) do
+      for _, m in base.pairs(i.magazines) do
+         -- Internal magazines can't be external. What?
+         if not m.internal then
+            tmp = magazine_template:new(
+               {
+                  capacity = m.capacity,
+                  name = i.name .. ' Magazine [' .. m.capacity .. ']',
+                  weapon = i.name
+               }
+            )
+            table.insert(mags, tmp)
+         end
+      end
+   end
+
+   return mags
 end
 
 function engine:load(r)
@@ -131,9 +162,12 @@ function engine:load(r)
    -- Load equipment
    r:_load_array('cartridges', 'cartridge_template', r.eh.cartridges);
    r:_load_array('firearms', 'firearm_template', r.eh.firearms);
+   -- Create magazine templates based on firearms
+   r.eh.magazines = self:_create_magazines(r)
 
    r.eh.items = {}
    r.eh.items = util.concat_table(r.eh.items, r.eh.cartridges)
+   r.eh.items = util.concat_table(r.eh.items, r.eh.magazines)
    r.eh.items = util.concat_table(r.eh.items, r.eh.firearms)
 end
 

@@ -24,6 +24,7 @@ function firearm:new(y)
    self._range = range:new(0)
    self.modes = {}
    self.magazine = {}
+   self.magazines = {}
    self.recoil = 0
    self._skill = nil
 
@@ -45,7 +46,7 @@ function firearm:spawn(r, t)
    neu._range = range:new(t.range or 0)
    neu.ammunition = util.deepcopy(t.ammunition)
    neu.modes = util.deepcopy(t.modes)
-   neu.magazine = util.deepcopy(t.magazine)
+   neu.magazines = util.deepcopy(t.magazines)
    neu.recoil = t.recoil or 1
    neu._skill = t.skill or 'Small Arms'
 

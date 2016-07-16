@@ -27,6 +27,10 @@ function item:set_attributes(y)
    self._aliases = util.deepcopy(y.aliases or {})
 end
 
+function item:name()
+   return self._name
+end
+
 function item:aliases()
    return self._aliases
 end
