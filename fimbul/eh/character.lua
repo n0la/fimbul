@@ -17,11 +17,9 @@ function character:new(y)
    self.__index = self
 
    -- Initialise abilities
-   neu.abilities = {}
    for _, a in base.pairs(rules.abilities.names) do
       local lower = string.lower(a)
       neu[lower] = ability:new(a)
-      table.insert(neu.abilities, neu[lower])
    end
 
    neu.skills = {}
@@ -226,8 +224,11 @@ function character:cost()
    local c = 0
 
    -- TODO: Performance
-   for _, a in base.pairs(self.abilities) do
-      c = c + a:cost()
+   for _, a in base.pairs(rules.abilities.names) do
+      local ab = self[string.lower(a)]
+      if ab then
+         c = c + ab:cost()
+      end
    end
 
    for _, s in base.pairs(self.skills) do
