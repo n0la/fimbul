@@ -182,6 +182,16 @@ function rules.calculate_mod(rank)
    return rank - rules.abilities.AVERAGE
 end
 
+function rules.calculate_skill_cost(from, to)
+   local cost = 0
+
+   for i = from+1, to do
+      cost = cost + i
+   end
+
+   return cost
+end
+
 function rules.calculate_rank_cost(from, to)
    local cost = 0
    local mod = 0

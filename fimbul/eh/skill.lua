@@ -97,7 +97,7 @@ function skill:cost()
       end
 
       -- Add any rank
-      cost = cost + rules.calculate_rank_cost(0, self:rank())
+      cost = cost + rules.calculate_skill_cost(0, self:rank())
    end
 
    return cost
