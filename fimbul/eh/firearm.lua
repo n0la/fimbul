@@ -1,7 +1,5 @@
 ---@module fimbul.eh.firearm
 
-local firearm = {}
-
 local base = _G
 
 local stacked_value = require('fimbul.stacked_value')
@@ -12,8 +10,12 @@ local util = require('fimbul.util')
 local rules = require('fimbul.eh.rules')
 local range = require('fimbul.eh.range')
 
+local item = require('fimbul.eh.item')
+
+local firearm = item:new()
+
 function firearm:new(y)
-   local neu = y or {}
+   local neu = item:new()
 
    setmetatable(neu, self)
    self.__index = self
@@ -24,8 +26,6 @@ function firearm:new(y)
    self.magazine = {}
    self.recoil = 0
    self._skill = nil
-   self._cost = 0
-   self._weight = 0
 
    return neu
 end
@@ -40,35 +40,20 @@ function firearm:spawn(r, t)
    neu.name = t.name
    neu.template = t
 
-   neu.aliases = util.deepcopy(t.aliases or {})
+   item.set_attributes(neu, t)
 
    neu._range = range:new(t.range or 0)
-
    neu.ammunition = util.deepcopy(t.ammunition)
    neu.modes = util.deepcopy(t.modes)
    neu.magazine = util.deepcopy(t.magazine)
    neu.recoil = t.recoil or 1
-   neu._cost = t.cost or 50
-   neu._weight = t.weight or 0.7
    neu._skill = t.skill or 'Small Arms'
 
    return neu
 end
 
-function firearm:_parse_attributes(r, s)
-   -- Nothing to do.
-end
-
 function firearm:range()
    return self._range
-end
-
-function firearm:cost()
-   return self._cost
-end
-
-function firearm:weight()
-   return self._weight
 end
 
 function firearm:caliber()
@@ -109,8 +94,9 @@ function firearm:string(extended)
    local e = extended or false
    local s
 
-   s = self.name .. ' [' .. table.concat(self.ammunition, ', ') .. ']'
+   s = self.name
    if e then
+      s = s .. ' [' .. table.concat(self.ammunition, ', ') .. ']'
       s = s .. "\n"
       s = s .. "Ranges: [" .. table.concat(self:range():ranges(), ', ') .. "]\n"
       s = s .. "Weight: " .. self:weight() .. "\n"

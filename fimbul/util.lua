@@ -312,12 +312,6 @@ function util.foreach(t, f, m)
    end
 end
 
-function util.foreach_in(str, F, m, ...)
-   for _, i in base.pairs({...}) do
-      self:foreach(t, F, m)
-   end
-end
-
 function util.tempdir(prefix)
    local tmp = prefix .. '.XXXXXXXXXX'
    local cmd = 'mktemp -d -t "' .. tmp .. '"'
@@ -449,5 +443,12 @@ function util.parse_modifier(modstr)
    error('Invalid mod specifier: ' .. modstr)
 end
 
+function util.findfirst(t, ...)
+   for _, i in base.pairs({...}) do
+      if t[i] ~= nil then
+         return t[i]
+      end
+   end
+end
 
 return util

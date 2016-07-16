@@ -31,7 +31,7 @@ function character:new(y)
    neu._hp = 0
    neu._stance = rules.combat.stance.STANDING
    neu._movement = rules.combat.movement.SUBTLE
-   neu.name = ''
+   neu._name = ''
 
    return neu
 end
@@ -43,7 +43,7 @@ function character:spawn(r, t)
       error('Character must have a name!')
    end
 
-   neu.name = t.name
+   neu._name = t.name
    neu.template = t
 
    -- Load race.
@@ -67,21 +67,7 @@ function character:spawn(r, t)
       local name = string.lower(a)
       local ans = rules.short_ability_name(a)
 
-      -- TODO: Perfect candidate for a function in util
-      if t[a] then
-         -- Normal name?
-         at = t[a]
-      elseif t[name] then
-         -- Lower case name?
-         at = t[name]
-      elseif t[ans] then
-         -- Short ability name?
-         at = t[ans]
-      elseif t[string.lower(ans)] then
-         -- Lowercase short ability name?
-         at = t[string.lower(ans)]
-      end
-
+      at = util.findfirst(t, a, name, ans, string.lower(ans))
       if at then
          neu[name] = ability:new(name, at)
       end
@@ -116,6 +102,10 @@ function character:spawn(r, t)
    neu._hp = neu:max_hp()
 
    return neu
+end
+
+function character:name()
+   return self._name
 end
 
 function character:weight()
@@ -195,7 +185,7 @@ function character:hp()
 end
 
 function character:is_dead()
-   return self:hp() <= 0
+   return self:hp() <= (self:max_hp() * -1)
 end
 
 function character:equipment()
@@ -276,6 +266,40 @@ end
 
 function character:size()
    return rules.combat.size_by_stance[self:stance()]
+end
+
+function character:string(e)
+   if not e then
+      return self:name()
+   end
+
+   local s = ''
+
+   s = s .. 'Character: ' .. self:name() .. "\n"
+   s = s .. 'CCP Spent: ' .. self:cost() .. "\n"
+   s = s .. "\n"
+   s = s .. 'Strength: ' .. self.strength:rank() .. "\n"
+   s = s .. 'Dexterity: ' .. self.dexterity:rank() .. "\n"
+   s = s .. 'Constitution: ' .. self.constitution:rank() .. "\n"
+   s = s .. 'Intelligence: ' .. self.intelligence:rank() .. "\n"
+   s = s .. 'Perception: ' .. self.perception:rank() .. "\n"
+   s = s .. 'Charisma: ' .. self.charisma:rank() .. "\n"
+   s = s .. "\n"
+   s = s .. 'Max HP: ' .. self:max_hp() .. "\n"
+   s = s .. 'Height: ' .. self:height() .. " cm\n"
+   s = s .. 'Weight: ' .. self:weight() .. " kg\n"
+   s = s .. 'Total weight: ' .. self:total_weight() .. " kg\n"
+   s = s .. 'Max carry weight: ' .. self:max_carry_weight() .. " kg\n"
+   s = s .. 'Equipment: ' .. "\n"
+
+   for _, i in base.pairs(self:equipment()) do
+      s = s .. '  - ' .. i:string() .. "\n"
+   end
+
+   s = s .. '  Weight: ' .. self:equipment_weight() .. " kg\n"
+   s = s .. '  Cost: ' .. self:equipment_cost() .. " C"
+
+   return s
 end
 
 return character

@@ -178,11 +178,17 @@ function rules.short_ability_name(name)
    return string.upper(name:sub(0, 3))
 end
 
+function rules.calculate_mod(rank)
+   return rank - rules.abilities.AVERAGE
+end
+
 function rules.calculate_rank_cost(from, to)
    local cost = 0
+   local mod = 0
 
    for i = from+1, to do
-      cost = cost + i
+      mod = math.abs(rules.calculate_mod(i))
+      cost = cost + (mod * 5)
    end
 
    return cost

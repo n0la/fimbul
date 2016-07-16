@@ -86,7 +86,7 @@ function data_repository:_find_all(directory, glob, path, results)
 end
 
 function data_repository:find_all(directory, glob)
-   local g = glob or "^.*%.yml$"
+   local g = glob or "^.*%.y[a]*ml$"
    local d = directory or ''
    local results = {}
 

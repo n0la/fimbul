@@ -30,6 +30,11 @@ function cli.open_repository(repo)
 end
 
 function cli.dispatch_command(cmds, cmd)
+   if cmd == nil then
+      io.stderr:write("No command given.\n")
+      os.exit(2)
+   end
+
    local c = cmds[cmd]
 
    if c == nil then

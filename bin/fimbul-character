@@ -25,6 +25,7 @@ Options:
 
 Commands:
   calculate         Calculate the character and show stats.
+  list              List all characters
 
 Please report bugs to https://github.com/n0la/fimbul
 ]])
@@ -35,6 +36,10 @@ local cmd
 _G.arg, _G.opts = optparser:parse(_G.arg)
 
 cmd = arg[1]
+if cmd == nil then
+   optparser:help()
+   os.exit(1)
+end
 table.remove(arg, 1)
 
 function char_calculate()
@@ -52,20 +57,19 @@ function char_calculate()
       return 3
    end
 
-   print('Character: ' .. c.name)
-   print('CCP cost: ' .. c:cost())
-   print('Max HP: ' .. c:max_hp())
-   print('Height: ' .. c:height())
-   print('Weight: ' .. c:weight())
-   print('Total weight: ' .. c:total_weight())
-   print('Max carry weight: ' .. c:max_carry_weight())
-   print('Equipment:')
-   print('  Weight: ' .. c:equipment_weight())
-   print('  Cost: ' .. c:equipment_cost())
+   print(c:string(true))
+end
+
+function char_list()
+   for _, i in pairs(r:engine():characters(r)) do
+      print(i.name)
+   end
 end
 
 local commands = {
-   ['calculate'] = {handler = char_calculate}
+   ['calculate'] = {handler = char_calculate},
+   ['calc'] = {handler = char_calculate},
+   ['list'] = {handler = char_list}
 }
 
 repo = cli.standard_args(_G.opts)

@@ -14,7 +14,7 @@ function hitzone:new(y)
    if y ~= nil then
       neu._name = y.name or error('No name specified')
       neu._damagemultiplier = y.damage_multiplier or 1
-      neu._abilitydamages = util.shallowcopy(y.ability_damages or {})
+      neu._size = y.size or rules.combat.size.SMALL
       neu._results = util.shallowcopy(y.results or {})
    end
 
@@ -29,8 +29,8 @@ function hitzone:damage_multiplier()
    return self._damagemultiplier
 end
 
-function hitzone:ability_damages()
-   return self._abilitydamages
+function hitzone:size()
+   return slef._size
 end
 
 function hitzone:results()

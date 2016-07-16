@@ -53,7 +53,7 @@ function repository:load_configuration(name)
 end
 
 function repository:_load_config()
-   c = self:load_configuration("config.yml")
+   c = self:load_configuration("config.yaml")
 
    assert(c.name, "Please specify a name for your repository.")
    assert(c.game, "Please specify a game for your repository.")
@@ -185,6 +185,7 @@ end
 --
 function repository:_load_array(what, template, tbl)
    local w = self:find_all('', what .. '.yml')
+   local w = util.concat_table(w, self:find_all('', what .. '.yaml'))
    local t = tbl or what
 
    for _, m in pairs(w) do
@@ -244,7 +245,8 @@ function repository:find_spawn_first(tbl, ...)
 end
 
 function repository:spawn_character(name)
-   return self:find_spawn_first(self._engine:characters(self), name)
+   local cs = self:engine():characters(self)
+   return self:find_spawn_first(cs, name)
 end
 
 function repository:has_function(name, ...)
@@ -258,9 +260,12 @@ function repository:has_function(name, ...)
 end
 
 function repository:engine(neu)
-   self._engine = neu
-   -- Initialise engine.
-   self._engine:init(self)
+   if neu ~= nil then
+      self._engine = neu
+      -- Initialise engine.
+      self._engine:init(self)
+   end
+   return self._engine
 end
 
 function repository:load()
@@ -304,7 +309,7 @@ end
 
 function repository.create(dir, args)
    local configdir = dir .. '/.pnp'
-   local configfile = configdir .. '/config.yml'
+   local configfile = configdir .. '/config.yaml'
 
    if args.name == nil then
       error('New repository parameters do not contain a name.')

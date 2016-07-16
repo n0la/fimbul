@@ -69,7 +69,7 @@ end
 -- Ability modifier
 --
 function ability:modifier()
-   return self:rank() - rules.abilities.AVERAGE
+   return rules.calculate_mod(self:rank())
 end
 
 return ability
