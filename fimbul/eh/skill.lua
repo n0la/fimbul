@@ -34,10 +34,6 @@ function skill:spawn(r, t)
    -- Abilities it uses
    neu._uses = t.uses or {}
 
-   -- Is it a speciality?
-   neu._specialityof = t.specialiaty_of or nil
-   -- TODO: Check speciality parent skill for existence
-
    return neu
 end
 
@@ -53,26 +49,6 @@ end
 --
 function skill:is_special()
    return self.special or false
-end
-
--- Is it a special variant of another skill?
---
-function skill:is_speciality()
-   return self.specialityof ~= nil
-end
-
-function skill:speciality_of(neu)
-   if neu ~= nil then
-      self.specialityof = neu
-   else
-      return self.specialityof
-   end
-end
-
--- Name of the parent skill
---
-function skill:parent_skill()
-   return self.specialityof
 end
 
 -- Return the current rank
