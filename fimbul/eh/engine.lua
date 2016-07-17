@@ -8,6 +8,8 @@ package.loaded['fimbul.eh.engine'] = engine
 
 local base = _G
 
+local rules = require('fimbul.eh.rules')
+
 local skill = require('fimbul.eh.skill')
 local skill_template = require('fimbul.eh.skill_template')
 
@@ -46,6 +48,7 @@ function engine:init(r)
    -- Equipment
    r.eh.cartridges = {}
    r.eh.firearms = {}
+   r.eh.magazines = {}
 end
 
 function engine:create_combat(r)
@@ -143,7 +146,8 @@ function engine:_create_magazines(r)
                {
                   capacity = m.capacity,
                   name = i.name .. ' Magazine [' .. m.capacity .. ']',
-                  weapon = i.name
+                  weapon = i.name,
+                  cost = i.cost * rules.equipment.MAGAZINE_COST,
                }
             )
             table.insert(mags, tmp)
