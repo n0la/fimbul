@@ -139,34 +139,6 @@ rules.combat.range.modifier = {
    },
 }
 
--- TODO: We need 'race'
-rules.combat.zone = {}
--- 2d6
-rules.combat.zone.dice = dice:new({sides = 6, amount = 2})
--- All zones
-rules.combat.zone.VITAL = 'vital'
-rules.combat.zone.LEGS = 'legs'
-rules.combat.zone.ARMS = 'arms'
-rules.combat.zone.HEAD = 'head'
-rules.combat.zone.TORSO = 'torso'
--- Default zone
-rules.combat.zone.default = rules.combat.zone.TORSO
-
-rules.combat.zones = {
-   nil,
-   rules.combat.zone.VITAL,
-   rules.combat.zone.LEGS,
-   rules.combat.zone.LEGS,
-   rules.combat.zone.TORSO,
-   rules.combat.zone.TORSO,
-   rules.combat.zone.TORSO,
-   rules.combat.zone.ARMS,
-   rules.combat.zone.ARMS,
-   rules.combat.zone.HEAD,
-   rules.combat.zone.HEAD,
-   rules.combat.zone.VITAL,
-}
-
 function rules.valid_ability(name)
    local n = string.lower(name)
    n = util.capitalise(name)
