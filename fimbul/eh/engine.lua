@@ -10,25 +10,8 @@ local base = _G
 
 local rules = require('fimbul.eh.rules')
 
-local skill = require('fimbul.eh.skill')
-local skill_template = require('fimbul.eh.skill_template')
+local spawner = require('fimbul.spawner')
 
-local character = require('fimbul.eh.character')
-local character_template = require('fimbul.eh.character_template')
-
-local race = require('fimbul.eh.race')
-local race_template = require('fimbul.eh.race_template')
-
-local background = require('fimbul.eh.background')
-local background_template = require('fimbul.eh.background_template')
-
-local cartridge = require('fimbul.eh.cartridge')
-local cartridge_template = require('fimbul.eh.cartridge_template')
-
-local firearm = require('fimbul.eh.firearm')
-local firearm_template = require('fimbul.eh.firearm_template')
-
-local magazine = require('fimbul.eh.magazine')
 local magazine_template = require('fimbul.eh.magazine_template')
 
 local combat = require('fimbul.eh.combat')
@@ -92,43 +75,11 @@ function engine:parse_item(r, s)
 end
 
 function engine:spawn(r, t)
-   if t.templatetype == 'skill' then
-      return skill:spawn(r, t)
-   elseif t.templatetype == 'character' then
-      return character:spawn(r, t)
-   elseif t.templatetype == 'background' then
-      return background:spawn(r, t)
-   elseif t.templatetype == 'cartridge' then
-      return cartridge:spawn(r, t)
-   elseif t.templatetype == 'firearm' then
-      return firearm:spawn(r, t)
-   elseif t.templatetype == 'race' then
-      return race:spawn(r, t)
-   elseif t.templatetype == 'magazine' then
-      return magazine:spawn(r, t)
-   else
-      error('Unsupported template in EH: ' .. what)
-   end
+   return self._spawner:spawn(r, t)
 end
 
 function engine:create_template(what, ...)
-   if what == 'skill_template' then
-      return skill_template:new(...)
-   elseif what == 'character_template' then
-      return character_template:new(...)
-   elseif what == 'background_template' then
-      return background_template:new(...)
-   elseif what == 'cartridge_template' then
-      return cartridge_template:new(...)
-   elseif what == 'firearm_template' then
-      return firearm_template:new(...)
-   elseif what == 'race_template' then
-      return race_template:new(...)
-   elseif what == 'magazine_template' then
-      return magazine_template:new(...)
-   else
-      error('Unsupported template in EH: ' .. what)
-   end
+   return self._spawner:create_template(what, ...)
 end
 
 function engine:characters(r)
@@ -184,6 +135,12 @@ function engine:new(r)
 
    setmetatable(neu, self)
    self.__index = self
+
+   neu._spawner = spawner:new('fimbul.eh')
+   -- Initialise our spawner
+   neu._spawner:add('skill', 'character', 'race',
+                     'background', 'cartridge', 'firearm',
+                     'magazine')
 
    return neu
 end
