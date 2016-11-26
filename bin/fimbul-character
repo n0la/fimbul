@@ -20,8 +20,12 @@ The fimbul-character reads your character (PC or NPC) information from your
 repository (or a file) and does all sorts of calculations for you.
 
 Options:
-  -r --repository=DIR   Alternate path to repository to use.
-  -n --name=NAME        Name of the character
+]]
+..
+cli.standard_parameters()
+..
+[[
+  -n --name=NAME    Name of the character
 
 Commands:
   calculate         Calculate the character and show stats.
@@ -50,7 +54,7 @@ function char_calculate()
       return 3
    end
 
-   local c = r:spawn_character(n)
+   local c = r:spawn_encounter_entity(n)
 
    if c == nil then
       io.stderr:write("No such character: " .. name .. "\n")
@@ -61,7 +65,7 @@ function char_calculate()
 end
 
 function char_list()
-   for _, i in pairs(r:engine():characters(r)) do
+   for _, i in pairs(r:engine():encounter_entities(r)) do
       print(i.name)
    end
 end

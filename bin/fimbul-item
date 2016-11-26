@@ -5,6 +5,7 @@ local std = require("std")
 
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
+local cli = require('fimbul.ui.cli')
 
 local optparser = std.optparse(
 [[
@@ -15,21 +16,20 @@ Usage: fimbul-item [options] item1, item2, ..., itemN
 
 Options:
 
-   -h --help             This bogus.
-   -p --price            Print how the price is calculated. Default: off
-   -r --repository=DIR   Directory of the repository. Default: .
-   -v --verbose          Print verbose item output. Default: off
-      --version          Version information.
+]]
+..
+cli.standard_parameters()
+..
+[[
+   -p, --price            Print how the price is calculated. Default: off
+   -e, --extended         Print extended information about the item: off
+       --version          Version information.
 
 Please report bugs to https://github.com/n0la/fimbul.
 ]])
 
 function dump_item(i)
-   if opts['verbose'] ~= nil then
-      print(i:string(true))
-   else
-      print(i:string(false))
-   end
+   print(i:string(opts['extended'] or false))
 
    if opts['price'] ~= nil then
       local p, sv = i:price()
@@ -38,21 +38,10 @@ function dump_item(i)
 end
 
 _G.arg, _G.opts = optparser:parse(_G.arg)
--- Repository
-local r, repo
+local r, game
 
-if opts['repository'] ~= nil then
-   repo = opts['repository']
-else
-   repo = '.'
-end
-
-ok, r = pcall(repository.new, repository, repo)
-if not ok then
-   io.stderr:write(r .. "\n")
-   os.exit(3)
-end
-r:load()
+game = cli.standard_args(_G.opts)
+r = cli.open_repository(game)
 
 for _, i in pairs(arg) do
    ok, item = pcall(repository.parse_item, r, i)

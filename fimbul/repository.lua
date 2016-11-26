@@ -16,6 +16,7 @@ local sources = require("fimbul.sources")
 local repository = {}
 
 repository.SUPPORTED_GAMES = {'v35', 'eh'}
+repository.BASE_PATH = '/usr/share/fimbul'
 
 function repository.supported_games()
    -- TODO: Make dynamic
@@ -41,27 +42,6 @@ function repository:game_information(game)
    local info = { description = engine:description() }
 
    return info
-end
-
-function repository:load_configuration(name)
-   local configfile = self.datapath .. "/" .. name
-   local status, c = pcall(util.yaml_loadfile, configfile)
-
-   assert(status, "Your repository is missing " .. name)
-
-   return c
-end
-
-function repository:_load_config()
-   c = self:load_configuration("config.yaml")
-
-   assert(c.name, "Please specify a name for your repository.")
-   assert(c.game, "Please specify a game for your repository.")
-
-   local e = self:load_engine(c.game)
-
-   self:engine(e)
-   self.config = c
 end
 
 function repository:_find_path(path)
@@ -102,64 +82,37 @@ function repository:find_all(dirname, glob)
    return results
 end
 
-function repository:_load_sources()
-   local src = sources:new()
-
-   if self.config.sources == nil then
-      return
+function repository:open(game)
+   if not util.contains(repository.supported_games(), game) then
+      error('Invalid game: ' .. game)
    end
 
-   for _, item in base.ipairs(self.config.sources) do
-      source = src.data[item]
+   local descpath = repository.BASE_PATH .. '/' .. game .. '.yaml'
+   logger.verbose('Loading file: ' .. descpath)
+   local status, c = pcall(util.yaml_loadfile, descpath)
 
-      if source == nil then
-         error("Repository references unknown source: " .. item)
-      end
-
-      local block = {}
-
-      block.path = source.path
-      block.name = source.name
-
-      local repo = data_repository:new(block)
-      table.insert(self.data, repo)
+   if not status then
+      error(c)
    end
-end
 
-function repository:open(path)
-   local p = path or lfs.currentdir()
+   if c.data then
+      for _, repo in base.ipairs(c.data) do
+         local block = {}
 
-   -- Find current path
-   assert(self:_find_path(p), "Path is not a repository.")
-   -- Load configuration
-   self:_load_config()
-   self.data = {}
+         block.path = repository.BASE_PATH .. '/' .. repo
+         block.name = repo
 
-   -- Setup different data repository directories
-   if self.config.data then
-      for _, block in base.ipairs(self.config.data) do
-         local p = block.path
-
-         -- Translate relative paths for ease of opening
-         if p and util.is_relative(p) then
-            local full = self.root .. "/" .. p
-            block.path = util.realpath(full)
-            assert(block.path,
-                   "The given data path " .. p .. " does not exist.")
-         end
-
-         local repository = data_repository:new(block)
-         table.insert(self.data, repository)
+         logger.verbose('Loading repository ' .. repo .. ' from ' .. block.path)
+         local repo = data_repository:new(block)
+         table.insert(self.data, repo)
       end
    end
 
-   -- Setup default data repository
-   table.insert(self.data,
-                data_repository:new({name = "_local", path = self.root}))
+   -- Load engine
+   local e = self:load_engine(game)
+   self:engine(e)
 
-   self:_load_sources()
-
-   -- Load data.
+   -- Load data
    self:load()
 end
 
@@ -189,6 +142,7 @@ function repository:_load_array(what, template, tbl)
    local t = tbl or what
 
    for _, m in pairs(w) do
+      logger.verbose('Loading file: ' .. m)
       local y = util.yaml_loadfile(m)
 
       if not y then
@@ -295,7 +249,7 @@ end
 
 function repository:load()
    if not self._engine then
-      perror('Please select an engine first.')
+      error('Please select an engine first.')
    end
    -- Delegate loading to the engine.
    self._engine:load(self)
@@ -330,34 +284,6 @@ end
 function repository:create_battle(e)
    -- Create battle with template and spawned characters
    return self._engine:create_battle(e, self:spawn_characters())
-end
-
-function repository.create(dir, args)
-   local configdir = dir .. '/.pnp'
-   local configfile = configdir .. '/config.yaml'
-
-   if args.name == nil then
-      error('New repository parameters do not contain a name.')
-   end
-
-   if args.game == nil then
-      error('New repository parameters do not contain a game.')
-   end
-
-   if util.isdir(configdir) then
-      error('Path is already a repository: ' .. dir)
-   end
-
-   if not lfs.mkdir(configdir) then
-      error('Failed to create a new repository path: ' .. configdir)
-   end
-
-   -- Try to create a new file.
-   local ok, err = pcall(util.yaml_dumpfile, configfile, args)
-   if not ok then
-      lfs.rmdir(configdir)
-      error(err)
-   end
 end
 
 function repository:new(p)
