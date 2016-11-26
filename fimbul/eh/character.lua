@@ -30,6 +30,7 @@ function character:new(y)
    neu._stance = rules.combat.stance.STANDING
    neu._movement = rules.combat.movement.SUBTLE
    neu._name = ''
+   neu._player = nil
 
    return neu
 end
@@ -55,6 +56,8 @@ function character:spawn(r, t)
    end
 
    neu._race = race
+
+   neu._player = t.player
 
    neu._weight = t.weight or 0
    neu._height = t.height or 0
@@ -104,6 +107,14 @@ end
 
 function character:name()
    return self._name
+end
+
+function character:player()
+   return self._player
+end
+
+function character:is_npc()
+   return self._player == nil
 end
 
 function character:weight()
