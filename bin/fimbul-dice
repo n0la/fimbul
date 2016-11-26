@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+#!/usr/bin/env lua53
 
 local dice_expression = require("fimbul.dice_expression")
 

@@ -23,7 +23,7 @@ usage()
     echo "] args"
 }
 
-for li in lua5.2 lua52; do
+for li in lua5.3 lua53; do
     LI=$(which $li 2>/dev/null)
     RET=$?
     if [ $RET = 0 ]; then

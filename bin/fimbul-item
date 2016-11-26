@@ -1,4 +1,4 @@
-#!/usr/bin/env lua52
+#!/usr/bin/env lua53
 
 local pretty = require("pl.pretty")
 local std = require("std")
