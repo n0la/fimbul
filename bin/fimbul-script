@@ -17,9 +17,11 @@ Usage: fimbul-script [options] script
 
 Options:
 
-   -r --repository=DIR   Directory of the repository. Default: .
-      --version          Version information.
-
+]]
+..
+cli.standard_parameters()
+..
+[[
 Please report bugs to https://github.com/n0la/fimbul.
 ]])
 
