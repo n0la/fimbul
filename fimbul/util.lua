@@ -129,6 +129,10 @@ end
 
 function util.yaml_loadfile(str)
    local file = io.open(str, "r")
+   if not file then
+      error('Could not load file: ' .. str)
+   end
+
    local content = file:read("*all")
    file:close()
 
