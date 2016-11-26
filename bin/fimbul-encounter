@@ -1,16 +1,40 @@
 #!/usr/bin/env lua
 
 local pretty = require("pl.pretty")
+local std = require('std')
 
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 local console = require("fimbul.ui.console")
+local cli = require('fimbul.ui.cli')
 
 local encounter_context = require("fimbul.ui.encounter_context")
 local battle_context = require("fimbul.ui.battle_context")
 
-local r = repository:new(arg[1])
-r:load()
+local optparser = std.optparse(
+[[
+fimbul-encounter 0.1
+
+Part of the fimbul project. All rights reserved.
+
+Usage: fimbul-encounter [options]
+
+The fimbul-encounter program lets you play out a battle combat between PCs
+and NPCs. It automatically manages initiative, NPC hit points and all other
+things you might need to run an encounter.
+
+Options:
+  -r --repository=DIR   Alternate path to repository to use.
+
+Please report bugs to https://github.com/n0la/fimbul
+]])
+
+local repo, r
+
+_G.arg, _G.opts = optparser:parse(_G.arg)
+
+repo = cli.standard_args(_G.opts)
+r = cli.open_repository(repo)
 
 local c = console:new(r, {name = "encounter"})
 local battle = battle_context:new(r)
