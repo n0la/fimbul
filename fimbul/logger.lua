@@ -9,7 +9,7 @@ logger.ERROR = true
 logger.WARNING = true
 
 function logger.print(str)
-   io.write(str)
+   io.write(str .. "\n")
 end
 
 function logger.verbose(str, ...)
