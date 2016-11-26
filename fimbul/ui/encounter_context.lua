@@ -28,12 +28,7 @@ function encounter_context:on_ls(d, args)
    local s = args[1] or ""
    local i = 0
 
-   if #self.repository.encounter == 0 then
-      d:say("Repository has no encounters.")
-      return
-   end
-
-   for _, e in pairs(self.repository.encounter) do
+   for _, e in pairs(self.repository:encounters()) do
       if s == "" or (s ~= "" and string.match(e.name, s)) then
          d:say(e.name)
          i = i + 1
@@ -44,7 +39,7 @@ function encounter_context:on_ls(d, args)
 end
 
 function encounter_context:on_select(d, args)
-   local s =  args[1]
+   local s = args[1]
 
    if type(s) == "string" then
       if s == nil or s == "" then
@@ -76,29 +71,12 @@ function encounter_context:on_start(d, args)
    d:switch_context("battle", e)
 end
 
-function encounter_context:on_info(d, args)
-   if not self:check_encounter(d) then
-      return
-   end
-
-   d:fsay("Name: %s", self.encounter.name)
-   d:fsay("Description: %s", self.encounter.description)
-   d:fsay("Gold: %s", self.encounter.gold)
-   d:fsay("Chance: %f", self.encounter.chance)
-
-   d:say("\nMonsters:")
-   for _, m in base.pairs(self.encounter.monsters) do
-      d:fsay(" %s\t%s", m.amount, m.type)
-   end
-end
-
 function encounter_context:on_help(d, args)
    d:say([[
 Encounter - edit and view encounters available
 
 "ls" "list"             ... Show a list of available encounters.
-"info" "show" "print"   ... Display information about the current encounter.
-"select" [encounter]    ... Select the given encounter.
+"select" [encounter]    ... Select another encounter.
 "start"                 ... Start the encounter in a battle with the PCs.
    ]])
 end
@@ -119,7 +97,5 @@ function encounter_context:new(repository)
 end
 
 encounter_context.on_list = encounter_context.on_ls
-encounter_context.on_show = encounter_context.on_info
-encounter_context.on_print = encounter_context.on_info
 
 return encounter_context

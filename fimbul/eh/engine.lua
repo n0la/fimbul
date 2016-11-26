@@ -9,29 +9,32 @@ package.loaded['fimbul.eh.engine'] = engine
 local base = _G
 
 local rules = require('fimbul.eh.rules')
-
 local spawner = require('fimbul.spawner')
-
 local magazine_template = require('fimbul.eh.magazine_template')
-
 local combat = require('fimbul.eh.combat')
-
 local util = require('fimbul.util')
 
 function engine:init(r)
    r.eh = {}
 
    r.eh.characters = {}
+   r.eh.npcs = {}
+
    r.eh.races = {}
    r.eh.skills = {}
    r.eh.backgrounds = {}
    r.eh.perks = {}
    r.eh.flaws = {}
+   r.eh.encounters = {}
 
    -- Equipment
    r.eh.cartridges = {}
    r.eh.firearms = {}
    r.eh.magazines = {}
+end
+
+function engine:namespace()
+   return 'eh'
 end
 
 function engine:create_combat(r)
@@ -86,6 +89,30 @@ function engine:characters(r)
    return r.eh.characters
 end
 
+function engine:encounter_entities(r)
+   return r.eh.encounter_entities
+end
+
+function engine:encounters(r)
+   return r.eh.encounters
+end
+
+function engine:create_battle(e)
+   local c = combat:new()
+
+   for _, chars in base.pairs(r.eh.characters) do
+      local char = self:spawn(self._repository, chars)
+
+      table.insert(c:participants(), char)
+   end
+
+   for _, npcs in base.pairs(e:participants()) do
+      table.insert(c:participants(), npcs)
+   end
+
+   return c
+end
+
 function engine:_create_magazines(r)
    local mags = {}
 
@@ -114,16 +141,25 @@ function engine:load(r)
    r:_load_array('backgrounds', 'background_template', r.eh.backgrounds)
    r:_load_array('races', 'race_template', r.eh.races)
    r:_load_files('characters', 'character_template', r.eh.characters)
+   r:_load_files('npcs', 'character_template', r.eh.npcs)
    -- Load equipment
-   r:_load_array('cartridges', 'cartridge_template', r.eh.cartridges);
-   r:_load_array('firearms', 'firearm_template', r.eh.firearms);
+   r:_load_array('cartridges', 'cartridge_template', r.eh.cartridges)
+   r:_load_array('firearms', 'firearm_template', r.eh.firearms)
    -- Create magazine templates based on firearms
    r.eh.magazines = self:_create_magazines(r)
+   -- Load any encounters
+   r:_load_files('encounters', 'encounter_template', r.eh.encounters)
 
    r.eh.items = {}
    r.eh.items = util.concat_table(r.eh.items, r.eh.cartridges)
    r.eh.items = util.concat_table(r.eh.items, r.eh.magazines)
    r.eh.items = util.concat_table(r.eh.items, r.eh.firearms)
+
+   r.eh.encounter_entities = {}
+   r.eh.encounter_entities = util.concat_table(r.eh.encounter_entities,
+                                               r.eh.characters)
+   r.eh.encounter_entities = util.concat_table(r.eh.encounter_entities,
+                                               r.eh.npcs)
 end
 
 function engine:description()
@@ -136,11 +172,12 @@ function engine:new(r)
    setmetatable(neu, self)
    self.__index = self
 
+   neu._repository = r
    neu._spawner = spawner:new('fimbul.eh')
    -- Initialise our spawner
    neu._spawner:add('skill', 'character', 'race',
                      'background', 'cartridge', 'firearm',
-                     'magazine')
+                     'magazine', 'encounter')
 
    return neu
 end

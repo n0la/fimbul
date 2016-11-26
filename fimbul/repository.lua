@@ -249,6 +249,31 @@ function repository:spawn_character(name)
    return self:find_spawn_first(cs, name)
 end
 
+function repository:spawn_characters()
+   local c = {}
+   local cs = self:engine():characters(self)
+   for _, i in base.pairs(cs) do
+      l = self:spawn_character(i.name)
+      table.insert(c, l)
+   end
+
+   return c
+end
+
+function repository:encounters()
+   return self:engine():encounters(self)
+end
+
+function repository:spawn_encounter(name)
+   local cs = self:engine():encounters(self)
+   return self:find_spawn_first(cs, name)
+end
+
+function repository:spawn_encounter_entity(name)
+   local cs = self:engine():encounter_entities(self)
+   return self:find_spawn_first(cs, name)
+end
+
 function repository:has_function(name, ...)
    for _, repo in base.ipairs(self.data) do
       if repo:has_function(name) then

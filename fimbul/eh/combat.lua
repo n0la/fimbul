@@ -7,6 +7,7 @@ local base = _G
 local task = require('fimbul.eh.task')
 local rules = require('fimbul.eh.rules')
 local util = require('fimbul.util')
+local battle_logger = require('fimbul.battle_logger')
 
 function combat:new(r)
    local neu = {}

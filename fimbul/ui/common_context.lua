@@ -25,36 +25,25 @@ function common_context:_on_help(d, args)
 Common - methods common to every context
 
 "roll" "dice" "d" "eval" "expr" .     ... Evaluate a dice expression and display the result.
-"spawn" [encounter|monster] n         ... Spawn an encounter, or monster and switch context.
+"encounter" [name]                    ... Spawn an encounter, or monster and switch context.
 "help"                                ... This bogus.
    ]])
 end
 
-function common_context:on_spawn(d, args)
-   local w = args[1]
-   local c = args[2]
-
-   if w ~= "monster" and w ~= "encounter" then
-      d:error("Please specify either 'encounter' or 'monster'")
-      return
-   end
+function common_context:on_encounter(d, args)
+   local c = args[1]
 
    if c == nil then
-      d:error("Nothing given to spawn.")
+      d:error("No encounter given")
       return
    end
 
-   local r = self.repository:find(string.lower(w), c)
+   local o, r = self.repository:spawn_encounter(c)
 
-   if #r == 0 then
+   if r == nil then
       d:fsay("Nothing found with the name '%s'", c)
-   elseif #r > 1 then
-      d:fsay("The search term '%s' does not yield an unique result.", c)
    else
-      if w == "encounter" then
-         -- Switch to encounter context
-         d:switch_context(w, r[1])
-      end
+      d:switch_context('encounter', r)
    end
 end
 
