@@ -1,35 +1,21 @@
 #!/usr/bin/env lua53
 
 local dice_expression = require("fimbul.dice_expression")
+local cli = require("fimbul.ui.cli")
 
 local os = require("os")
-local std = require("std")
+local cliargs = cli.args()
 
-local optparser = std.optparse [[
- dice 0.1
+cliargs:flag('-m, --multi-line', 'stdin is one big chunk. Disables -v')
+cliargs:flag('-e, --expression', 'print expression alongside result')
+cliargs:splat('EXPRESSIONS', 'expressions to evaluate', nil, 999)
 
- Usage: dice [-hmv] dice1, dice2, ..., diceN
-
- Roll dice and/or evaluate dice expressions.
-
- This application evaluates dice expressions given on the command line. If
- none are given then it evaluate stdin.
-
- Options:
-
-   -h  --help               This bogus.
-   -m  --multi-line         stdin is one big chunk. Disables -v
-   -v  --verbose            Print expression alongside result.
-
- "dice" is part of the fimbul project.
-]]
-
-local expressions, opts = optparser:parse(arg)
+local opts = cli.parse(cliargs)
 
 function evaluate_statement(str)
    local ret = dice_expression.evaluate(str)
 
-   if opts.verbose then
+   if opts.expression then
       io.write(string.format("%s = %d\n", str, ret))
    else
       io.write(string.format("%d\n", ret))
@@ -46,7 +32,7 @@ function save_read(str)
 end
 
 function read_stdin()
-   if opts.linebased then
+   if not opts.multi_line then
       local done = false
 
       while not done do
@@ -59,10 +45,10 @@ function read_stdin()
    end
 end
 
-if not expressions or #expressions == 0 then
+if not opts.EXPRESSIONS or #opts.EXPRESSIONS == 0 then
    read_stdin()
 else
-   for i = 1, #expressions do
-      evaluate_statement(expressions[i])
+   for _, expr in ipairs(opts.EXPRESSIONS) do
+      evaluate_statement(expr)
    end
 end

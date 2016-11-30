@@ -8,22 +8,30 @@ local cli = {}
 local repository = require('fimbul.repository')
 local logger = require('fimbul.logger')
 
-function cli.standard_parameters()
-   return
-[[
-   -g, --game=GAME    Game engine to use
-   -v, --verbose      Verbose logging output
-   -h, --help             This bogus.
-]]
+function cli.args()
+   local cliargs = require('cliargs')
+
+   cliargs:option('-g, --game=GAME', 'Game engine to use', 'v35')
+   cliargs:flag('-v, --verbose', 'Verbose logging output')
+
+   return cliargs
 end
 
-function cli.standard_args(opts)
+function cli.parse(cliargs)
+   local args, err = cliargs:parse(_G.arg)
+
+   if not args and err then
+      io.stderr:write(
+         string.format("%s: %s; re-run with help for usage\n", cli.name, err))
+      os.exit(1)
+   end
+
    local game
 
-   game = opts['game'] or 'v35'
-   logger.VERBOSE = opts['verbose'] or false
+   game = args['game'] or 'v35'
+   logger.VERBOSE = args['verbose'] or false
 
-   return game
+   return args, game
 end
 
 function cli.open_repository(game)

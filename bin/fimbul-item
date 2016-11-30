@@ -1,32 +1,14 @@
 #!/usr/bin/env lua53
 
-local pretty = require("pl.pretty")
-local std = require("std")
-
 local util = require("fimbul.util")
 local repository = require("fimbul.repository")
 local cli = require('fimbul.ui.cli')
 
-local optparser = std.optparse(
-[[
-fimbul-item 0.1 - Calculate prices for craftable items and artefacts.
-Part of the fimbul project. Copyright (c) 2014 Florian Stinglmayr
+local cliargs = cli.args()
 
-Usage: fimbul-item [options] item1, item2, ..., itemN
-
-Options:
-
-]]
-..
-cli.standard_parameters()
-..
-[[
-   -p, --price            Print how the price is calculated. Default: off
-   -e, --extended         Print extended information about the item: off
-       --version          Version information.
-
-Please report bugs to https://github.com/n0la/fimbul.
-]])
+cliargs:flag('-p, --price', 'Show extended price calculation')
+cliargs:flag('-e, --extended', 'Show extended information')
+cliargs:splat('INPUTS', "items to parse", nil, 999)
 
 function dump_item(i)
    print(i:string(opts['extended'] or false))
@@ -37,13 +19,10 @@ function dump_item(i)
    end
 end
 
-_G.arg, _G.opts = optparser:parse(_G.arg)
-local r, game
-
-game = cli.standard_args(_G.opts)
+opts, game = cli.parse(cliargs)
 r = cli.open_repository(game)
 
-for _, i in pairs(arg) do
+for _, i in ipairs(opts.INPUTS) do
    ok, item = pcall(repository.parse_item, r, i)
    if not ok then
       io.stderr:write('Error parsing item "' .. i .. '": ' ..

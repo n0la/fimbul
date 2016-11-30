@@ -316,18 +316,6 @@ function util.foreach(t, f, m)
    end
 end
 
-function util.tempdir(prefix)
-   local tmp = prefix .. '.XXXXXXXXXX'
-   local cmd = 'mktemp -d -t "' .. tmp .. '"'
-
-   handle = io.popen(cmd, "r")
-   path = handle:read("*all")
-   handle:close()
-
-   path = std.string.trim(path)
-   return path
-end
-
 function util.realpath(p)
    local c
    local t = {}
