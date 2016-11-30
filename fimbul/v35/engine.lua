@@ -54,6 +54,7 @@ function engine:init(r)
    r.v35.ability = {}
    r.v35.artifact = {}
    r.v35.wondrous = {}
+   r.v35.spell = {}
 end
 
 function engine:update_items(r)
@@ -75,6 +76,8 @@ function engine:load(r)
    r:_load_files("monsters", "monster_template", r.v35.monster)
    r:_load_files("encounters", "encounter_template", r.v35.encounter)
    r:_load_files("characters", "character_template", r.v35.character)
+   -- Load spells
+   r:_load_array("spells", "spell_template", r.v35.spell)
    -- Items and Gear
    r:_load_array("weapons", "weapon_template", r.v35.weapon)
    r:_load_array("materials", "material_template", r.v35.material)
@@ -146,7 +149,8 @@ function engine:new()
                     'character', 'weapon',
                     'material', 'armor',
                     'shield', 'ability',
-                    'artifact', 'wondrous_item')
+                    'artifact', 'wondrous_item',
+                    'spell')
 
    return neu
 end
