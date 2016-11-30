@@ -178,7 +178,7 @@ function magical_item:_check_ability(r, a)
       --
       if a.requires.allof then
          for _, ab in base.ipairs(a.requires.allof) do
-            local temp = r:find("ability", ab)
+            local temp = r:find(r.v35.ability, ab)
 
             if not temp or #temp == 0 then
                error('Ability "' .. a.name .. '" depends on an ' ..
@@ -223,7 +223,7 @@ function magical_item:lookup_ability(r, am, tbl, pos, en)
       return self:_call_function(r, 'ability', am)
    end
 
-   a = r:find("ability", am)
+   a = r:find(r.v35.ability, am)
    if #a > 0 then
       for i = 1, #a do
          ability = r:spawn(a[i])
@@ -268,7 +268,7 @@ function magical_item:_parse_attributes(r, str)
 
       -- Check this or this + 1 for material
       if tbl[i+1] then
-         mat = r:find("material", (s .. ' ' .. (tbl[i+1] or '')))
+         mat = r:find(r.v35.material, (s .. ' ' .. (tbl[i+1] or '')))
 
          if #mat > 0 then
             self.material = r:spawn(mat[1])
@@ -277,7 +277,7 @@ function magical_item:_parse_attributes(r, str)
          end
       end
 
-      mat = r:find("material", s)
+      mat = r:find(r.v35.material, s)
       if #mat > 0 then
          self.material = r:spawn(mat[1])
          goto end_of_loop

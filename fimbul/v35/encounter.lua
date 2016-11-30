@@ -27,7 +27,7 @@ function encounter:spawn(r, encounter)
    local e = encounter
 
    if type(encounter) == "string" then
-      e = r:find("encounters", encounter)
+      e = r:find(r.v35.encounters, encounter)
       if #e == 0 then
          error("No such encounter " .. encounter)
       else
@@ -53,7 +53,7 @@ function encounter:spawn(r, encounter)
 
       a = dice_expression.evaluate(a)
       for i = 1, a do
-         local template = r:find("monster", t)
+         local template = r:find(r.v35.monster, t)
 
          if #template == 0 then
             error("Encounter " .. neu.name .. " uses monster " ..
