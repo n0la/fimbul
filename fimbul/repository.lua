@@ -18,7 +18,6 @@ repository.SUPPORTED_GAMES = {'v35'}
 repository.BASE_PATH = '/usr/share/fimbul'
 
 function repository.supported_games()
-   -- TODO: Make dynamic
    return repository.SUPPORTED_GAMES
 end
 
