@@ -10,7 +10,6 @@ local pretty = require("pl.pretty")
 local logger = require("fimbul.logger")
 local util = require("fimbul.util")
 local data_repository = require("fimbul.data_repository")
-local config = require("fimbul.config")
 
 local repository = {}
 
