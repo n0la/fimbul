@@ -84,4 +84,9 @@ rules.crafting.XP_COST = 0.04
 -- Material cost: half
 rules.crafting.MATERIAL_COST = 0.5
 
+rules.wand = {}
+rules.wand.BASE_CRAFT_PRICE = 375
+rules.wand.BASE_ITEM_PRICE = 750
+rules.wand.MAX_SPELL_LEVEL = 4
+
 return rules

@@ -21,7 +21,7 @@ function weapon:new(y)
    setmetatable(neu, self)
    self.__index = self
 
-   self.slot = item.WEAPON
+   neu.slot = item.WEAPON
 
    return neu
 end

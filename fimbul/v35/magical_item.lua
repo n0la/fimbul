@@ -28,6 +28,8 @@ function magical_item:new(y)
    self.masterwork = false
    -- Any magical abilities
    self.abilities = {}
+   -- Any spells
+   self.spells = {}
    -- Spawn a mysterious default material
    self.material = material:spawn(nil, {name = 'default'})
 
@@ -377,6 +379,26 @@ function magical_item:craft_materials()
    return (p * rules.crafting.MATERIAL_COST)
 end
 
+function magical_item:_add_craftcost(e)
+   local str = ''
+
+   if not e then
+      return ''
+   end
+
+   if self:craft_price() == 0 then
+      return ''
+   end
+
+   str = str .. "\n"
+   str = str .. 'Crafting: [Base: ' .. self:craft_price() .. ', '
+   str = str .. 'XP: ' .. self:craft_xp() .. ', '
+   str = str .. 'Materials: ' .. self:craft_materials() .. ', '
+   str = str .. 'Days: ' .. self:craft_days() .. ']'
+
+   return str
+end
+
 -- This function will build a string for a name
 -- and leave a %s inside this string were base classes
 -- can add their own information.
@@ -424,13 +446,7 @@ function magical_item:_string(extended)
       str = str .. ' (' .. self:weight() .. ' lbs)'
    end
 
-   if e and self:craft_price() ~= 0 then
-      str = str .. "\n"
-      str = str .. 'Crafting: [Price: ' .. self:craft_price() .. ', '
-      str = str .. 'XP: ' .. self:craft_xp() .. ', '
-      str = str .. 'Materials: ' .. self:craft_materials() .. ', '
-      str = str .. 'Days: ' .. self:craft_days() .. ']'
-   end
+   str = str .. self:_add_craftcost(e)
 
    return str
 end

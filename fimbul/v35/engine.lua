@@ -55,6 +55,7 @@ function engine:init(r)
    r.v35.artifact = {}
    r.v35.wondrous = {}
    r.v35.spell = {}
+   r.v35.wand = {}
 end
 
 function engine:update_items(r)
@@ -67,6 +68,7 @@ function engine:update_items(r)
    items = util.concat_table(items, r.v35.armor)
    items = util.concat_table(items, r.v35.shield)
    items = util.concat_table(items, r.v35.wondrous)
+   items = util.concat_table(items, r.v35.wand)
 
    r.v35.items = items
 end
@@ -79,6 +81,7 @@ function engine:load(r)
    -- Load spells
    r:_load_array("spells", "spell_template", r.v35.spell)
    -- Items and Gear
+   r:_load_array("wands", "wand_template", r.v35.wand)
    r:_load_array("weapons", "weapon_template", r.v35.weapon)
    r:_load_array("materials", "material_template", r.v35.material)
    r:_load_array("armors", "armor_template", r.v35.armor)
@@ -150,7 +153,7 @@ function engine:new()
                     'material', 'armor',
                     'shield', 'ability',
                     'artifact', 'wondrous_item',
-                    'spell')
+                    'spell', 'wand')
 
    return neu
 end

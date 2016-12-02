@@ -31,8 +31,8 @@ function spell:spawn(r, t)
 
    neu.description = t.description or ''
 
-   neu.domains = util.deepcopy(t.domains or {})
-   neu.levels = util.deepcopy(t.levels or {})
+   neu._domains = util.deepcopy(t.domains or {})
+   neu._levels = util.deepcopy(t.levels or {})
 
    neu.duration = t.duration or ''
    neu.effect = t.effect or ''
@@ -43,6 +43,10 @@ function spell:spawn(r, t)
    neu.target = t.target or ''
 
    return neu
+end
+
+function spell:levels()
+   return self._levels or {}
 end
 
 return spell

@@ -14,6 +14,10 @@ local std = require("std")
 local lfs = require("lfs")
 local pretty = require("pl.pretty")
 
+function util.dump(o)
+   pretty.dump(o)
+end
+
 function util.lookahead(t, pos, f)
 
    i = #t
