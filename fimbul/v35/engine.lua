@@ -111,7 +111,9 @@ function engine:load(r)
    -- PCs and NPCs
    r:_load_files("monsters", "monster_template", r.v35.monster)
    r:_load_files("characters", "character_template", r.v35.character)
+   r:_load_array("characters", "character_template", r.v35.character)
    r:_load_files("npcs", "character_template", r.v35.npc)
+   r:_load_array("npcs", "character_template", r.v35.npc)
    -- Load lore
    r:_load_files("lore", "lore_template", r.v35.lore)
    -- Encounters
