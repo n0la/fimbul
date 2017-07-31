@@ -47,6 +47,10 @@ function engine:init(r)
    r.v35.monster = {}
    r.v35.encounter = {}
    r.v35.character = {}
+   r.v35.npc = {}
+   r.v35.lore = {}
+   r.v35.lores = {}
+   r.v35.characters = {}
    r.v35.weapon = {}
    r.v35.material = {}
    r.v35.armor = {}
@@ -56,6 +60,36 @@ function engine:init(r)
    r.v35.wondrous = {}
    r.v35.spell = {}
    r.v35.wand = {}
+   r.v35.items = {}
+end
+
+function engine:characters(r)
+   return r.v35.characters
+end
+
+function engine:lore(r)
+   return r.v35.lores
+end
+
+function engine:update_lore(r)
+   local lore = {}
+
+   lore = util.concat_table(lore, r.v35.monster)
+   lore = util.concat_table(lore, r.v35.character)
+   lore = util.concat_table(lore, r.v35.npc)
+   lore = util.concat_table(lore, r.v35.lore)
+
+   r.v35.lores = lore
+end
+
+function engine:update_characters(r)
+   local characters = {}
+
+   characters = util.concat_table(characters, r.v35.monster)
+   characters = util.concat_table(characters, r.v35.character)
+   characters = util.concat_table(characters, r.v35.npc)
+
+   r.v35.characters = characters
 end
 
 function engine:update_items(r)
@@ -76,8 +110,12 @@ end
 function engine:load(r)
    -- PCs and NPCs
    r:_load_files("monsters", "monster_template", r.v35.monster)
-   r:_load_files("encounters", "encounter_template", r.v35.encounter)
    r:_load_files("characters", "character_template", r.v35.character)
+   r:_load_files("npcs", "character_template", r.v35.npc)
+   -- Load lore
+   r:_load_files("lore", "lore_template", r.v35.lore)
+   -- Encounters
+   r:_load_files("encounters", "encounter_template", r.v35.encounter)
    -- Load spells
    r:_load_array("spells", "spell_template", r.v35.spell)
    -- Items and Gear
@@ -93,6 +131,8 @@ function engine:load(r)
    r:_load_array("artifacts", "artifact_template", r.v35.artifact)
 
    self:update_items(r)
+   self:update_characters(r)
+   self:update_lore(r)
 end
 
 function engine:_find_item_and_spawn(r, s)
@@ -153,7 +193,8 @@ function engine:new()
                     'material', 'armor',
                     'shield', 'ability',
                     'artifact', 'wondrous_item',
-                    'spell', 'wand')
+                    'spell', 'wand', 'lore'
+   )
 
    return neu
 end

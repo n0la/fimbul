@@ -4,7 +4,7 @@ local creature = require("fimbul.v35.creature")
 
 local character = creature:new()
 
-function character:new()
+function character:new(t)
    local neu = creature:new()
 
    setmetatable(neu, self)

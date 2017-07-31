@@ -22,7 +22,7 @@ function item_plugin:new(config)
 end
 
 function item_plugin:name()
-   return 'fimbul.item_plugin'
+   return 'fimbul.lich.item_plugin'
 end
 
 function item_plugin:onconnect(server)

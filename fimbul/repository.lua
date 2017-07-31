@@ -113,6 +113,16 @@ function repository:open(game)
    self:load()
 end
 
+function repository:add_data_directory(name, path)
+   local block = {}
+
+   block.path = path
+   block.name = name
+
+   local repo = data_repository:new(block)
+   table.insert(self.data, repo)
+end
+
 -- This method is useful if there are files called <WHAT>.yml and
 -- each of these files has one element in it.
 --
@@ -197,6 +207,11 @@ end
 
 function repository:spawn_character(name)
    local cs = self:engine():characters(self)
+   return self:find_spawn_first(cs, name)
+end
+
+function repository:spawn_lore(name)
+   local cs = self:engine():lore(self)
    return self:find_spawn_first(cs, name)
 end
 

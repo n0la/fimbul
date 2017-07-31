@@ -4,6 +4,7 @@ local dice_expression = require("fimbul.dice_expression")
 
 local base = _G
 
+local util = require('fimbul.util')
 local rules = require("fimbul.v35.rules")
 local attributes = require("fimbul.v35.attributes")
 local armour_class = require("fimbul.v35.armour_class")
@@ -19,7 +20,9 @@ function creature:new()
    setmetatable(neu, self)
    self.__index = self
 
-   neu.name = ""
+   neu._name = ""
+   neu._description = ''
+   neu._aliases = {}
    neu.type = ""
    neu.hd = 0
    neu.bab = 0
@@ -58,7 +61,10 @@ function creature:spawn(r, t)
 
    local hp = dice_expression.evaluate(template.hd or "1")
 
-   neu.name = template.name
+   neu._name = template.name
+   neu._description = template.description
+   neu._aliases = util.deepclone(template.aliases or {})
+
    neu.type = template.type
    neu.hd = template.hd
 
@@ -161,6 +167,18 @@ function creature:get(variable)
    end
 
    return self[variable]
+end
+
+function creature:name()
+   return self._name or ''
+end
+
+function creature:description()
+   return self._description or ''
+end
+
+function creature:aliases()
+   return self._aliases or {}
 end
 
 return creature
